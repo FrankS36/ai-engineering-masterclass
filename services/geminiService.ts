@@ -1,9 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
 import { Chapter } from "../types";
 
-// Initialize Gemini Client
-// IMPORTANT: Expects process.env.API_KEY to be available.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazy initialization of Gemini Client to handle missing API keys gracefully
+let ai: GoogleGenAI | null = null;
+
+const getAI = (): GoogleGenAI => {
+  if (!ai) {
+    const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not configured. Please set it in your environment variables.");
+    }
+    ai = new GoogleGenAI({ apiKey });
+  }
+  return ai;
+};
 
 export const askTutor = async (
   question: string,
@@ -11,6 +21,7 @@ export const askTutor = async (
   history: { role: 'user' | 'model'; text: string }[]
 ): Promise<string> => {
   try {
+    const aiClient = getAI();
     const model = 'gemini-2.5-flash';
     
     // Construct context from the current chapter content
@@ -29,7 +40,7 @@ export const askTutor = async (
       Be concise, encouraging, and academic in tone. Use Markdown for formatting.
     `;
 
-    const chat = ai.chats.create({
+    const chat = aiClient.chats.create({
       model: model,
       config: {
         systemInstruction: systemInstruction,
@@ -46,13 +57,17 @@ export const askTutor = async (
 
   } catch (error) {
     console.error("Gemini API Error:", error);
+    if (error instanceof Error && error.message.includes("GEMINI_API_KEY")) {
+      return "⚠️ API key not configured. Please set GEMINI_API_KEY in your Vercel environment variables to use the AI tutor feature.";
+    }
     return "Sorry, I encountered an error while trying to reach the AI tutor. Please check your API configuration.";
   }
 };
 
 export const generateImage = async (prompt: string): Promise<string | null> => {
   try {
-    const response = await ai.models.generateContent({
+    const aiClient = getAI();
+    const response = await aiClient.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
         parts: [{ text: prompt }],
@@ -83,7 +98,8 @@ export interface SearchResult {
 
 export const getLiveUpdates = async (topic: string): Promise<SearchResult> => {
   try {
-    const response = await ai.models.generateContent({
+    const aiClient = getAI();
+    const response = await aiClient.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: `Find the absolute latest news, releases, and technical breakthroughs regarding "${topic}" from the last 3 months. Summarize the top 3 developments in a bulleted list.`,
       config: {
@@ -108,13 +124,17 @@ export const getLiveUpdates = async (topic: string): Promise<SearchResult> => {
     return { text, sources: uniqueSources };
   } catch (error) {
     console.error("Gemini Search Error:", error);
+    if (error instanceof Error && error.message.includes("GEMINI_API_KEY")) {
+      return { text: "⚠️ API key not configured. Please set GEMINI_API_KEY in your Vercel environment variables.", sources: [] };
+    }
     return { text: "Unable to fetch live updates at this moment.", sources: [] };
   }
 };
 
 export const runQuickPrompt = async (prompt: string): Promise<string> => {
     try {
-        const response = await ai.models.generateContent({
+        const aiClient = getAI();
+        const response = await aiClient.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
@@ -123,6 +143,9 @@ export const runQuickPrompt = async (prompt: string): Promise<string> => {
         });
         return response.text || "No response generated.";
     } catch (error) {
+        if (error instanceof Error && error.message.includes("GEMINI_API_KEY")) {
+            return "⚠️ API key not configured. Please set GEMINI_API_KEY in your Vercel environment variables.";
+        }
         return "Error generating response.";
     }
 }
