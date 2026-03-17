@@ -3,6 +3,398 @@ import { Chapter } from './types';
 export const chapters: Chapter[] = [
   {
     id: 'ch1',
+    title: 'AI Product Strategy',
+    content: `
+# AI Product Strategy
+
+Building AI features requires different thinking than traditional software. This chapter covers the strategic decisions that determine success.
+
+## Identifying Good AI Use Cases
+
+[INTERACTIVE: USE_CASE_EVAL]
+
+Not every problem needs AI. Good AI use cases share characteristics:
+
+### High-Value Indicators
+
+**Tolerance for imperfection**: Tasks where 90% accuracy is valuable
+- Content suggestions (wrong suggestion is ignorable)
+- Draft generation (human reviews anyway)
+- Search/discovery (multiple results shown)
+
+**High volume, low stakes per instance**: Many small decisions
+- Email categorization
+- Content moderation (with human review)
+- Lead scoring
+
+**Augmentation over automation**: AI assists humans
+- Writing assistance
+- Code completion
+- Research summarization
+
+### Red Flags
+
+**Zero tolerance for errors**: Legal documents, medical diagnoses (without human review)
+**Deterministic requirements**: Same input must always give same output
+**Simple rules suffice**: If-then logic would work fine
+**Data doesn't exist**: No training data, no examples, no feedback loop
+
+## Build vs Buy vs API
+
+[INTERACTIVE: BUILD_BUY]
+
+### Use APIs (OpenAI, Anthropic, etc.)
+
+**When**:
+- Speed to market matters
+- Use case is general (chat, summarization, code)
+- Scale is uncertain
+- ML expertise is limited
+
+**Trade-offs**:
+- Ongoing costs
+- Data leaves your infrastructure
+- Dependent on provider
+- Limited customization
+
+### Use Open Source Models
+
+**When**:
+- Data privacy is critical
+- Need full control
+- High volume makes API costs prohibitive
+- Specific customization needed
+
+**Trade-offs**:
+- Infrastructure complexity
+- ML expertise required
+- Responsible for updates/security
+- Higher upfront investment
+
+### Build Custom
+
+**When**:
+- Unique task with no existing solution
+- Competitive differentiation required
+- Massive scale justifies investment
+- Have strong ML team
+
+**Trade-offs**:
+- Highest cost and time
+- Ongoing maintenance burden
+- Risk of failure
+- Opportunity cost
+
+## Pricing AI Features
+
+### Cost Structure
+
+\`\`\`
+Per-request cost = 
+  (input_tokens × input_price) + 
+  (output_tokens × output_price) + 
+  infrastructure_overhead
+\`\`\`
+
+### Pricing Models
+
+**Per-use**: Charge per request/generation
+- Aligns costs with revenue
+- Complex to communicate
+- Usage anxiety for users
+
+**Subscription tiers**: Include AI in plans
+- Predictable for users
+- Risk of heavy users
+- Need usage limits
+
+**Hybrid**: Base subscription + overage
+- Balanced approach
+- More complex
+- Common in enterprise
+
+### Margin Considerations
+
+- AI costs can be 50-80% of feature revenue
+- Optimize before scaling
+- Build in buffer for model price changes
+- Consider caching and tiering
+
+## User Experience Design
+
+### Setting Expectations
+
+**Be honest about capabilities**:
+- "AI-generated suggestions"
+- "May contain errors"
+- "Review before sending"
+
+**Show confidence levels** when appropriate:
+- High confidence: Direct presentation
+- Low confidence: "Here are some options..."
+
+### Handling Failures
+
+**Graceful degradation**:
+- Fallback to simpler features
+- Clear error messages
+- Easy retry options
+
+**Feedback mechanisms**:
+- Thumbs up/down
+- Report issues
+- Suggest corrections
+
+### Latency Considerations
+
+Users expect:
+- < 200ms: Feels instant
+- 200ms-1s: Noticeable but acceptable
+- 1-3s: Need loading indicator
+- > 3s: Need progress/streaming
+
+**Techniques**:
+- Streaming for long responses
+- Optimistic UI updates
+- Background processing with notifications
+
+## Managing User Expectations
+
+### The Hype Problem
+
+Users may expect:
+- Perfect accuracy
+- Human-level understanding
+- Consistent behavior
+
+Reality:
+- Probabilistic outputs
+- No true understanding
+- Can fail unpredictably
+
+### Education Strategies
+
+- Onboarding that shows capabilities AND limitations
+- Examples of good and bad use cases
+- Clear documentation
+- In-context tips
+
+## Legal and Compliance
+
+### Data Privacy
+
+- Where does user data go?
+- Is it used for training?
+- GDPR/CCPA compliance
+- Data retention policies
+
+### Content Liability
+
+- Who's responsible for AI-generated content?
+- Terms of service updates
+- Indemnification clauses
+- Content moderation requirements
+
+### Industry-Specific
+
+- Healthcare: HIPAA, clinical decision support rules
+- Finance: Fair lending, explainability requirements
+- Education: FERPA, age restrictions
+
+## Competitive Analysis
+
+### Defensibility
+
+AI features are often easy to copy. Defensibility comes from:
+
+**Data moats**: Proprietary data that improves your model
+**Feedback loops**: User interactions that compound advantage
+**Integration depth**: Hard to rip out once embedded
+**Brand trust**: Users trust your AI more
+
+### Monitoring Competition
+
+- Feature parity tracking
+- Pricing comparison
+- User perception research
+- Technology trend analysis
+
+## Future-Proofing
+
+### Model Upgrades
+
+- Abstract model selection
+- Version your prompts
+- Maintain eval sets
+- Plan for capability jumps
+
+### Cost Trajectory
+
+- API costs generally decrease over time
+- But usage often increases faster
+- Build cost monitoring from day one
+- Have optimization roadmap ready
+
+### Emerging Capabilities
+
+- Multimodal (images, audio, video)
+- Longer context windows
+- Better reasoning
+- Faster inference
+
+Plan for features that will become possible.
+
+## Summary
+
+[INTERACTIVE: CH10_SUMMARY]
+`,
+    quizzes: [
+      {
+        id: 'q1-1',
+        question: 'What makes a good AI use case?',
+        options: [
+          'Any task that sounds impressive',
+          'Tasks with tolerance for imperfection, high volume, and augmentation over automation',
+          'Only tasks that require 100% accuracy',
+          'Tasks where simple rules would work'
+        ],
+        correctIndex: 1,
+        explanation: 'Good AI use cases tolerate imperfection (90% accuracy is valuable), involve high volume, and augment rather than replace humans.'
+      },
+      {
+        id: 'q1-2',
+        question: 'When should you use APIs (OpenAI, etc.) over open source?',
+        options: [
+          'Always',
+          'When speed to market matters, use case is general, and ML expertise is limited',
+          'Never—open source is always better',
+          'Only for prototypes'
+        ],
+        correctIndex: 1,
+        explanation: 'APIs are best when you need speed, the use case is general, scale is uncertain, and you lack ML expertise.'
+      },
+      {
+        id: 'q1-3',
+        question: 'What is a key risk of subscription pricing for AI features?',
+        options: [
+          'Users won\'t understand it',
+          'Heavy users can make the feature unprofitable',
+          'It\'s too simple',
+          'It requires per-use tracking'
+        ],
+        correctIndex: 1,
+        explanation: 'Subscription pricing risks heavy users consuming expensive AI resources without additional revenue. Usage limits help.'
+      },
+      {
+        id: 'q1-4',
+        question: 'What latency do users expect for AI features to feel "instant"?',
+        options: [
+          '< 200ms',
+          '< 5 seconds',
+          '< 30 seconds',
+          'Latency doesn\'t matter'
+        ],
+        correctIndex: 0,
+        explanation: 'Under 200ms feels instant. 200ms-1s is noticeable. Over 3s needs streaming or progress indicators.'
+      },
+      {
+        id: 'q1-5',
+        question: 'What creates defensibility for AI features?',
+        options: [
+          'Being first to market',
+          'Data moats, feedback loops, integration depth, and brand trust',
+          'Using the newest model',
+          'Lower prices'
+        ],
+        correctIndex: 1,
+        explanation: 'AI features are easy to copy. Defensibility comes from proprietary data, compounding feedback loops, deep integration, and trust.'
+      },
+      {
+        id: 'q1-6',
+        question: 'How should you handle AI failures in UX?',
+        options: [
+          'Hide them from users',
+          'Graceful degradation, clear errors, easy retry, and feedback mechanisms',
+          'Show technical error messages',
+          'Disable the feature entirely'
+        ],
+        correctIndex: 1,
+        explanation: 'Good UX includes fallbacks, clear error messages, retry options, and ways for users to report issues.'
+      },
+      {
+        id: 'q1-7',
+        question: 'What is a "data moat"?',
+        options: [
+          'A type of database',
+          'Proprietary data that improves your model and is hard for competitors to replicate',
+          'A security feature',
+          'A pricing strategy'
+        ],
+        correctIndex: 1,
+        explanation: 'Data moats are proprietary datasets that improve your AI and create competitive advantage because competitors can\'t easily get the same data.'
+      },
+      {
+        id: 'q1-8',
+        question: 'What is a red flag for AI use cases?',
+        options: [
+          'High volume of requests',
+          'Zero tolerance for errors or simple rules would suffice',
+          'Users want assistance',
+          'Task involves text'
+        ],
+        correctIndex: 1,
+        explanation: 'Red flags include zero error tolerance (without human review), deterministic requirements, and cases where simple rules work.'
+      },
+      {
+        id: 'q1-9',
+        question: 'How should you set user expectations for AI features?',
+        options: [
+          'Promise perfect accuracy',
+          'Be honest about capabilities and limitations, show confidence levels',
+          'Hide that it\'s AI',
+          'Don\'t mention limitations'
+        ],
+        correctIndex: 1,
+        explanation: 'Honest communication about capabilities, limitations, and confidence levels builds trust and reduces disappointment.'
+      },
+      {
+        id: 'q1-10',
+        question: 'What should you plan for regarding AI costs?',
+        options: [
+          'Costs will stay constant',
+          'API costs decrease but usage often increases faster; build monitoring from day one',
+          'Costs don\'t matter',
+          'Only plan for cost increases'
+        ],
+        correctIndex: 1,
+        explanation: 'While per-token costs decrease, usage growth often outpaces savings. Build cost monitoring early and have optimization plans ready.'
+      }
+    ],
+    flashcards: [
+      { id: 'f1-1', front: 'Data Moat', back: 'Proprietary data that improves your model and is hard for competitors to replicate.' },
+      { id: 'f1-2', front: 'Feedback Loop', back: 'User interactions that generate data to improve the model, creating compounding advantage.' },
+      { id: 'f1-3', front: 'Graceful Degradation', back: 'Falling back to simpler features when AI fails, maintaining user experience.' },
+      { id: 'f1-4', front: 'Augmentation vs Automation', back: 'AI that assists humans (augmentation) vs replaces them (automation). Augmentation is often safer.' },
+      { id: 'f1-5', front: 'Per-Use Pricing', back: 'Charging per AI request/generation. Aligns costs with revenue but can cause usage anxiety.' },
+      { id: 'f1-6', front: 'Subscription Tiers', back: 'Including AI in subscription plans. Predictable but risks heavy users being unprofitable.' },
+      { id: 'f1-7', front: 'Time to First Token', back: 'Latency until streaming begins. Critical for perceived speed in chat interfaces.' },
+      { id: 'f1-8', front: 'Optimistic UI', back: 'Showing expected result immediately while processing in background.' },
+      { id: 'f1-9', front: 'Confidence Level', back: 'Indicator of how certain the AI is about its output. Helps users calibrate trust.' },
+      { id: 'f1-10', front: 'Build vs Buy vs API', back: 'Strategic decision: custom development vs open source vs cloud APIs.' },
+      { id: 'f1-11', front: 'Model Abstraction', back: 'Designing systems so the underlying model can be swapped without major changes.' },
+      { id: 'f1-12', front: 'Usage Anxiety', back: 'User hesitation to use AI features due to per-use pricing concerns.' },
+      { id: 'f1-13', front: 'Content Liability', back: 'Legal responsibility for AI-generated content. Requires clear terms of service.' },
+      { id: 'f1-14', front: 'Capability Jump', back: 'Sudden improvement in model capabilities requiring product adaptation.' },
+      { id: 'f1-15', front: 'Integration Depth', back: 'How embedded AI is in the product. Deeper = harder for users to switch.' },
+      { id: 'f1-16', front: 'Hype Management', back: 'Setting realistic expectations vs inflated AI promises.' },
+      { id: 'f1-17', front: 'Feature Parity', back: 'Matching competitor AI capabilities.' },
+      { id: 'f1-18', front: 'Cost Attribution', back: 'Tracking AI costs by feature, user, or use case for pricing and optimization.' },
+      { id: 'f1-19', front: 'Explainability', back: 'Ability to explain why AI made a decision. Required in some regulated industries.' },
+      { id: 'f1-20', front: 'AI Ethics', back: 'Considerations around bias, fairness, transparency, and societal impact of AI features.' }
+    ]
+  },
+  {
+    id: 'ch2',
     title: 'The AI Engineering Landscape',
     content: `
 # The AI Engineering Landscape
@@ -117,7 +509,7 @@ Running AI at scale can get expensive fast. A single GPT-4 call might cost $0.03
 `,
     quizzes: [
       {
-        id: 'q1-1',
+        id: 'q2-1',
         question: 'What is the "Critical Distinction" between AI Engineering and Traditional ML Engineering?',
         options: [
           'AI Engineering requires more PhD researchers',
@@ -129,7 +521,7 @@ Running AI at scale can get expensive fast. A single GPT-4 call might cost $0.03
         explanation: 'The core shift is moving from training/tuning weights (ML Engineering) to composing applications using pre-trained, capable Foundation Models (AI Engineering).'
       },
       {
-        id: 'q1-2',
+        id: 'q2-2',
         question: 'Which of the following is NOT a typical "Phase 1: Proof of Concept" activity?',
         options: [
           'Basic functionality demonstration',
@@ -141,7 +533,7 @@ Running AI at scale can get expensive fast. A single GPT-4 call might cost $0.03
         explanation: 'Full production deployment and incident response belong to Phase 5. Phase 1 is about proving feasibility and value quickly.'
       },
       {
-        id: 'q1-3',
+        id: 'q2-3',
         question: 'Why is "Evaluation" considered more difficult in AI Engineering than traditional software?',
         options: [
           'Computers are slower now',
@@ -153,7 +545,7 @@ Running AI at scale can get expensive fast. A single GPT-4 call might cost $0.03
         explanation: 'Because models generate non-deterministic, open-ended text, you cannot simply write a unit test that asserts "Output == X". You need probabilistic evaluation frameworks.'
       },
       {
-        id: 'q1-4',
+        id: 'q2-4',
         question: 'In the "Use Case Evaluation Framework", what is a key question for Technical Feasibility?',
         options: [
           'How much money will we make?',
@@ -166,30 +558,30 @@ Running AI at scale can get expensive fast. A single GPT-4 call might cost $0.03
       }
     ],
     flashcards: [
-      { id: 'f1-1', front: 'Foundation Model', back: 'A model trained on broad data (text, image, audio) that can be adapted to a wide range of downstream tasks.' },
-      { id: 'f1-2', front: 'AI Engineering', back: 'The discipline of building applications using pretrained foundation models as configurable components.' },
-      { id: 'f1-3', front: 'Transfer Learning', back: 'Taking a model pretrained on one task/dataset and fine-tuning or prompting it for a different specific task.' },
-      { id: 'f1-4', front: 'Context Window', back: 'The limit on the amount of text (tokens) a model can consider at one time (e.g., 128k, 1M+).' },
-      { id: 'f1-5', front: 'Probabilistic System', back: 'A system where the same input may result in different outputs; requires different testing strategies than deterministic code.' },
-      { id: 'f1-6', front: 'RAG', back: 'Retrieval-Augmented Generation. Connecting a model to external data sources to ground its answers.' },
-      { id: 'f1-7', front: 'Token', back: 'The basic unit of text processing in LLMs. Can be a word, subword, or character. Roughly 4 characters = 1 token in English.' },
-      { id: 'f1-8', front: 'Prompt Engineering', back: 'The practice of designing and optimizing inputs to get desired outputs from foundation models.' },
-      { id: 'f1-9', front: 'Inference', back: 'Running a trained model to generate predictions or outputs. What happens when you call an LLM API.' },
-      { id: 'f1-10', front: 'Latency', back: 'The time between sending a request and receiving a response. Critical metric for real-time AI applications.' },
-      { id: 'f1-11', front: 'Hallucination', back: 'When an LLM generates plausible-sounding but factually incorrect or fabricated information.' },
-      { id: 'f1-12', front: 'Fine-Tuning', back: 'Further training a pre-trained model on task-specific data to improve performance on that task.' },
-      { id: 'f1-13', front: 'Embedding', back: 'A dense vector representation of text that captures semantic meaning. Similar texts have similar embeddings.' },
-      { id: 'f1-14', front: 'LLM (Large Language Model)', back: 'Neural networks with billions of parameters trained on massive text datasets to understand and generate language.' },
-      { id: 'f1-15', front: 'API (in AI context)', back: 'Interface to access AI models over the internet. Most foundation models are accessed via REST APIs.' },
-      { id: 'f1-16', front: 'Temperature', back: 'Parameter controlling randomness in model outputs. 0 = deterministic, higher = more creative/random.' },
-      { id: 'f1-17', front: 'Multimodal', back: 'AI systems that can process and generate multiple types of data: text, images, audio, video.' },
-      { id: 'f1-18', front: 'Grounding', back: 'Anchoring LLM outputs to factual sources (via RAG or citations) to reduce hallucinations.' },
-      { id: 'f1-19', front: 'Throughput', back: 'Number of requests or tokens a system can process per unit time. Important for high-volume applications.' },
-      { id: 'f1-20', front: 'Model Provider', back: 'Companies that train and serve foundation models via API (OpenAI, Anthropic, Google, etc.).' }
+      { id: 'f2-1', front: 'Foundation Model', back: 'A model trained on broad data (text, image, audio) that can be adapted to a wide range of downstream tasks.' },
+      { id: 'f2-2', front: 'AI Engineering', back: 'The discipline of building applications using pretrained foundation models as configurable components.' },
+      { id: 'f2-3', front: 'Transfer Learning', back: 'Taking a model pretrained on one task/dataset and fine-tuning or prompting it for a different specific task.' },
+      { id: 'f2-4', front: 'Context Window', back: 'The limit on the amount of text (tokens) a model can consider at one time (e.g., 128k, 1M+).' },
+      { id: 'f2-5', front: 'Probabilistic System', back: 'A system where the same input may result in different outputs; requires different testing strategies than deterministic code.' },
+      { id: 'f2-6', front: 'RAG', back: 'Retrieval-Augmented Generation. Connecting a model to external data sources to ground its answers.' },
+      { id: 'f2-7', front: 'Token', back: 'The basic unit of text processing in LLMs. Can be a word, subword, or character. Roughly 4 characters = 1 token in English.' },
+      { id: 'f2-8', front: 'Prompt Engineering', back: 'The practice of designing and optimizing inputs to get desired outputs from foundation models.' },
+      { id: 'f2-9', front: 'Inference', back: 'Running a trained model to generate predictions or outputs. What happens when you call an LLM API.' },
+      { id: 'f2-10', front: 'Latency', back: 'The time between sending a request and receiving a response. Critical metric for real-time AI applications.' },
+      { id: 'f2-11', front: 'Hallucination', back: 'When an LLM generates plausible-sounding but factually incorrect or fabricated information.' },
+      { id: 'f2-12', front: 'Fine-Tuning', back: 'Further training a pre-trained model on task-specific data to improve performance on that task.' },
+      { id: 'f2-13', front: 'Embedding', back: 'A dense vector representation of text that captures semantic meaning. Similar texts have similar embeddings.' },
+      { id: 'f2-14', front: 'LLM (Large Language Model)', back: 'Neural networks with billions of parameters trained on massive text datasets to understand and generate language.' },
+      { id: 'f2-15', front: 'API (in AI context)', back: 'Interface to access AI models over the internet. Most foundation models are accessed via REST APIs.' },
+      { id: 'f2-16', front: 'Temperature', back: 'Parameter controlling randomness in model outputs. 0 = deterministic, higher = more creative/random.' },
+      { id: 'f2-17', front: 'Multimodal', back: 'AI systems that can process and generate multiple types of data: text, images, audio, video.' },
+      { id: 'f2-18', front: 'Grounding', back: 'Anchoring LLM outputs to factual sources (via RAG or citations) to reduce hallucinations.' },
+      { id: 'f2-19', front: 'Throughput', back: 'Number of requests or tokens a system can process per unit time. Important for high-volume applications.' },
+      { id: 'f2-20', front: 'Model Provider', back: 'Companies that train and serve foundation models via API (OpenAI, Anthropic, Google, etc.).' }
     ]
   },
   {
-    id: 'ch2',
+    id: 'ch3',
     title: 'How Foundation Models Work',
     content: `
 # How Foundation Models Work
@@ -524,7 +916,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
 `,
     quizzes: [
       {
-        id: 'q2-1',
+        id: 'q3-1',
         question: 'What is "Mixture of Experts" (MoE)?',
         options: [
           'A team of human scientists checking the model',
@@ -536,7 +928,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'MoE models route tokens to specific "expert" neural networks, allowing massive total parameters but only activating a fraction per token for fast inference.'
       },
       {
-        id: 'q2-2',
+        id: 'q3-2',
         question: 'What did the Chinchilla paper reveal about model training?',
         options: [
           'Models should be as big as possible',
@@ -548,7 +940,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'DeepMind showed that compute-optimal training requires balancing model size with data. A 70B model trained on enough data can match a 280B undertrained model.'
       },
       {
-        id: 'q2-3',
+        id: 'q3-3',
         question: 'What is the purpose of RLHF?',
         options: [
           'To make models generate faster',
@@ -560,7 +952,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'RLHF uses human feedback to train models to produce outputs humans prefer—making them helpful, harmless, and honest.'
       },
       {
-        id: 'q2-4',
+        id: 'q3-4',
         question: 'What are emergent capabilities?',
         options: [
           'Features explicitly programmed by developers',
@@ -572,7 +964,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'Emergent capabilities like chain-of-thought reasoning appear at scale thresholds—they\'re a byproduct of the training objective, not explicit programming.'
       },
       {
-        id: 'q2-5',
+        id: 'q3-5',
         question: 'Why does tokenization matter for AI engineers?',
         options: [
           'It only matters for linguists',
@@ -584,7 +976,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'You pay per token, context is measured in tokens, and unusual tokenization can cause unexpected behavior—especially with code, math, and non-English text.'
       },
       {
-        id: 'q2-6',
+        id: 'q3-6',
         question: 'What is the advantage of native multimodality over composite approaches?',
         options: [
           'It\'s cheaper to train',
@@ -596,7 +988,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'Native multimodal models trained on mixed media from the start learn relationships between modalities that bolted-together systems miss.'
       },
       {
-        id: 'q2-7',
+        id: 'q3-7',
         question: 'What is speculative decoding?',
         options: [
           'Having the model guess user intent',
@@ -608,7 +1000,7 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
         explanation: 'Speculative decoding uses a fast small model to draft tokens, then has the main model verify them in parallel—providing 2-3x speedups.'
       },
       {
-        id: 'q2-8',
+        id: 'q3-8',
         question: 'What is the key difference between Temperature and Top-P sampling?',
         options: [
           'They\'re the same thing',
@@ -621,30 +1013,30 @@ Foundation models are the infrastructure layer of AI engineering. To work with t
       }
     ],
     flashcards: [
-      { id: 'f2-1', front: 'Foundation Model', back: 'A large model trained at scale on broad data, designed to be adapted to many downstream tasks through prompting, fine-tuning, or retrieval.' },
-      { id: 'f2-2', front: 'Scaling Laws', back: 'Mathematical relationships showing model performance improves predictably with parameters, data, and compute following power laws.' },
-      { id: 'f2-3', front: 'Emergent Capabilities', back: 'Abilities like reasoning and in-context learning that appear suddenly at certain scale thresholds without explicit training.' },
-      { id: 'f2-4', front: 'Transformer', back: 'The dominant neural network architecture using self-attention to process sequences in parallel and capture long-range dependencies.' },
-      { id: 'f2-5', front: 'Self-Attention', back: 'Mechanism where each token computes relevance scores to all other tokens using Query, Key, and Value vectors.' },
-      { id: 'f2-6', front: 'Pre-Training', back: 'Phase 1 of training: predicting next tokens on massive text corpora to learn language, knowledge, and reasoning patterns.' },
-      { id: 'f2-7', front: 'SFT (Supervised Fine-Tuning)', back: 'Phase 2: Training on (instruction, response) pairs to teach the model the format of being a helpful assistant.' },
-      { id: 'f2-8', front: 'RLHF', back: 'Reinforcement Learning from Human Feedback. Phase 3: Using human preference rankings to align model outputs with human values.' },
-      { id: 'f2-9', front: 'BPE (Byte-Pair Encoding)', back: 'Tokenization algorithm that iteratively merges frequent character pairs to build a vocabulary of subword units.' },
-      { id: 'f2-10', front: 'Temperature', back: 'Sampling parameter that controls randomness. T=0 is greedy/deterministic, T>1 increases creativity/randomness.' },
-      { id: 'f2-11', front: 'Top-P (Nucleus Sampling)', back: 'Sampling that keeps only tokens whose cumulative probability exceeds threshold P, adapting to distribution shape.' },
-      { id: 'f2-12', front: 'Context Window', back: 'Maximum tokens a model can process at once. Modern models range from 128K to 2M+ tokens.' },
-      { id: 'f2-13', front: 'Flash Attention', back: 'Optimized attention algorithm reducing memory usage and increasing speed by fusing operations.' },
-      { id: 'f2-14', front: 'KV Cache', back: 'Stored key/value vectors from previous tokens enabling efficient autoregressive generation.' },
-      { id: 'f2-15', front: 'Mixture of Experts (MoE)', back: 'Architecture using multiple expert networks with a router, activating only a subset per token for efficiency.' },
-      { id: 'f2-16', front: 'Native Multimodality', back: 'Models trained on mixed media (text, images, audio) from scratch rather than bolting separate encoders together.' },
-      { id: 'f2-17', front: 'Quantization', back: 'Reducing model precision (FP16 → INT8/INT4) to decrease memory and increase speed with minimal quality loss.' },
-      { id: 'f2-18', front: 'Speculative Decoding', back: 'Using a small fast model to draft tokens that a larger model verifies in parallel for 2-3x speedups.' },
-      { id: 'f2-19', front: 'Chinchilla Optimal', back: 'The compute-optimal training ratio of ~20 tokens per parameter discovered by DeepMind.' },
-      { id: 'f2-20', front: 'Process Reward Model', back: 'Reward model evaluating correctness of intermediate reasoning steps, not just final answers. Key for training reasoning models.' }
+      { id: 'f3-1', front: 'Foundation Model', back: 'A large model trained at scale on broad data, designed to be adapted to many downstream tasks through prompting, fine-tuning, or retrieval.' },
+      { id: 'f3-2', front: 'Scaling Laws', back: 'Mathematical relationships showing model performance improves predictably with parameters, data, and compute following power laws.' },
+      { id: 'f3-3', front: 'Emergent Capabilities', back: 'Abilities like reasoning and in-context learning that appear suddenly at certain scale thresholds without explicit training.' },
+      { id: 'f3-4', front: 'Transformer', back: 'The dominant neural network architecture using self-attention to process sequences in parallel and capture long-range dependencies.' },
+      { id: 'f3-5', front: 'Self-Attention', back: 'Mechanism where each token computes relevance scores to all other tokens using Query, Key, and Value vectors.' },
+      { id: 'f3-6', front: 'Pre-Training', back: 'Phase 1 of training: predicting next tokens on massive text corpora to learn language, knowledge, and reasoning patterns.' },
+      { id: 'f3-7', front: 'SFT (Supervised Fine-Tuning)', back: 'Phase 2: Training on (instruction, response) pairs to teach the model the format of being a helpful assistant.' },
+      { id: 'f3-8', front: 'RLHF', back: 'Reinforcement Learning from Human Feedback. Phase 3: Using human preference rankings to align model outputs with human values.' },
+      { id: 'f3-9', front: 'BPE (Byte-Pair Encoding)', back: 'Tokenization algorithm that iteratively merges frequent character pairs to build a vocabulary of subword units.' },
+      { id: 'f3-10', front: 'Temperature', back: 'Sampling parameter that controls randomness. T=0 is greedy/deterministic, T>1 increases creativity/randomness.' },
+      { id: 'f3-11', front: 'Top-P (Nucleus Sampling)', back: 'Sampling that keeps only tokens whose cumulative probability exceeds threshold P, adapting to distribution shape.' },
+      { id: 'f3-12', front: 'Context Window', back: 'Maximum tokens a model can process at once. Modern models range from 128K to 2M+ tokens.' },
+      { id: 'f3-13', front: 'Flash Attention', back: 'Optimized attention algorithm reducing memory usage and increasing speed by fusing operations.' },
+      { id: 'f3-14', front: 'KV Cache', back: 'Stored key/value vectors from previous tokens enabling efficient autoregressive generation.' },
+      { id: 'f3-15', front: 'Mixture of Experts (MoE)', back: 'Architecture using multiple expert networks with a router, activating only a subset per token for efficiency.' },
+      { id: 'f3-16', front: 'Native Multimodality', back: 'Models trained on mixed media (text, images, audio) from scratch rather than bolting separate encoders together.' },
+      { id: 'f3-17', front: 'Quantization', back: 'Reducing model precision (FP16 → INT8/INT4) to decrease memory and increase speed with minimal quality loss.' },
+      { id: 'f3-18', front: 'Speculative Decoding', back: 'Using a small fast model to draft tokens that a larger model verifies in parallel for 2-3x speedups.' },
+      { id: 'f3-19', front: 'Chinchilla Optimal', back: 'The compute-optimal training ratio of ~20 tokens per parameter discovered by DeepMind.' },
+      { id: 'f3-20', front: 'Process Reward Model', back: 'Reward model evaluating correctness of intermediate reasoning steps, not just final answers. Key for training reasoning models.' }
     ]
   },
   {
-    id: 'ch3',
+    id: 'ch4',
     title: 'Prompt Engineering & Techniques',
     content: `
 # Prompt Engineering & Techniques
@@ -958,7 +1350,7 @@ Sometimes no amount of prompt engineering will get you there:
 `,
     quizzes: [
       {
-        id: 'q3-1',
+        id: 'q4-1',
         question: 'What is the primary purpose of a system prompt?',
         options: [
           'To make the model respond faster',
@@ -970,7 +1362,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'System prompts establish the ground rules for how the model should behave throughout the entire conversation.'
       },
       {
-        id: 'q3-2',
+        id: 'q4-2',
         question: 'When should you use few-shot prompting over zero-shot?',
         options: [
           'When you want faster responses',
@@ -982,7 +1374,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'Few-shot prompting excels when you need the model to follow a specific pattern that is easier to show than describe.'
       },
       {
-        id: 'q3-3',
+        id: 'q4-3',
         question: 'Why does Chain of Thought (CoT) prompting improve reasoning performance?',
         options: [
           'It uses a special model architecture',
@@ -994,7 +1386,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'CoT prompting causes the model to generate step-by-step reasoning, where each step provides context for the next.'
       },
       {
-        id: 'q3-4',
+        id: 'q4-4',
         question: 'What is prompt injection?',
         options: [
           'A technique to speed up prompts',
@@ -1006,7 +1398,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'Prompt injection occurs when user-controlled content is interpreted as instructions, overriding your system prompt.'
       },
       {
-        id: 'q3-5',
+        id: 'q4-5',
         question: 'What does JSON mode guarantee?',
         options: [
           'The output will match your exact schema',
@@ -1018,7 +1410,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'JSON mode ensures valid JSON syntax, but you must still describe your desired schema in the prompt for the model to follow it.'
       },
       {
-        id: 'q3-6',
+        id: 'q4-6',
         question: 'What is self-consistency prompting?',
         options: [
           'Asking the model to verify its own output',
@@ -1030,7 +1422,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'Self-consistency runs the prompt multiple times with sampling, then takes the most common answer for higher reliability.'
       },
       {
-        id: 'q3-7',
+        id: 'q4-7',
         question: 'When should you consider fine-tuning instead of prompt engineering?',
         options: [
           'For every production use case',
@@ -1042,7 +1434,7 @@ Sometimes no amount of prompt engineering will get you there:
         explanation: 'Fine-tuning is warranted when prompt engineering hits limits: excessive token usage, inconsistent behavior, or need for deep specialization.'
       },
       {
-        id: 'q3-8',
+        id: 'q4-8',
         question: 'What is indirect prompt injection?',
         options: [
           'Injecting prompts through the system message',
@@ -1055,25 +1447,25 @@ Sometimes no amount of prompt engineering will get you there:
       }
     ],
     flashcards: [
-      { id: 'f3-1', front: 'System Prompt', back: 'The foundational instruction set that establishes persona, constraints, and behavioral guidelines for the entire conversation.' },
-      { id: 'f3-2', front: 'Zero-Shot Prompting', back: 'Giving the model an instruction with no examples. Works best for simple, well-defined tasks.' },
-      { id: 'f3-3', front: 'Few-Shot Prompting', back: 'Providing 2-5 examples before your query so the model learns the desired pattern from demonstration.' },
-      { id: 'f3-4', front: 'Chain of Thought (CoT)', back: 'Prompting technique that asks the model to "think step by step," improving performance on reasoning tasks.' },
-      { id: 'f3-5', front: 'Self-Consistency', back: 'Running the same prompt multiple times with sampling and taking the majority answer for higher reliability.' },
-      { id: 'f3-6', front: 'Tree of Thoughts', back: 'Advanced prompting where the model explores multiple reasoning paths, evaluates them, and can backtrack.' },
-      { id: 'f3-7', front: 'Prompt Injection', back: 'Security vulnerability where malicious user input hijacks or overrides intended instructions.' },
-      { id: 'f3-8', front: 'Indirect Injection', back: 'Prompt injection via malicious content embedded in documents or data the model processes, not direct user input.' },
-      { id: 'f3-9', front: 'JSON Mode', back: 'API feature that forces valid JSON output, but you still need to specify your desired schema in the prompt.' },
-      { id: 'f3-10', front: 'Function Calling', back: 'API feature where models output structured data matching predefined schemas, enabling tool use and guaranteed formats.' },
-      { id: 'f3-11', front: 'Structured Output', back: 'Techniques to get consistent, parseable output including JSON mode, function calling, and output parser libraries.' },
-      { id: 'f3-12', front: 'Temperature', back: 'Parameter controlling randomness: T=0 for deterministic/factual tasks, T=0.7-1.0 for creative tasks.' },
-      { id: 'f3-13', front: 'Prompt Versioning', back: 'Treating prompts like code: version control, tracking outputs, and A/B testing changes in production.' },
-      { id: 'f3-14', front: 'Delimiter Strategy', back: 'Security technique using clear markers (like triple backticks) to separate trusted instructions from untrusted user content.' },
-      { id: 'f3-15', front: 'Output Filtering', back: 'Security measure that validates model outputs before returning them to users, catching injection attempts.' }
+      { id: 'f4-1', front: 'System Prompt', back: 'The foundational instruction set that establishes persona, constraints, and behavioral guidelines for the entire conversation.' },
+      { id: 'f4-2', front: 'Zero-Shot Prompting', back: 'Giving the model an instruction with no examples. Works best for simple, well-defined tasks.' },
+      { id: 'f4-3', front: 'Few-Shot Prompting', back: 'Providing 2-5 examples before your query so the model learns the desired pattern from demonstration.' },
+      { id: 'f4-4', front: 'Chain of Thought (CoT)', back: 'Prompting technique that asks the model to "think step by step," improving performance on reasoning tasks.' },
+      { id: 'f4-5', front: 'Self-Consistency', back: 'Running the same prompt multiple times with sampling and taking the majority answer for higher reliability.' },
+      { id: 'f4-6', front: 'Tree of Thoughts', back: 'Advanced prompting where the model explores multiple reasoning paths, evaluates them, and can backtrack.' },
+      { id: 'f4-7', front: 'Prompt Injection', back: 'Security vulnerability where malicious user input hijacks or overrides intended instructions.' },
+      { id: 'f4-8', front: 'Indirect Injection', back: 'Prompt injection via malicious content embedded in documents or data the model processes, not direct user input.' },
+      { id: 'f4-9', front: 'JSON Mode', back: 'API feature that forces valid JSON output, but you still need to specify your desired schema in the prompt.' },
+      { id: 'f4-10', front: 'Function Calling', back: 'API feature where models output structured data matching predefined schemas, enabling tool use and guaranteed formats.' },
+      { id: 'f4-11', front: 'Structured Output', back: 'Techniques to get consistent, parseable output including JSON mode, function calling, and output parser libraries.' },
+      { id: 'f4-12', front: 'Temperature', back: 'Parameter controlling randomness: T=0 for deterministic/factual tasks, T=0.7-1.0 for creative tasks.' },
+      { id: 'f4-13', front: 'Prompt Versioning', back: 'Treating prompts like code: version control, tracking outputs, and A/B testing changes in production.' },
+      { id: 'f4-14', front: 'Delimiter Strategy', back: 'Security technique using clear markers (like triple backticks) to separate trusted instructions from untrusted user content.' },
+      { id: 'f4-15', front: 'Output Filtering', back: 'Security measure that validates model outputs before returning them to users, catching injection attempts.' }
     ]
   },
   {
-    id: 'ch4',
+    id: 'ch5',
     title: 'Building with LLM APIs',
     content: `
 # Building with LLM APIs
@@ -1426,7 +1818,7 @@ Consider:
 `,
     quizzes: [
       {
-        id: 'q4-1',
+        id: 'q5-1',
         question: 'What are the three standard roles in the messages array?',
         options: [
           'admin, user, bot',
@@ -1438,7 +1830,7 @@ Consider:
         explanation: 'The standard roles are system (persistent instructions), user (human input), and assistant (model responses).'
       },
       {
-        id: 'q4-2',
+        id: 'q5-2',
         question: 'Why is streaming important for LLM applications?',
         options: [
           'It reduces total response time',
@@ -1450,7 +1842,7 @@ Consider:
         explanation: 'Streaming improves perceived speed—users see output in ~200ms instead of waiting seconds for the full response.'
       },
       {
-        id: 'q4-3',
+        id: 'q5-3',
         question: 'What is the purpose of function calling / tool use?',
         options: [
           'To make the model faster',
@@ -1462,7 +1854,7 @@ Consider:
         explanation: 'Function calling allows models to output structured data matching schemas you define, essential for reliable integrations.'
       },
       {
-        id: 'q4-4',
+        id: 'q5-4',
         question: 'How should you handle rate limit (429) errors?',
         options: [
           'Immediately retry',
@@ -1474,7 +1866,7 @@ Consider:
         explanation: 'Rate limits require exponential backoff (increasing wait times) and potentially queuing requests to avoid overwhelming the API.'
       },
       {
-        id: 'q4-5',
+        id: 'q5-5',
         question: 'What is the formula for LLM API costs?',
         options: [
           'Cost = total_tokens × price',
@@ -1486,7 +1878,7 @@ Consider:
         explanation: 'APIs charge separately for input and output tokens, with output typically more expensive.'
       },
       {
-        id: 'q4-6',
+        id: 'q5-6',
         question: 'What should you do when conversation history exceeds the context window?',
         options: [
           'Start a new conversation',
@@ -1498,7 +1890,7 @@ Consider:
         explanation: 'Context management strategies include truncating old messages, summarizing history, or keeping only semantically relevant messages.'
       },
       {
-        id: 'q4-7',
+        id: 'q5-7',
         question: 'Why should API keys never be committed to version control?',
         options: [
           'They take up too much space',
@@ -1510,7 +1902,7 @@ Consider:
         explanation: 'Exposed API keys can be harvested by bots and used maliciously, leading to unauthorized charges and data access.'
       },
       {
-        id: 'q4-8',
+        id: 'q5-8',
         question: 'What is semantic caching?',
         options: [
           'Caching based on exact query matches',
@@ -1522,7 +1914,7 @@ Consider:
         explanation: 'Semantic caching uses embeddings to find similar past queries, returning cached responses even for slightly different wording.'
       },
       {
-        id: 'q4-9',
+        id: 'q5-9',
         question: 'What is a circuit breaker pattern?',
         options: [
           'A way to limit token usage',
@@ -1534,7 +1926,7 @@ Consider:
         explanation: 'Circuit breakers detect failing services and stop calling them temporarily, preventing cascade failures and allowing recovery.'
       },
       {
-        id: 'q4-10',
+        id: 'q5-10',
         question: 'Which cost optimization strategy routes simple tasks to cheaper models?',
         options: [
           'Caching',
@@ -1547,30 +1939,30 @@ Consider:
       }
     ],
     flashcards: [
-      { id: 'f4-1', front: 'Messages Array', back: 'The core abstraction for LLM APIs: a list of messages with roles (system, user, assistant) representing the conversation.' },
-      { id: 'f4-2', front: 'System Role', back: 'Message role for instructions that persist across the conversation, setting behavior and constraints.' },
-      { id: 'f4-3', front: 'Streaming', back: 'Receiving tokens as they are generated rather than waiting for the complete response. Dramatically improves perceived latency.' },
-      { id: 'f4-4', front: 'Server-Sent Events (SSE)', back: 'HTTP protocol for streaming data from server to client, commonly used for LLM streaming responses.' },
-      { id: 'f4-5', front: 'Function Calling', back: 'API feature letting models invoke functions you define with structured arguments, enabling tool use and reliable JSON output.' },
-      { id: 'f4-6', front: 'Tool Use Loop', back: 'Pattern: send message → model calls tool → execute function → send result → model responds.' },
-      { id: 'f4-7', front: 'Context Window', back: 'Maximum number of tokens a model can process in a single request, including both input and output.' },
-      { id: 'f4-8', front: 'Token', back: 'The unit of text processing for LLMs. Roughly 4 characters or 0.75 words in English.' },
-      { id: 'f4-9', front: 'Rate Limiting', back: 'API restriction on requests per minute/day. Handle with exponential backoff and request queuing.' },
-      { id: 'f4-10', front: 'Exponential Backoff', back: 'Retry strategy where wait time doubles after each failure (1s, 2s, 4s, 8s...) to avoid overwhelming the API.' },
-      { id: 'f4-11', front: 'Circuit Breaker', back: 'Pattern that stops calling a failing service temporarily to prevent cascade failures and allow recovery.' },
-      { id: 'f4-12', front: 'Model Tiering', back: 'Cost optimization: route simple tasks to cheap/fast models, reserve expensive models for complex tasks.' },
-      { id: 'f4-13', front: 'Semantic Caching', back: 'Caching responses for semantically similar queries using embeddings, not just exact matches.' },
-      { id: 'f4-14', front: 'Prompt Tokens', back: 'Tokens in the input/request. Typically cheaper than completion tokens.' },
-      { id: 'f4-15', front: 'Completion Tokens', back: 'Tokens in the output/response. Typically more expensive than prompt tokens.' },
-      { id: 'f4-16', front: 'max_tokens', back: 'Parameter limiting response length. Set appropriately to control costs and response size.' },
-      { id: 'f4-17', front: 'temperature', back: 'Parameter controlling randomness. 0 = deterministic, higher = more creative/random.' },
-      { id: 'f4-18', front: 'top_p (Nucleus Sampling)', back: 'Alternative to temperature: only consider tokens whose cumulative probability exceeds threshold p.' },
-      { id: 'f4-19', front: 'Graceful Degradation', back: 'Fallback strategy: return cached or default response when the primary service fails.' },
-      { id: 'f4-20', front: 'Provider Fallback', back: 'Resilience pattern: if one LLM provider fails, automatically route to a backup provider.' }
+      { id: 'f5-1', front: 'Messages Array', back: 'The core abstraction for LLM APIs: a list of messages with roles (system, user, assistant) representing the conversation.' },
+      { id: 'f5-2', front: 'System Role', back: 'Message role for instructions that persist across the conversation, setting behavior and constraints.' },
+      { id: 'f5-3', front: 'Streaming', back: 'Receiving tokens as they are generated rather than waiting for the complete response. Dramatically improves perceived latency.' },
+      { id: 'f5-4', front: 'Server-Sent Events (SSE)', back: 'HTTP protocol for streaming data from server to client, commonly used for LLM streaming responses.' },
+      { id: 'f5-5', front: 'Function Calling', back: 'API feature letting models invoke functions you define with structured arguments, enabling tool use and reliable JSON output.' },
+      { id: 'f5-6', front: 'Tool Use Loop', back: 'Pattern: send message → model calls tool → execute function → send result → model responds.' },
+      { id: 'f5-7', front: 'Context Window', back: 'Maximum number of tokens a model can process in a single request, including both input and output.' },
+      { id: 'f5-8', front: 'Token', back: 'The unit of text processing for LLMs. Roughly 4 characters or 0.75 words in English.' },
+      { id: 'f5-9', front: 'Rate Limiting', back: 'API restriction on requests per minute/day. Handle with exponential backoff and request queuing.' },
+      { id: 'f5-10', front: 'Exponential Backoff', back: 'Retry strategy where wait time doubles after each failure (1s, 2s, 4s, 8s...) to avoid overwhelming the API.' },
+      { id: 'f5-11', front: 'Circuit Breaker', back: 'Pattern that stops calling a failing service temporarily to prevent cascade failures and allow recovery.' },
+      { id: 'f5-12', front: 'Model Tiering', back: 'Cost optimization: route simple tasks to cheap/fast models, reserve expensive models for complex tasks.' },
+      { id: 'f5-13', front: 'Semantic Caching', back: 'Caching responses for semantically similar queries using embeddings, not just exact matches.' },
+      { id: 'f5-14', front: 'Prompt Tokens', back: 'Tokens in the input/request. Typically cheaper than completion tokens.' },
+      { id: 'f5-15', front: 'Completion Tokens', back: 'Tokens in the output/response. Typically more expensive than prompt tokens.' },
+      { id: 'f5-16', front: 'max_tokens', back: 'Parameter limiting response length. Set appropriately to control costs and response size.' },
+      { id: 'f5-17', front: 'temperature', back: 'Parameter controlling randomness. 0 = deterministic, higher = more creative/random.' },
+      { id: 'f5-18', front: 'top_p (Nucleus Sampling)', back: 'Alternative to temperature: only consider tokens whose cumulative probability exceeds threshold p.' },
+      { id: 'f5-19', front: 'Graceful Degradation', back: 'Fallback strategy: return cached or default response when the primary service fails.' },
+      { id: 'f5-20', front: 'Provider Fallback', back: 'Resilience pattern: if one LLM provider fails, automatically route to a backup provider.' }
     ]
   },
   {
-    id: 'ch5',
+    id: 'ch6',
     title: 'RAG & Knowledge Systems',
     content: `
 # RAG & Knowledge Systems
@@ -1827,7 +2219,7 @@ RAG systems need systematic evaluation.
 `,
     quizzes: [
       {
-        id: 'q5-1',
+        id: 'q6-1',
         question: 'What problem does RAG primarily solve?',
         options: [
           'Making models faster',
@@ -1839,7 +2231,7 @@ RAG systems need systematic evaluation.
         explanation: 'RAG solves the knowledge cutoff and domain specificity problems by retrieving relevant documents at query time.'
       },
       {
-        id: 'q5-2',
+        id: 'q6-2',
         question: 'What is the purpose of chunking in RAG?',
         options: [
           'To compress documents',
@@ -1851,7 +2243,7 @@ RAG systems need systematic evaluation.
         explanation: 'Chunking breaks documents into retrievable units that fit within context limits and can be individually matched to queries.'
       },
       {
-        id: 'q5-3',
+        id: 'q6-3',
         question: 'What is a vector embedding?',
         options: [
           'A compressed version of a document',
@@ -1863,7 +2255,7 @@ RAG systems need systematic evaluation.
         explanation: 'Embeddings are dense vectors that represent text semantically—similar meanings result in similar vectors.'
       },
       {
-        id: 'q5-4',
+        id: 'q6-4',
         question: 'Why use hybrid search (semantic + keyword)?',
         options: [
           'It\'s faster than either alone',
@@ -1875,7 +2267,7 @@ RAG systems need systematic evaluation.
         explanation: 'Hybrid search catches both semantic matches (synonyms, concepts) and exact matches (names, codes) that either alone might miss.'
       },
       {
-        id: 'q5-5',
+        id: 'q6-5',
         question: 'What is reranking in RAG?',
         options: [
           'Sorting documents by date',
@@ -1887,7 +2279,7 @@ RAG systems need systematic evaluation.
         explanation: 'Reranking uses a cross-encoder or similar model to more accurately score query-document relevance after initial retrieval.'
       },
       {
-        id: 'q5-6',
+        id: 'q6-6',
         question: 'What is the trade-off with chunk size?',
         options: [
           'Larger is always better',
@@ -1899,7 +2291,7 @@ RAG systems need systematic evaluation.
         explanation: 'Small chunks fragment meaning; large chunks include irrelevant content. The sweet spot is usually 200-1000 tokens.'
       },
       {
-        id: 'q5-7',
+        id: 'q6-7',
         question: 'What does Recall@K measure?',
         options: [
           'Speed of retrieval',
@@ -1911,7 +2303,7 @@ RAG systems need systematic evaluation.
         explanation: 'Recall@K measures what fraction of all relevant documents appear in your top K retrieved results.'
       },
       {
-        id: 'q5-8',
+        id: 'q6-8',
         question: 'What is HyDE (Hypothetical Document Embedding)?',
         options: [
           'A vector database',
@@ -1923,7 +2315,7 @@ RAG systems need systematic evaluation.
         explanation: 'HyDE generates what an ideal answer might look like, embeds it, and uses that for retrieval—often finding better matches than the raw query.'
       },
       {
-        id: 'q5-9',
+        id: 'q6-9',
         question: 'When should you consider RAG vs fine-tuning?',
         options: [
           'Always use fine-tuning',
@@ -1935,7 +2327,7 @@ RAG systems need systematic evaluation.
         explanation: 'RAG excels at providing updatable knowledge with citations. Fine-tuning is better for changing model behavior or style.'
       },
       {
-        id: 'q5-10',
+        id: 'q6-10',
         question: 'What causes "hallucination beyond context" in RAG?',
         options: [
           'Too many chunks retrieved',
@@ -1948,30 +2340,30 @@ RAG systems need systematic evaluation.
       }
     ],
     flashcards: [
-      { id: 'f5-1', front: 'RAG (Retrieval-Augmented Generation)', back: 'Pattern that retrieves relevant documents and includes them in the prompt, giving LLMs access to external knowledge.' },
-      { id: 'f5-2', front: 'Chunking', back: 'Splitting documents into smaller pieces for embedding and retrieval. Strategies include fixed-size, sentence, paragraph, and semantic.' },
-      { id: 'f5-3', front: 'Embedding', back: 'Converting text to a dense vector that captures semantic meaning. Similar texts have similar embeddings.' },
-      { id: 'f5-4', front: 'Vector Database', back: 'Database optimized for storing and searching embeddings using approximate nearest neighbor algorithms.' },
-      { id: 'f5-5', front: 'Semantic Search', back: 'Finding documents by meaning similarity using vector embeddings, not just keyword matching.' },
-      { id: 'f5-6', front: 'BM25', back: 'Classic keyword search algorithm based on term frequency. Good for exact matches but misses semantic similarity.' },
-      { id: 'f5-7', front: 'Hybrid Search', back: 'Combining semantic (vector) and keyword (BM25) search for better retrieval coverage.' },
-      { id: 'f5-8', front: 'Reranking', back: 'Using a more powerful model (cross-encoder) to reorder initial retrieval results for better relevance.' },
-      { id: 'f5-9', front: 'Recall@K', back: 'Metric: percentage of relevant documents that appear in the top K retrieved results.' },
-      { id: 'f5-10', front: 'Precision@K', back: 'Metric: percentage of top K retrieved results that are actually relevant.' },
-      { id: 'f5-11', front: 'MRR (Mean Reciprocal Rank)', back: 'Metric measuring how high the first relevant result ranks on average.' },
-      { id: 'f5-12', front: 'HyDE', back: 'Hypothetical Document Embedding: generate a hypothetical answer, embed it, use that for retrieval.' },
-      { id: 'f5-13', front: 'Query Expansion', back: 'Adding related terms to a query to improve retrieval coverage.' },
-      { id: 'f5-14', front: 'Parent Document Retrieval', back: 'Store small chunks for matching but return larger parent documents for context.' },
-      { id: 'f5-15', front: 'Chunk Overlap', back: 'Including some text from adjacent chunks to preserve context at boundaries. Usually 10-20%.' },
-      { id: 'f5-16', front: 'Faithfulness', back: 'RAG evaluation metric: does the generated answer accurately reflect the retrieved context?' },
-      { id: 'f5-17', front: 'Cross-Encoder', back: 'Model that scores query-document pairs together, more accurate than bi-encoders but slower.' },
-      { id: 'f5-18', front: 'Bi-Encoder', back: 'Model that embeds query and documents separately, enabling fast retrieval but less accurate than cross-encoders.' },
-      { id: 'f5-19', front: 'ANN (Approximate Nearest Neighbor)', back: 'Algorithm for fast similarity search that trades some accuracy for speed. Used by vector databases.' },
-      { id: 'f5-20', front: 'Metadata Filtering', back: 'Narrowing vector search results using structured metadata (date, category, source) before or after similarity search.' }
+      { id: 'f6-1', front: 'RAG (Retrieval-Augmented Generation)', back: 'Pattern that retrieves relevant documents and includes them in the prompt, giving LLMs access to external knowledge.' },
+      { id: 'f6-2', front: 'Chunking', back: 'Splitting documents into smaller pieces for embedding and retrieval. Strategies include fixed-size, sentence, paragraph, and semantic.' },
+      { id: 'f6-3', front: 'Embedding', back: 'Converting text to a dense vector that captures semantic meaning. Similar texts have similar embeddings.' },
+      { id: 'f6-4', front: 'Vector Database', back: 'Database optimized for storing and searching embeddings using approximate nearest neighbor algorithms.' },
+      { id: 'f6-5', front: 'Semantic Search', back: 'Finding documents by meaning similarity using vector embeddings, not just keyword matching.' },
+      { id: 'f6-6', front: 'BM25', back: 'Classic keyword search algorithm based on term frequency. Good for exact matches but misses semantic similarity.' },
+      { id: 'f6-7', front: 'Hybrid Search', back: 'Combining semantic (vector) and keyword (BM25) search for better retrieval coverage.' },
+      { id: 'f6-8', front: 'Reranking', back: 'Using a more powerful model (cross-encoder) to reorder initial retrieval results for better relevance.' },
+      { id: 'f6-9', front: 'Recall@K', back: 'Metric: percentage of relevant documents that appear in the top K retrieved results.' },
+      { id: 'f6-10', front: 'Precision@K', back: 'Metric: percentage of top K retrieved results that are actually relevant.' },
+      { id: 'f6-11', front: 'MRR (Mean Reciprocal Rank)', back: 'Metric measuring how high the first relevant result ranks on average.' },
+      { id: 'f6-12', front: 'HyDE', back: 'Hypothetical Document Embedding: generate a hypothetical answer, embed it, use that for retrieval.' },
+      { id: 'f6-13', front: 'Query Expansion', back: 'Adding related terms to a query to improve retrieval coverage.' },
+      { id: 'f6-14', front: 'Parent Document Retrieval', back: 'Store small chunks for matching but return larger parent documents for context.' },
+      { id: 'f6-15', front: 'Chunk Overlap', back: 'Including some text from adjacent chunks to preserve context at boundaries. Usually 10-20%.' },
+      { id: 'f6-16', front: 'Faithfulness', back: 'RAG evaluation metric: does the generated answer accurately reflect the retrieved context?' },
+      { id: 'f6-17', front: 'Cross-Encoder', back: 'Model that scores query-document pairs together, more accurate than bi-encoders but slower.' },
+      { id: 'f6-18', front: 'Bi-Encoder', back: 'Model that embeds query and documents separately, enabling fast retrieval but less accurate than cross-encoders.' },
+      { id: 'f6-19', front: 'ANN (Approximate Nearest Neighbor)', back: 'Algorithm for fast similarity search that trades some accuracy for speed. Used by vector databases.' },
+      { id: 'f6-20', front: 'Metadata Filtering', back: 'Narrowing vector search results using structured metadata (date, category, source) before or after similarity search.' }
     ]
   },
   {
-    id: 'ch6',
+    id: 'ch7',
     title: 'Agents & Tool Use',
     content: `
 # Agents & Tool Use
@@ -2261,7 +2653,7 @@ Building agents from scratch is hard. Frameworks help.
 `,
     quizzes: [
       {
-        id: 'q6-1',
+        id: 'q7-1',
         question: 'What distinguishes an agent from a simple LLM call?',
         options: [
           'Agents use bigger models',
@@ -2273,7 +2665,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'Agents reason, act, observe results, and decide next steps in a loop—unlike single-shot LLM calls.'
       },
       {
-        id: 'q6-2',
+        id: 'q7-2',
         question: 'What does ReAct stand for?',
         options: [
           'Real-time Action',
@@ -2285,7 +2677,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'ReAct combines reasoning (thinking about what to do) with acting (executing tools) in an iterative loop.'
       },
       {
-        id: 'q6-3',
+        id: 'q7-3',
         question: 'Why are clear tool descriptions important?',
         options: [
           'They make the code more readable',
@@ -2297,7 +2689,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'The LLM decides which tool to use based on the description. Vague descriptions lead to wrong tool choices.'
       },
       {
-        id: 'q6-4',
+        id: 'q7-4',
         question: 'What is the "plan-then-execute" strategy?',
         options: [
           'Execute first, plan later',
@@ -2309,7 +2701,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'Plan-then-execute creates the complete plan before any execution, providing clear structure but less adaptability.'
       },
       {
-        id: 'q6-5',
+        id: 'q7-5',
         question: 'What is short-term memory in agents?',
         options: [
           'The model\'s training data',
@@ -2321,7 +2713,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'Short-term memory is the context maintained during a session: recent messages, tool results, and reasoning.'
       },
       {
-        id: 'q6-6',
+        id: 'q7-6',
         question: 'When should you require human approval in an agent?',
         options: [
           'For every action',
@@ -2333,7 +2725,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'Human-in-the-loop is essential for high-risk actions like payments, deletions, or external communications.'
       },
       {
-        id: 'q6-7',
+        id: 'q7-7',
         question: 'What is the "supervisor" multi-agent pattern?',
         options: [
           'All agents work independently',
@@ -2345,7 +2737,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'The supervisor pattern has one orchestrating agent that delegates tasks to specialized worker agents.'
       },
       {
-        id: 'q6-8',
+        id: 'q7-8',
         question: 'When should you NOT use an agent?',
         options: [
           'When the task requires multiple steps',
@@ -2357,7 +2749,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'Agents add complexity. If simple prompting or RAG solves the problem, don\'t overcomplicate with agents.'
       },
       {
-        id: 'q6-9',
+        id: 'q7-9',
         question: 'What is "loop detection" in agent safety?',
         options: [
           'Detecting circular references in code',
@@ -2369,7 +2761,7 @@ Building agents from scratch is hard. Frameworks help.
         explanation: 'Loop detection prevents agents from running indefinitely by setting a maximum step count.'
       },
       {
-        id: 'q6-10',
+        id: 'q7-10',
         question: 'What is long-term memory in agents?',
         options: [
           'The current conversation',
@@ -2382,30 +2774,30 @@ Building agents from scratch is hard. Frameworks help.
       }
     ],
     flashcards: [
-      { id: 'f6-1', front: 'Agent', back: 'An LLM-powered system that can reason, plan, take actions via tools, and adapt based on results.' },
-      { id: 'f6-2', front: 'ReAct', back: 'Reasoning + Acting: foundational agent pattern that alternates between thinking and executing tools.' },
-      { id: 'f6-3', front: 'Tool/Function', back: 'An external capability the agent can invoke, defined with name, description, and parameter schema.' },
-      { id: 'f6-4', front: 'Plan-then-Execute', back: 'Planning strategy that generates a complete plan before execution. Clear but less adaptive.' },
-      { id: 'f6-5', front: 'Iterative Planning', back: 'Planning strategy that plans a few steps, executes, then replans based on results. More adaptive.' },
-      { id: 'f6-6', front: 'Short-term Memory', back: 'Conversation history and tool results within a single session.' },
-      { id: 'f6-7', front: 'Long-term Memory', back: 'Persisted information across sessions: user preferences, past interactions, learned facts.' },
-      { id: 'f6-8', front: 'Working Memory', back: 'Scratchpad for current task: current plan, completed steps, pending actions.' },
-      { id: 'f6-9', front: 'Supervisor Pattern', back: 'Multi-agent architecture where one agent coordinates and delegates to specialized agents.' },
-      { id: 'f6-10', front: 'Human-in-the-Loop', back: 'Requiring human approval for high-stakes agent actions before execution.' },
-      { id: 'f6-11', front: 'Least Privilege', back: 'Security principle: only give agents the minimum tools and permissions they need.' },
-      { id: 'f6-12', front: 'Loop Detection', back: 'Safety mechanism that terminates agents exceeding a maximum step count.' },
-      { id: 'f6-13', front: 'Observation', back: 'In ReAct, the result returned after executing a tool that informs the next reasoning step.' },
-      { id: 'f6-14', front: 'Tool Description', back: 'Natural language explanation of what a tool does. Critical for correct tool selection by the agent.' },
-      { id: 'f6-15', front: 'Multi-Agent System', back: 'Architecture using multiple specialized agents that collaborate on complex tasks.' },
-      { id: 'f6-16', front: 'Debate Pattern', back: 'Multi-agent pattern where agents argue different perspectives to reach better conclusions.' },
-      { id: 'f6-17', front: 'Pipeline Pattern', back: 'Multi-agent pattern where agents process in sequence: planner → executor → reviewer.' },
-      { id: 'f6-18', front: 'Swarm Pattern', back: 'Multi-agent pattern where agents work in parallel on subtasks, then merge results.' },
-      { id: 'f6-19', front: 'Guardrails', back: 'Safety mechanisms: action classification, confirmation requirements, sandboxing, logging, rate limiting.' },
-      { id: 'f6-20', front: 'Agent Framework', back: 'Library for building agents (LangChain, LlamaIndex, AutoGen). Trade-off between speed and control.' }
+      { id: 'f7-1', front: 'Agent', back: 'An LLM-powered system that can reason, plan, take actions via tools, and adapt based on results.' },
+      { id: 'f7-2', front: 'ReAct', back: 'Reasoning + Acting: foundational agent pattern that alternates between thinking and executing tools.' },
+      { id: 'f7-3', front: 'Tool/Function', back: 'An external capability the agent can invoke, defined with name, description, and parameter schema.' },
+      { id: 'f7-4', front: 'Plan-then-Execute', back: 'Planning strategy that generates a complete plan before execution. Clear but less adaptive.' },
+      { id: 'f7-5', front: 'Iterative Planning', back: 'Planning strategy that plans a few steps, executes, then replans based on results. More adaptive.' },
+      { id: 'f7-6', front: 'Short-term Memory', back: 'Conversation history and tool results within a single session.' },
+      { id: 'f7-7', front: 'Long-term Memory', back: 'Persisted information across sessions: user preferences, past interactions, learned facts.' },
+      { id: 'f7-8', front: 'Working Memory', back: 'Scratchpad for current task: current plan, completed steps, pending actions.' },
+      { id: 'f7-9', front: 'Supervisor Pattern', back: 'Multi-agent architecture where one agent coordinates and delegates to specialized agents.' },
+      { id: 'f7-10', front: 'Human-in-the-Loop', back: 'Requiring human approval for high-stakes agent actions before execution.' },
+      { id: 'f7-11', front: 'Least Privilege', back: 'Security principle: only give agents the minimum tools and permissions they need.' },
+      { id: 'f7-12', front: 'Loop Detection', back: 'Safety mechanism that terminates agents exceeding a maximum step count.' },
+      { id: 'f7-13', front: 'Observation', back: 'In ReAct, the result returned after executing a tool that informs the next reasoning step.' },
+      { id: 'f7-14', front: 'Tool Description', back: 'Natural language explanation of what a tool does. Critical for correct tool selection by the agent.' },
+      { id: 'f7-15', front: 'Multi-Agent System', back: 'Architecture using multiple specialized agents that collaborate on complex tasks.' },
+      { id: 'f7-16', front: 'Debate Pattern', back: 'Multi-agent pattern where agents argue different perspectives to reach better conclusions.' },
+      { id: 'f7-17', front: 'Pipeline Pattern', back: 'Multi-agent pattern where agents process in sequence: planner → executor → reviewer.' },
+      { id: 'f7-18', front: 'Swarm Pattern', back: 'Multi-agent pattern where agents work in parallel on subtasks, then merge results.' },
+      { id: 'f7-19', front: 'Guardrails', back: 'Safety mechanisms: action classification, confirmation requirements, sandboxing, logging, rate limiting.' },
+      { id: 'f7-20', front: 'Agent Framework', back: 'Library for building agents (LangChain, LlamaIndex, AutoGen). Trade-off between speed and control.' }
     ]
   },
   {
-    id: 'ch7',
+    id: 'ch8',
     title: 'Evaluation & Testing',
     content: `
 # Evaluation & Testing
@@ -2677,7 +3069,7 @@ Evaluation isn't a one-time event.
 `,
     quizzes: [
       {
-        id: 'q7-1',
+        id: 'q8-1',
         question: 'Why is LLM evaluation different from traditional software testing?',
         options: [
           'LLMs are faster',
@@ -2689,7 +3081,7 @@ Evaluation isn't a one-time event.
         explanation: 'LLMs produce variable outputs and correctness is often subjective, unlike deterministic software with clear pass/fail criteria.'
       },
       {
-        id: 'q7-2',
+        id: 'q8-2',
         question: 'What is LLM-as-Judge?',
         options: [
           'A legal AI application',
@@ -2701,7 +3093,7 @@ Evaluation isn't a one-time event.
         explanation: 'LLM-as-Judge uses a (typically stronger) LLM to score or compare outputs from the model being evaluated.'
       },
       {
-        id: 'q7-3',
+        id: 'q8-3',
         question: 'Why is pairwise comparison often better than pointwise scoring?',
         options: [
           'It\'s faster',
@@ -2713,7 +3105,7 @@ Evaluation isn't a one-time event.
         explanation: 'Pairwise comparison ("Which is better: A or B?") is more reliable than absolute scores because relative judgments are easier and more consistent.'
       },
       {
-        id: 'q7-4',
+        id: 'q8-4',
         question: 'What makes a good eval set?',
         options: [
           'Only easy examples',
@@ -2725,7 +3117,7 @@ Evaluation isn't a one-time event.
         explanation: 'Good eval sets cover real use cases, include diverse and adversarial examples, and are tracked over time.'
       },
       {
-        id: 'q7-5',
+        id: 'q8-5',
         question: 'What is red teaming?',
         options: [
           'A type of fine-tuning',
@@ -2737,7 +3129,7 @@ Evaluation isn't a one-time event.
         explanation: 'Red teaming involves systematically attacking your system to find vulnerabilities before malicious users do.'
       },
       {
-        id: 'q7-6',
+        id: 'q8-6',
         question: 'How many examples should a minimum eval set have?',
         options: [
           '5-10',
@@ -2749,7 +3141,7 @@ Evaluation isn't a one-time event.
         explanation: 'A minimum of 50-100 examples provides basic coverage; 200-500 is recommended for statistical significance.'
       },
       {
-        id: 'q7-7',
+        id: 'q8-7',
         question: 'What should trigger re-evaluation?',
         options: [
           'Only when users complain',
@@ -2761,7 +3153,7 @@ Evaluation isn't a one-time event.
         explanation: 'Re-evaluate whenever the system changes (model, prompts, use cases) and on a regular schedule.'
       },
       {
-        id: 'q7-8',
+        id: 'q8-8',
         question: 'What is the limitation of exact match evaluation?',
         options: [
           'It\'s too slow',
@@ -2773,7 +3165,7 @@ Evaluation isn't a one-time event.
         explanation: 'Exact match fails when correct answers can be phrased differently—it\'s only suitable for constrained outputs.'
       },
       {
-        id: 'q7-9',
+        id: 'q8-9',
         question: 'What is online evaluation?',
         options: [
           'Testing on the internet',
@@ -2785,7 +3177,7 @@ Evaluation isn't a one-time event.
         explanation: 'Online evaluation measures performance in production using real user interactions, feedback, and business metrics.'
       },
       {
-        id: 'q7-10',
+        id: 'q8-10',
         question: 'Why use a different model for LLM-as-Judge than the one being evaluated?',
         options: [
           'It\'s cheaper',
@@ -2798,30 +3190,30 @@ Evaluation isn't a one-time event.
       }
     ],
     flashcards: [
-      { id: 'f7-1', front: 'Offline Evaluation', back: 'Testing against a fixed dataset before deployment. Uses eval sets, metrics, and baselines.' },
-      { id: 'f7-2', front: 'Online Evaluation', back: 'Measuring real-world performance in production using user feedback and behavioral metrics.' },
-      { id: 'f7-3', front: 'Eval Set', back: 'Curated collection of test examples with inputs and expected outputs for systematic evaluation.' },
-      { id: 'f7-4', front: 'LLM-as-Judge', back: 'Using an LLM to evaluate another LLM\'s outputs. Flexible but can have biases.' },
-      { id: 'f7-5', front: 'Pointwise Evaluation', back: 'Scoring each response independently on a scale (e.g., 1-5 for helpfulness).' },
-      { id: 'f7-6', front: 'Pairwise Comparison', back: 'Comparing two responses directly ("Which is better?"). More reliable than pointwise.' },
-      { id: 'f7-7', front: 'Exact Match', back: 'Metric checking if output exactly matches expected. Good for classification, too strict for free-form.' },
-      { id: 'f7-8', front: 'Semantic Similarity', back: 'Measuring meaning similarity using embeddings. Catches paraphrases but may miss factual errors.' },
-      { id: 'f7-9', front: 'ROUGE', back: 'Metric for summarization measuring n-gram overlap between generated and reference text.' },
-      { id: 'f7-10', front: 'Pass@k', back: 'Code generation metric: probability that at least one of k samples passes test cases.' },
-      { id: 'f7-11', front: 'Red Teaming', back: 'Adversarial testing to find vulnerabilities: prompt injection, jailbreaking, edge cases.' },
-      { id: 'f7-12', front: 'A/B Testing', back: 'Comparing variants in production by splitting traffic and measuring outcomes.' },
-      { id: 'f7-13', front: 'Regression Testing', back: 'Ensuring new changes don\'t break existing functionality. Set thresholds and alert on drops.' },
-      { id: 'f7-14', front: 'Prompt Injection Test', back: 'Red team attack testing if users can override system instructions.' },
-      { id: 'f7-15', front: 'Hallucination Probe', back: 'Test inputs designed to trigger the model to make up information.' },
-      { id: 'f7-16', front: 'Ground Truth', back: 'The correct/expected answer in an eval set, used as reference for scoring.' },
-      { id: 'f7-17', front: 'Inter-Annotator Agreement', back: 'Measure of consistency between human evaluators. Important for subjective tasks.' },
-      { id: 'f7-18', front: 'Metric Drift', back: 'When evaluation scores change over time, indicating model or data distribution changes.' },
-      { id: 'f7-19', front: 'Rubric', back: 'Explicit criteria for scoring responses. Essential for consistent LLM-as-Judge evaluation.' },
-      { id: 'f7-20', front: 'Statistical Significance', back: 'Confidence that observed differences aren\'t due to chance. Required for valid A/B test conclusions.' }
+      { id: 'f8-1', front: 'Offline Evaluation', back: 'Testing against a fixed dataset before deployment. Uses eval sets, metrics, and baselines.' },
+      { id: 'f8-2', front: 'Online Evaluation', back: 'Measuring real-world performance in production using user feedback and behavioral metrics.' },
+      { id: 'f8-3', front: 'Eval Set', back: 'Curated collection of test examples with inputs and expected outputs for systematic evaluation.' },
+      { id: 'f8-4', front: 'LLM-as-Judge', back: 'Using an LLM to evaluate another LLM\'s outputs. Flexible but can have biases.' },
+      { id: 'f8-5', front: 'Pointwise Evaluation', back: 'Scoring each response independently on a scale (e.g., 1-5 for helpfulness).' },
+      { id: 'f8-6', front: 'Pairwise Comparison', back: 'Comparing two responses directly ("Which is better?"). More reliable than pointwise.' },
+      { id: 'f8-7', front: 'Exact Match', back: 'Metric checking if output exactly matches expected. Good for classification, too strict for free-form.' },
+      { id: 'f8-8', front: 'Semantic Similarity', back: 'Measuring meaning similarity using embeddings. Catches paraphrases but may miss factual errors.' },
+      { id: 'f8-9', front: 'ROUGE', back: 'Metric for summarization measuring n-gram overlap between generated and reference text.' },
+      { id: 'f8-10', front: 'Pass@k', back: 'Code generation metric: probability that at least one of k samples passes test cases.' },
+      { id: 'f8-11', front: 'Red Teaming', back: 'Adversarial testing to find vulnerabilities: prompt injection, jailbreaking, edge cases.' },
+      { id: 'f8-12', front: 'A/B Testing', back: 'Comparing variants in production by splitting traffic and measuring outcomes.' },
+      { id: 'f8-13', front: 'Regression Testing', back: 'Ensuring new changes don\'t break existing functionality. Set thresholds and alert on drops.' },
+      { id: 'f8-14', front: 'Prompt Injection Test', back: 'Red team attack testing if users can override system instructions.' },
+      { id: 'f8-15', front: 'Hallucination Probe', back: 'Test inputs designed to trigger the model to make up information.' },
+      { id: 'f8-16', front: 'Ground Truth', back: 'The correct/expected answer in an eval set, used as reference for scoring.' },
+      { id: 'f8-17', front: 'Inter-Annotator Agreement', back: 'Measure of consistency between human evaluators. Important for subjective tasks.' },
+      { id: 'f8-18', front: 'Metric Drift', back: 'When evaluation scores change over time, indicating model or data distribution changes.' },
+      { id: 'f8-19', front: 'Rubric', back: 'Explicit criteria for scoring responses. Essential for consistent LLM-as-Judge evaluation.' },
+      { id: 'f8-20', front: 'Statistical Significance', back: 'Confidence that observed differences aren\'t due to chance. Required for valid A/B test conclusions.' }
     ]
   },
   {
-    id: 'ch8',
+    id: 'ch9',
     title: 'Production & Deployment',
     content: `
 # Production & Deployment
@@ -3165,7 +3557,7 @@ Essential views:
 `,
     quizzes: [
       {
-        id: 'q8-1',
+        id: 'q9-1',
         question: 'What is a circuit breaker in the context of LLM applications?',
         options: [
           'A hardware component',
@@ -3177,7 +3569,7 @@ Essential views:
         explanation: 'Circuit breakers detect repeated failures and stop calling the failing service, allowing it to recover and preventing cascade failures.'
       },
       {
-        id: 'q8-2',
+        id: 'q9-2',
         question: 'What is canary deployment?',
         options: [
           'Deploying to a test environment',
@@ -3189,7 +3581,7 @@ Essential views:
         explanation: 'Canary releases send a small percentage of traffic to the new version first, allowing you to catch issues before full rollout.'
       },
       {
-        id: 'q8-3',
+        id: 'q9-3',
         question: 'Why is model tiering important for cost management?',
         options: [
           'It improves accuracy',
@@ -3201,7 +3593,7 @@ Essential views:
         explanation: 'Model tiering can dramatically reduce costs by using cheaper models (like GPT-3.5) for simple tasks that don\'t need GPT-4.'
       },
       {
-        id: 'q8-4',
+        id: 'q9-4',
         question: 'What should you log for LLM requests?',
         options: [
           'Only errors',
@@ -3213,7 +3605,7 @@ Essential views:
         explanation: 'Comprehensive logging enables debugging, cost tracking, and quality monitoring. Include inputs, outputs, metrics, and tracing IDs.'
       },
       {
-        id: 'q8-5',
+        id: 'q9-5',
         question: 'What is blue-green deployment?',
         options: [
           'Deploying to two different clouds',
@@ -3225,7 +3617,7 @@ Essential views:
         explanation: 'Blue-green deployment maintains two identical environments, allowing instant rollback by switching traffic back to the old version.'
       },
       {
-        id: 'q8-6',
+        id: 'q9-6',
         question: 'Why use async processing for LLM calls?',
         options: [
           'It\'s required by the API',
@@ -3237,7 +3629,7 @@ Essential views:
         explanation: 'LLM calls can take seconds. Async processing lets your application handle other work while waiting, improving throughput.'
       },
       {
-        id: 'q8-7',
+        id: 'q9-7',
         question: 'What is the purpose of output filtering?',
         options: [
           'To compress responses',
@@ -3249,7 +3641,7 @@ Essential views:
         explanation: 'Output filtering is a security measure that validates responses before returning them, catching harmful content or prompt leakage.'
       },
       {
-        id: 'q8-8',
+        id: 'q9-8',
         question: 'What latency metric is most important for user experience?',
         options: [
           'Average latency',
@@ -3261,7 +3653,7 @@ Essential views:
         explanation: 'P95/P99 shows what most users experience. Average can hide that 5% of users have terrible latency.'
       },
       {
-        id: 'q8-9',
+        id: 'q9-9',
         question: 'How should API keys be managed in production?',
         options: [
           'Hardcoded in the application',
@@ -3273,7 +3665,7 @@ Essential views:
         explanation: 'API keys should be in secrets managers, never in code/git, rotated regularly, and separated by environment.'
       },
       {
-        id: 'q8-10',
+        id: 'q9-10',
         question: 'What is request batching?',
         options: [
           'Sending requests one at a time',
@@ -3286,30 +3678,30 @@ Essential views:
       }
     ],
     flashcards: [
-      { id: 'f8-1', front: 'Circuit Breaker', back: 'Pattern that stops calling a failing service after repeated failures, preventing cascade failures and allowing recovery.' },
-      { id: 'f8-2', front: 'Blue-Green Deployment', back: 'Running two identical environments and switching traffic between them for instant rollback capability.' },
-      { id: 'f8-3', front: 'Canary Release', back: 'Gradually rolling out changes to a small percentage of traffic first to catch issues before full deployment.' },
-      { id: 'f8-4', front: 'Feature Flag', back: 'Configuration that enables/disables features without deployment, allowing gradual rollout and instant rollback.' },
-      { id: 'f8-5', front: 'Model Tiering', back: 'Routing simple queries to cheaper models, reserving expensive models for complex tasks to optimize costs.' },
-      { id: 'f8-6', front: 'P95/P99 Latency', back: 'The latency at the 95th/99th percentile—what 95%/99% of users experience. Better than average for UX.' },
-      { id: 'f8-7', front: 'Exponential Backoff', back: 'Retry strategy where wait time doubles after each failure (1s, 2s, 4s...) to avoid overwhelming failing services.' },
-      { id: 'f8-8', front: 'Rate Limiting', back: 'Restricting requests per user/time to prevent abuse and control costs.' },
-      { id: 'f8-9', front: 'Secrets Manager', back: 'Service for securely storing and accessing sensitive data like API keys (AWS Secrets Manager, HashiCorp Vault).' },
-      { id: 'f8-10', front: 'Output Filtering', back: 'Security measure validating model responses before returning to users, catching harmful content or leaks.' },
-      { id: 'f8-11', front: 'Request Batching', back: 'Grouping multiple operations into single API calls for efficiency (e.g., batch embeddings).' },
-      { id: 'f8-12', front: 'Horizontal Scaling', back: 'Adding more instances to handle increased load, distributing traffic via load balancer.' },
-      { id: 'f8-13', front: 'Graceful Degradation', back: 'Fallback strategy returning cached or default responses when primary service fails.' },
-      { id: 'f8-14', front: 'Distributed Tracing', back: 'Following a request through all services with correlated IDs for debugging.' },
-      { id: 'f8-15', front: 'Time to First Token', back: 'Latency until the first token of a streaming response appears. Critical for perceived speed.' },
-      { id: 'f8-16', front: 'Provider Fallback', back: 'Switching to a backup LLM provider when the primary is unavailable.' },
-      { id: 'f8-17', front: 'Input Validation', back: 'Checking and sanitizing user input before processing—length limits, PII redaction, sanitization.' },
-      { id: 'f8-18', front: 'Cost Attribution', back: 'Tracking LLM costs by user, feature, or endpoint to understand spending.' },
-      { id: 'f8-19', front: 'SLA (Service Level Agreement)', back: 'Commitment to uptime and performance (e.g., 99.9% availability, P95 < 3s).' },
-      { id: 'f8-20', front: 'Async Processing', back: 'Non-blocking execution that allows handling other work while waiting for slow operations like LLM calls.' }
+      { id: 'f9-1', front: 'Circuit Breaker', back: 'Pattern that stops calling a failing service after repeated failures, preventing cascade failures and allowing recovery.' },
+      { id: 'f9-2', front: 'Blue-Green Deployment', back: 'Running two identical environments and switching traffic between them for instant rollback capability.' },
+      { id: 'f9-3', front: 'Canary Release', back: 'Gradually rolling out changes to a small percentage of traffic first to catch issues before full deployment.' },
+      { id: 'f9-4', front: 'Feature Flag', back: 'Configuration that enables/disables features without deployment, allowing gradual rollout and instant rollback.' },
+      { id: 'f9-5', front: 'Model Tiering', back: 'Routing simple queries to cheaper models, reserving expensive models for complex tasks to optimize costs.' },
+      { id: 'f9-6', front: 'P95/P99 Latency', back: 'The latency at the 95th/99th percentile—what 95%/99% of users experience. Better than average for UX.' },
+      { id: 'f9-7', front: 'Exponential Backoff', back: 'Retry strategy where wait time doubles after each failure (1s, 2s, 4s...) to avoid overwhelming failing services.' },
+      { id: 'f9-8', front: 'Rate Limiting', back: 'Restricting requests per user/time to prevent abuse and control costs.' },
+      { id: 'f9-9', front: 'Secrets Manager', back: 'Service for securely storing and accessing sensitive data like API keys (AWS Secrets Manager, HashiCorp Vault).' },
+      { id: 'f9-10', front: 'Output Filtering', back: 'Security measure validating model responses before returning to users, catching harmful content or leaks.' },
+      { id: 'f9-11', front: 'Request Batching', back: 'Grouping multiple operations into single API calls for efficiency (e.g., batch embeddings).' },
+      { id: 'f9-12', front: 'Horizontal Scaling', back: 'Adding more instances to handle increased load, distributing traffic via load balancer.' },
+      { id: 'f9-13', front: 'Graceful Degradation', back: 'Fallback strategy returning cached or default responses when primary service fails.' },
+      { id: 'f9-14', front: 'Distributed Tracing', back: 'Following a request through all services with correlated IDs for debugging.' },
+      { id: 'f9-15', front: 'Time to First Token', back: 'Latency until the first token of a streaming response appears. Critical for perceived speed.' },
+      { id: 'f9-16', front: 'Provider Fallback', back: 'Switching to a backup LLM provider when the primary is unavailable.' },
+      { id: 'f9-17', front: 'Input Validation', back: 'Checking and sanitizing user input before processing—length limits, PII redaction, sanitization.' },
+      { id: 'f9-18', front: 'Cost Attribution', back: 'Tracking LLM costs by user, feature, or endpoint to understand spending.' },
+      { id: 'f9-19', front: 'SLA (Service Level Agreement)', back: 'Commitment to uptime and performance (e.g., 99.9% availability, P95 < 3s).' },
+      { id: 'f9-20', front: 'Async Processing', back: 'Non-blocking execution that allows handling other work while waiting for slow operations like LLM calls.' }
     ]
   },
   {
-    id: 'ch9',
+    id: 'ch10',
     title: 'Fine-Tuning & Customization',
     content: `
 # Fine-Tuning & Customization
@@ -3572,7 +3964,7 @@ ROI = Savings / Cost
 `,
     quizzes: [
       {
-        id: 'q9-1',
+        id: 'q10-1',
         question: 'When should you consider fine-tuning over RAG?',
         options: [
           'When you need to add new knowledge',
@@ -3584,7 +3976,7 @@ ROI = Savings / Cost
         explanation: 'Fine-tuning is for behavior (style, format). RAG is for knowledge. Fine-tuning is slow, so it\'s not for experimentation.'
       },
       {
-        id: 'q9-2',
+        id: 'q10-2',
         question: 'What is LoRA?',
         options: [
           'A type of vector database',
@@ -3596,7 +3988,7 @@ ROI = Savings / Cost
         explanation: 'LoRA adds small trainable matrices to attention layers while keeping original weights frozen, enabling efficient fine-tuning.'
       },
       {
-        id: 'q9-3',
+        id: 'q10-3',
         question: 'Why is data quality more important than quantity for fine-tuning?',
         options: [
           'It\'s not—more data is always better',
@@ -3608,7 +4000,7 @@ ROI = Savings / Cost
         explanation: '100 high-quality examples demonstrating exactly what you want often outperform 10,000 noisy examples that teach inconsistent patterns.'
       },
       {
-        id: 'q9-4',
+        id: 'q10-4',
         question: 'What is catastrophic forgetting?',
         options: [
           'When training data is lost',
@@ -3620,7 +4012,7 @@ ROI = Savings / Cost
         explanation: 'Catastrophic forgetting occurs when fine-tuning causes the model to lose previously learned general capabilities.'
       },
       {
-        id: 'q9-5',
+        id: 'q10-5',
         question: 'What is QLoRA?',
         options: [
           'A vector database',
@@ -3632,7 +4024,7 @@ ROI = Savings / Cost
         explanation: 'QLoRA combines LoRA with quantized base models, enabling fine-tuning of large models on consumer GPUs.'
       },
       {
-        id: 'q9-6',
+        id: 'q10-6',
         question: 'What format do most fine-tuning APIs expect?',
         options: [
           'Plain text',
@@ -3644,7 +4036,7 @@ ROI = Savings / Cost
         explanation: 'Most fine-tuning uses conversation format with messages containing role and content for each turn.'
       },
       {
-        id: 'q9-7',
+        id: 'q10-7',
         question: 'How can you prevent overfitting during fine-tuning?',
         options: [
           'Use more epochs',
@@ -3656,7 +4048,7 @@ ROI = Savings / Cost
         explanation: 'Overfitting is prevented by data diversity, limiting epochs, using regularization, and stopping when eval loss increases.'
       },
       {
-        id: 'q9-8',
+        id: 'q10-8',
         question: 'What is a typical LoRA rank value?',
         options: [
           '1-2',
@@ -3668,7 +4060,7 @@ ROI = Savings / Cost
         explanation: 'LoRA rank is typically 8-64. Higher values add more capacity but require more compute.'
       },
       {
-        id: 'q9-9',
+        id: 'q10-9',
         question: 'Why might fine-tuning reduce inference costs?',
         options: [
           'Fine-tuned models are always cheaper',
@@ -3680,7 +4072,7 @@ ROI = Savings / Cost
         explanation: 'If you fine-tune to bake in few-shot examples or detailed instructions, you can use shorter prompts, reducing token costs.'
       },
       {
-        id: 'q9-10',
+        id: 'q10-10',
         question: 'What is distribution shift in fine-tuning?',
         options: [
           'Moving data between servers',
@@ -3693,30 +4085,30 @@ ROI = Savings / Cost
       }
     ],
     flashcards: [
-      { id: 'f9-1', front: 'Fine-Tuning', back: 'Training a pre-trained model on task-specific data to customize its behavior.' },
-      { id: 'f9-2', front: 'LoRA', back: 'Low-Rank Adaptation: adds small trainable matrices to attention layers while freezing original weights.' },
-      { id: 'f9-3', front: 'QLoRA', back: 'LoRA + quantization: enables fine-tuning large models on consumer GPUs.' },
-      { id: 'f9-4', front: 'PEFT', back: 'Parameter-Efficient Fine-Tuning: methods that update only a small subset of model parameters.' },
-      { id: 'f9-5', front: 'Catastrophic Forgetting', back: 'When fine-tuning causes the model to lose previously learned general capabilities.' },
-      { id: 'f9-6', front: 'Overfitting', back: 'Model memorizes training data instead of learning generalizable patterns.' },
-      { id: 'f9-7', front: 'Distribution Shift', back: 'When training data doesn\'t match real production usage patterns.' },
-      { id: 'f9-8', front: 'Instruction Fine-Tuning', back: 'Training on instruction-response pairs to improve instruction following.' },
-      { id: 'f9-9', front: 'LoRA Rank', back: 'Hyperparameter controlling LoRA capacity. Typical values: 8-64.' },
-      { id: 'f9-10', front: 'Learning Rate', back: 'How much to adjust weights per step. Typical for fine-tuning: 1e-5 to 5e-5.' },
-      { id: 'f9-11', front: 'Early Stopping', back: 'Stopping training when validation loss stops improving to prevent overfitting.' },
-      { id: 'f9-12', front: 'Synthetic Data', back: 'Training data generated by a stronger model rather than human annotation.' },
-      { id: 'f9-13', front: 'Full Fine-Tuning', back: 'Updating all model parameters. Requires massive compute, rarely practical.' },
-      { id: 'f9-14', front: 'Adapter Layers', back: 'Small trainable modules inserted into frozen models for efficient fine-tuning.' },
-      { id: 'f9-15', front: 'Eval Set', back: 'Held-out data for measuring model performance during and after training.' },
-      { id: 'f9-16', front: 'Epoch', back: 'One complete pass through the training data. Typical for fine-tuning: 1-5.' },
-      { id: 'f9-17', front: 'Batch Size', back: 'Number of examples processed together. Larger = faster but more memory.' },
-      { id: 'f9-18', front: 'Weight Merging', back: 'Combining LoRA weights with base model for simpler deployment.' },
-      { id: 'f9-19', front: 'Regularization', back: 'Techniques (dropout, weight decay) to prevent overfitting.' },
-      { id: 'f9-20', front: 'Checkpoint', back: 'Saved model state during training, enabling resume and comparison.' }
+      { id: 'f10-1', front: 'Fine-Tuning', back: 'Training a pre-trained model on task-specific data to customize its behavior.' },
+      { id: 'f10-2', front: 'LoRA', back: 'Low-Rank Adaptation: adds small trainable matrices to attention layers while freezing original weights.' },
+      { id: 'f10-3', front: 'QLoRA', back: 'LoRA + quantization: enables fine-tuning large models on consumer GPUs.' },
+      { id: 'f10-4', front: 'PEFT', back: 'Parameter-Efficient Fine-Tuning: methods that update only a small subset of model parameters.' },
+      { id: 'f10-5', front: 'Catastrophic Forgetting', back: 'When fine-tuning causes the model to lose previously learned general capabilities.' },
+      { id: 'f10-6', front: 'Overfitting', back: 'Model memorizes training data instead of learning generalizable patterns.' },
+      { id: 'f10-7', front: 'Distribution Shift', back: 'When training data doesn\'t match real production usage patterns.' },
+      { id: 'f10-8', front: 'Instruction Fine-Tuning', back: 'Training on instruction-response pairs to improve instruction following.' },
+      { id: 'f10-9', front: 'LoRA Rank', back: 'Hyperparameter controlling LoRA capacity. Typical values: 8-64.' },
+      { id: 'f10-10', front: 'Learning Rate', back: 'How much to adjust weights per step. Typical for fine-tuning: 1e-5 to 5e-5.' },
+      { id: 'f10-11', front: 'Early Stopping', back: 'Stopping training when validation loss stops improving to prevent overfitting.' },
+      { id: 'f10-12', front: 'Synthetic Data', back: 'Training data generated by a stronger model rather than human annotation.' },
+      { id: 'f10-13', front: 'Full Fine-Tuning', back: 'Updating all model parameters. Requires massive compute, rarely practical.' },
+      { id: 'f10-14', front: 'Adapter Layers', back: 'Small trainable modules inserted into frozen models for efficient fine-tuning.' },
+      { id: 'f10-15', front: 'Eval Set', back: 'Held-out data for measuring model performance during and after training.' },
+      { id: 'f10-16', front: 'Epoch', back: 'One complete pass through the training data. Typical for fine-tuning: 1-5.' },
+      { id: 'f10-17', front: 'Batch Size', back: 'Number of examples processed together. Larger = faster but more memory.' },
+      { id: 'f10-18', front: 'Weight Merging', back: 'Combining LoRA weights with base model for simpler deployment.' },
+      { id: 'f10-19', front: 'Regularization', back: 'Techniques (dropout, weight decay) to prevent overfitting.' },
+      { id: 'f10-20', front: 'Checkpoint', back: 'Saved model state during training, enabling resume and comparison.' }
     ]
   },
   {
-    id: 'ch10',
+    id: 'ch11',
     title: 'Multimodal AI',
     content: `
 # Multimodal AI
@@ -3985,7 +4377,7 @@ Images consume significant tokens:
 `,
     quizzes: [
       {
-        id: 'q10-1',
+        id: 'q11-1',
         question: 'What is the primary advantage of multimodal AI over text-only models?',
         options: [
           'Lower cost per query',
@@ -3997,7 +4389,7 @@ Images consume significant tokens:
         explanation: 'Real-world data is inherently multimodal. Documents contain images, users share screenshots, and context often requires visual understanding.'
       },
       {
-        id: 'q10-2',
+        id: 'q11-2',
         question: 'Which model currently supports the longest context for video understanding?',
         options: [
           'GPT-4o',
@@ -4009,7 +4401,7 @@ Images consume significant tokens:
         explanation: 'Gemini 1.5 Pro supports over 1 million tokens, enabling native processing of long videos and many images.'
       },
       {
-        id: 'q10-3',
+        id: 'q11-3',
         question: 'What is the recommended approach for analyzing a 30-minute video with current models?',
         options: [
           'Send the entire video file to GPT-4o',
@@ -4021,7 +4413,7 @@ Images consume significant tokens:
         explanation: 'Frame sampling combined with audio transcription is the most practical approach for most models. Only Gemini supports native long video.'
       },
       {
-        id: 'q10-4',
+        id: 'q11-4',
         question: 'Why is image resolution important for vision model performance?',
         options: [
           'Higher resolution always means better results',
@@ -4034,20 +4426,20 @@ Images consume significant tokens:
       }
     ],
     flashcards: [
-      { id: 'f10-1', front: 'Vision-Language Model (VLM)', back: 'AI model that can process both images and text, using a vision encoder to convert images into embeddings the language model understands.' },
-      { id: 'f10-2', front: 'CLIP', back: 'Contrastive Language-Image Pre-training. OpenAI model that learns to match images with text descriptions, used for image embeddings.' },
-      { id: 'f10-3', front: 'Whisper', back: 'OpenAI\'s open-source speech recognition model. Supports 99+ languages and can run locally or via API.' },
-      { id: 'f10-4', front: 'Frame Sampling', back: 'Technique for video analysis where key frames are extracted and processed as images rather than processing video natively.' },
-      { id: 'f10-5', front: 'OCR (Optical Character Recognition)', back: 'Extracting text from images. Modern vision models have strong built-in OCR capabilities.' },
-      { id: 'f10-6', front: 'Multimodal RAG', back: 'RAG systems that can retrieve and reason over both text and images, using multimodal embeddings.' },
-      { id: 'f10-7', front: 'Image Detail Level', back: 'API parameter (high/low/auto) controlling image processing resolution and token usage.' },
-      { id: 'f10-8', front: 'TTS (Text-to-Speech)', back: 'Converting text to spoken audio. Modern TTS produces natural-sounding speech with emotion and intonation.' },
-      { id: 'f10-9', front: 'ASR (Automatic Speech Recognition)', back: 'Converting spoken audio to text. Also called speech-to-text (STT).' },
-      { id: 'f10-10', front: 'Native Multimodal', back: 'Models trained from scratch on multiple modalities vs models that combine separate vision and language components.' }
+      { id: 'f11-1', front: 'Vision-Language Model (VLM)', back: 'AI model that can process both images and text, using a vision encoder to convert images into embeddings the language model understands.' },
+      { id: 'f11-2', front: 'CLIP', back: 'Contrastive Language-Image Pre-training. OpenAI model that learns to match images with text descriptions, used for image embeddings.' },
+      { id: 'f11-3', front: 'Whisper', back: 'OpenAI\'s open-source speech recognition model. Supports 99+ languages and can run locally or via API.' },
+      { id: 'f11-4', front: 'Frame Sampling', back: 'Technique for video analysis where key frames are extracted and processed as images rather than processing video natively.' },
+      { id: 'f11-5', front: 'OCR (Optical Character Recognition)', back: 'Extracting text from images. Modern vision models have strong built-in OCR capabilities.' },
+      { id: 'f11-6', front: 'Multimodal RAG', back: 'RAG systems that can retrieve and reason over both text and images, using multimodal embeddings.' },
+      { id: 'f11-7', front: 'Image Detail Level', back: 'API parameter (high/low/auto) controlling image processing resolution and token usage.' },
+      { id: 'f11-8', front: 'TTS (Text-to-Speech)', back: 'Converting text to spoken audio. Modern TTS produces natural-sounding speech with emotion and intonation.' },
+      { id: 'f11-9', front: 'ASR (Automatic Speech Recognition)', back: 'Converting spoken audio to text. Also called speech-to-text (STT).' },
+      { id: 'f11-10', front: 'Native Multimodal', back: 'Models trained from scratch on multiple modalities vs models that combine separate vision and language components.' }
     ]
   },
   {
-    id: 'ch11',
+    id: 'ch12',
     title: 'Structured Outputs',
     content: `
 # Structured Outputs
@@ -4417,7 +4809,7 @@ class Extraction(BaseModel):
 `,
     quizzes: [
       {
-        id: 'q11-1',
+        id: 'q12-1',
         question: 'What is the main limitation of basic "JSON mode" in LLM APIs?',
         options: [
           'It doesn\'t work with all models',
@@ -4429,7 +4821,7 @@ class Extraction(BaseModel):
         explanation: 'JSON mode ensures the output is valid JSON, but the model might still use wrong field names, types, or structure.'
       },
       {
-        id: 'q11-2',
+        id: 'q12-2',
         question: 'Which library adds structured output capabilities to multiple LLM providers?',
         options: [
           'LangChain',
@@ -4441,7 +4833,7 @@ class Extraction(BaseModel):
         explanation: 'Instructor wraps OpenAI, Anthropic, Google, and other providers to add structured output with automatic retries and validation.'
       },
       {
-        id: 'q11-3',
+        id: 'q12-3',
         question: 'Why should monetary values be stored as integers (cents) rather than floats?',
         options: [
           'Integers are faster to process',
@@ -4453,7 +4845,7 @@ class Extraction(BaseModel):
         explanation: 'Floating point arithmetic can introduce precision errors (e.g., 0.1 + 0.2 ≠ 0.3). Using cents as integers avoids this.'
       },
       {
-        id: 'q11-4',
+        id: 'q12-4',
         question: 'What does Outlines do differently from Instructor?',
         options: [
           'Outlines works with cloud APIs, Instructor with local models',
@@ -4466,20 +4858,20 @@ class Extraction(BaseModel):
       }
     ],
     flashcards: [
-      { id: 'f11-1', front: 'Structured Output', back: 'LLM output that conforms to a predefined schema (JSON, XML, etc.) rather than free-form text.' },
-      { id: 'f11-2', front: 'JSON Mode', back: 'API setting that ensures valid JSON output, but doesn\'t enforce a specific schema.' },
-      { id: 'f11-3', front: 'Function Calling', back: 'LLM capability to output structured arguments for predefined functions, enabling reliable data extraction.' },
-      { id: 'f11-4', front: 'Pydantic', back: 'Python library for data validation using type annotations. Standard for defining schemas in AI applications.' },
-      { id: 'f11-5', front: 'Instructor', back: 'Library that adds structured output capabilities to multiple LLM providers with automatic retries.' },
-      { id: 'f11-6', front: 'Outlines', back: 'Library for constrained generation in local models, enforcing schemas at the token level.' },
-      { id: 'f11-7', front: 'Schema Enforcement', back: 'Guaranteeing that LLM output exactly matches a predefined structure, not just valid syntax.' },
-      { id: 'f11-8', front: 'Validation Retry', back: 'Pattern where invalid structured output triggers a retry with error feedback to the model.' },
-      { id: 'f11-9', front: 'Partial Streaming', back: 'Receiving incomplete structured objects during generation, useful for progressive UI updates.' },
-      { id: 'f11-10', front: 'Field Description', back: 'Metadata explaining what a schema field should contain, helping the model generate correct values.' }
+      { id: 'f12-1', front: 'Structured Output', back: 'LLM output that conforms to a predefined schema (JSON, XML, etc.) rather than free-form text.' },
+      { id: 'f12-2', front: 'JSON Mode', back: 'API setting that ensures valid JSON output, but doesn\'t enforce a specific schema.' },
+      { id: 'f12-3', front: 'Function Calling', back: 'LLM capability to output structured arguments for predefined functions, enabling reliable data extraction.' },
+      { id: 'f12-4', front: 'Pydantic', back: 'Python library for data validation using type annotations. Standard for defining schemas in AI applications.' },
+      { id: 'f12-5', front: 'Instructor', back: 'Library that adds structured output capabilities to multiple LLM providers with automatic retries.' },
+      { id: 'f12-6', front: 'Outlines', back: 'Library for constrained generation in local models, enforcing schemas at the token level.' },
+      { id: 'f12-7', front: 'Schema Enforcement', back: 'Guaranteeing that LLM output exactly matches a predefined structure, not just valid syntax.' },
+      { id: 'f12-8', front: 'Validation Retry', back: 'Pattern where invalid structured output triggers a retry with error feedback to the model.' },
+      { id: 'f12-9', front: 'Partial Streaming', back: 'Receiving incomplete structured objects during generation, useful for progressive UI updates.' },
+      { id: 'f12-10', front: 'Field Description', back: 'Metadata explaining what a schema field should contain, helping the model generate correct values.' }
     ]
   },
   {
-    id: 'ch12',
+    id: 'ch13',
     title: 'Prompt Caching',
     content: `
 # Prompt Caching
@@ -4849,7 +5241,7 @@ class CacheMetrics:
 `,
     quizzes: [
       {
-        id: 'q12-1',
+        id: 'q13-1',
         question: 'What discount does Anthropic offer for cached prompt tokens?',
         options: [
           '25% discount',
@@ -4861,7 +5253,7 @@ class CacheMetrics:
         explanation: 'Anthropic offers a 90% discount on cached tokens (cache reads), making repeated system prompts extremely cost-effective.'
       },
       {
-        id: 'q12-2',
+        id: 'q13-2',
         question: 'How should you structure prompts to maximize cache hits?',
         options: [
           'Put variable content at the beginning',
@@ -4873,7 +5265,7 @@ class CacheMetrics:
         explanation: 'Caching works on prefixes, so static content should come first. Variable content at the end doesn\'t break the cache for the static portion.'
       },
       {
-        id: 'q12-3',
+        id: 'q13-3',
         question: 'What is semantic caching?',
         options: [
           'Caching based on exact string matches',
@@ -4885,7 +5277,7 @@ class CacheMetrics:
         explanation: 'Semantic caching uses embeddings to find similar queries, allowing cache hits even when the exact wording differs.'
       },
       {
-        id: 'q12-4',
+        id: 'q13-4',
         question: 'When should you invalidate a cache in an LLM application?',
         options: [
           'Every hour automatically',
@@ -4898,20 +5290,20 @@ class CacheMetrics:
       }
     ],
     flashcards: [
-      { id: 'f12-1', front: 'Prompt Caching', back: 'Reusing processed prompt prefixes across API calls to reduce costs. Offered by Anthropic (90% discount) and OpenAI (50% discount).' },
-      { id: 'f12-2', front: 'Semantic Caching', back: 'Caching responses for semantically similar queries using embedding similarity, not just exact matches.' },
-      { id: 'f12-3', front: 'Cache Hit Rate', back: 'Percentage of requests served from cache. Higher hit rates mean more cost savings.' },
-      { id: 'f12-4', front: 'TTL (Time To Live)', back: 'How long cached data remains valid before expiring. Should match how often the underlying data changes.' },
-      { id: 'f12-5', front: 'Cache Invalidation', back: 'Removing or updating cached data when it becomes stale. One of the hardest problems in computing.' },
-      { id: 'f12-6', front: 'Cache Write Cost', back: 'Initial cost to store content in cache. Anthropic charges 25% premium for cache writes.' },
-      { id: 'f12-7', front: 'Prefix Caching', back: 'Caching mechanism that works on prompt prefixes. Identical beginnings are cached even if endings differ.' },
-      { id: 'f12-8', front: 'Response Caching', back: 'Storing exact query-response pairs for instant retrieval on repeated identical queries.' },
-      { id: 'f12-9', front: 'Cache Key', back: 'Unique identifier for cached content, typically a hash of the request parameters.' },
-      { id: 'f12-10', front: 'GPTCache', back: 'Open-source library for semantic caching of LLM responses.' }
+      { id: 'f13-1', front: 'Prompt Caching', back: 'Reusing processed prompt prefixes across API calls to reduce costs. Offered by Anthropic (90% discount) and OpenAI (50% discount).' },
+      { id: 'f13-2', front: 'Semantic Caching', back: 'Caching responses for semantically similar queries using embedding similarity, not just exact matches.' },
+      { id: 'f13-3', front: 'Cache Hit Rate', back: 'Percentage of requests served from cache. Higher hit rates mean more cost savings.' },
+      { id: 'f13-4', front: 'TTL (Time To Live)', back: 'How long cached data remains valid before expiring. Should match how often the underlying data changes.' },
+      { id: 'f13-5', front: 'Cache Invalidation', back: 'Removing or updating cached data when it becomes stale. One of the hardest problems in computing.' },
+      { id: 'f13-6', front: 'Cache Write Cost', back: 'Initial cost to store content in cache. Anthropic charges 25% premium for cache writes.' },
+      { id: 'f13-7', front: 'Prefix Caching', back: 'Caching mechanism that works on prompt prefixes. Identical beginnings are cached even if endings differ.' },
+      { id: 'f13-8', front: 'Response Caching', back: 'Storing exact query-response pairs for instant retrieval on repeated identical queries.' },
+      { id: 'f13-9', front: 'Cache Key', back: 'Unique identifier for cached content, typically a hash of the request parameters.' },
+      { id: 'f13-10', front: 'GPTCache', back: 'Open-source library for semantic caching of LLM responses.' }
     ]
   },
   {
-    id: 'ch13',
+    id: 'ch14',
     title: 'Streaming Best Practices',
     content: `
 # Streaming Best Practices
@@ -5378,7 +5770,7 @@ function useAutoScroll(containerRef, content) {
 `,
     quizzes: [
       {
-        id: 'q13-1',
+        id: 'q14-1',
         question: 'What is Time to First Token (TTFT)?',
         options: [
           'Total time to generate all tokens',
@@ -5390,7 +5782,7 @@ function useAutoScroll(containerRef, content) {
         explanation: 'TTFT is the latency until the first token appears. It\'s often more important than total generation time for perceived speed.'
       },
       {
-        id: 'q13-2',
+        id: 'q14-2',
         question: 'What protocol do LLM APIs typically use for streaming?',
         options: [
           'WebSockets',
@@ -5402,7 +5794,7 @@ function useAutoScroll(containerRef, content) {
         explanation: 'Most LLM APIs use Server-Sent Events (SSE) for streaming, which is simple HTTP-based one-way streaming.'
       },
       {
-        id: 'q13-3',
+        id: 'q14-3',
         question: 'Why is buffered display recommended over token-by-token display?',
         options: [
           'It\'s faster',
@@ -5414,7 +5806,7 @@ function useAutoScroll(containerRef, content) {
         explanation: 'Buffering tokens and rendering in batches creates smoother visual updates rather than jittery character-by-character appearance.'
       },
       {
-        id: 'q13-4',
+        id: 'q14-4',
         question: 'What should happen when a user scrolls up during streaming?',
         options: [
           'Stop the stream',
@@ -5427,20 +5819,20 @@ function useAutoScroll(containerRef, content) {
       }
     ],
     flashcards: [
-      { id: 'f13-1', front: 'TTFT (Time to First Token)', back: 'Latency until the first token appears to the user. Critical metric for perceived responsiveness.' },
-      { id: 'f13-2', front: 'Server-Sent Events (SSE)', back: 'HTTP-based protocol for server-to-client streaming. Used by most LLM APIs for streaming responses.' },
-      { id: 'f13-3', front: 'Buffered Display', back: 'Technique of accumulating tokens and rendering in batches for smoother visual updates.' },
-      { id: 'f13-4', front: 'Partial Streaming', back: 'Streaming structured outputs where fields become available progressively as they\'re generated.' },
-      { id: 'f13-5', front: 'Stream Cancellation', back: 'Ability to abort an ongoing stream, typically using AbortController in JavaScript.' },
-      { id: 'f13-6', front: 'Typing Indicator', back: 'Visual cue (blinking cursor, dots) showing the AI is generating a response.' },
-      { id: 'f13-7', front: 'Auto-Scroll', back: 'Automatically scrolling to show new content, but pausing when user scrolls up to read.' },
-      { id: 'f13-8', front: 'Delta', back: 'The incremental content in each streaming chunk, representing new tokens since the last chunk.' },
-      { id: 'f13-9', front: 'Vercel AI SDK', back: 'Popular library for building streaming AI interfaces in React/Next.js applications.' },
-      { id: 'f13-10', front: 'Connection Reuse', back: 'Keeping HTTP connections open across requests to reduce latency from connection setup.' }
+      { id: 'f14-1', front: 'TTFT (Time to First Token)', back: 'Latency until the first token appears to the user. Critical metric for perceived responsiveness.' },
+      { id: 'f14-2', front: 'Server-Sent Events (SSE)', back: 'HTTP-based protocol for server-to-client streaming. Used by most LLM APIs for streaming responses.' },
+      { id: 'f14-3', front: 'Buffered Display', back: 'Technique of accumulating tokens and rendering in batches for smoother visual updates.' },
+      { id: 'f14-4', front: 'Partial Streaming', back: 'Streaming structured outputs where fields become available progressively as they\'re generated.' },
+      { id: 'f14-5', front: 'Stream Cancellation', back: 'Ability to abort an ongoing stream, typically using AbortController in JavaScript.' },
+      { id: 'f14-6', front: 'Typing Indicator', back: 'Visual cue (blinking cursor, dots) showing the AI is generating a response.' },
+      { id: 'f14-7', front: 'Auto-Scroll', back: 'Automatically scrolling to show new content, but pausing when user scrolls up to read.' },
+      { id: 'f14-8', front: 'Delta', back: 'The incremental content in each streaming chunk, representing new tokens since the last chunk.' },
+      { id: 'f14-9', front: 'Vercel AI SDK', back: 'Popular library for building streaming AI interfaces in React/Next.js applications.' },
+      { id: 'f14-10', front: 'Connection Reuse', back: 'Keeping HTTP connections open across requests to reduce latency from connection setup.' }
     ]
   },
   {
-    id: 'ch14',
+    id: 'ch15',
     title: 'LLM Security Deep Dive',
     content: `
 # LLM Security Deep Dive
@@ -5903,7 +6295,7 @@ def run_red_team_tests(endpoint):
 `,
     quizzes: [
       {
-        id: 'q14-1',
+        id: 'q15-1',
         question: 'What is indirect prompt injection?',
         options: [
           'Injecting prompts through the API',
@@ -5915,7 +6307,7 @@ def run_red_team_tests(endpoint):
         explanation: 'Indirect injection hides malicious instructions in external data (web pages, documents) that the LLM retrieves and processes, bypassing input validation.'
       },
       {
-        id: 'q14-2',
+        id: 'q15-2',
         question: 'What is the principle of defense in depth for LLM security?',
         options: [
           'Using the most secure model available',
@@ -5927,7 +6319,7 @@ def run_red_team_tests(endpoint):
         explanation: 'Defense in depth means multiple security layers (input validation, output filtering, rate limiting, monitoring) so a single bypass doesn\'t compromise the system.'
       },
       {
-        id: 'q14-3',
+        id: 'q15-3',
         question: 'Why use a separate LLM call to check input safety?',
         options: [
           'It\'s faster than regex',
@@ -5939,7 +6331,7 @@ def run_red_team_tests(endpoint):
         explanation: 'LLM-as-judge can understand context and detect creative attacks that simple pattern matching would miss, like encoded or obfuscated injection attempts.'
       },
       {
-        id: 'q14-4',
+        id: 'q15-4',
         question: 'What should happen when a security monitoring system detects anomalous behavior?',
         options: [
           'Immediately ban the user permanently',
@@ -5952,20 +6344,20 @@ def run_red_team_tests(endpoint):
       }
     ],
     flashcards: [
-      { id: 'f14-1', front: 'Prompt Injection', back: 'Attack where malicious instructions in user input manipulate the LLM to ignore its instructions or perform unintended actions.' },
-      { id: 'f14-2', front: 'Indirect Injection', back: 'Prompt injection via external data (web pages, documents) that the LLM retrieves, bypassing input validation.' },
-      { id: 'f14-3', front: 'Jailbreaking', back: 'Techniques to bypass LLM safety guardrails through creative prompting (role-play, hypotheticals, encoding).' },
-      { id: 'f14-4', front: 'Defense in Depth', back: 'Security strategy using multiple layers of protection so no single point of failure compromises the system.' },
-      { id: 'f14-5', front: 'LLM-as-Judge', back: 'Using a separate LLM call to evaluate input/output for security risks, detecting sophisticated attacks.' },
-      { id: 'f14-6', front: 'Prompt Hardening', back: 'Techniques to make system prompts more resistant to injection, including clear boundaries and explicit security rules.' },
-      { id: 'f14-7', front: 'Output Filtering', back: 'Scanning LLM output for PII, prompt leaks, or harmful content before returning to users.' },
-      { id: 'f14-8', front: 'Red Teaming', back: 'Proactively testing systems with attack prompts to find vulnerabilities before malicious actors do.' },
-      { id: 'f14-9', front: 'Sandboxing', back: 'Running untrusted code in isolated environments (like E2B) to prevent system compromise.' },
-      { id: 'f14-10', front: 'Audit Logging', back: 'Recording all LLM interactions for security analysis, incident investigation, and compliance.' }
+      { id: 'f15-1', front: 'Prompt Injection', back: 'Attack where malicious instructions in user input manipulate the LLM to ignore its instructions or perform unintended actions.' },
+      { id: 'f15-2', front: 'Indirect Injection', back: 'Prompt injection via external data (web pages, documents) that the LLM retrieves, bypassing input validation.' },
+      { id: 'f15-3', front: 'Jailbreaking', back: 'Techniques to bypass LLM safety guardrails through creative prompting (role-play, hypotheticals, encoding).' },
+      { id: 'f15-4', front: 'Defense in Depth', back: 'Security strategy using multiple layers of protection so no single point of failure compromises the system.' },
+      { id: 'f15-5', front: 'LLM-as-Judge', back: 'Using a separate LLM call to evaluate input/output for security risks, detecting sophisticated attacks.' },
+      { id: 'f15-6', front: 'Prompt Hardening', back: 'Techniques to make system prompts more resistant to injection, including clear boundaries and explicit security rules.' },
+      { id: 'f15-7', front: 'Output Filtering', back: 'Scanning LLM output for PII, prompt leaks, or harmful content before returning to users.' },
+      { id: 'f15-8', front: 'Red Teaming', back: 'Proactively testing systems with attack prompts to find vulnerabilities before malicious actors do.' },
+      { id: 'f15-9', front: 'Sandboxing', back: 'Running untrusted code in isolated environments (like E2B) to prevent system compromise.' },
+      { id: 'f15-10', front: 'Audit Logging', back: 'Recording all LLM interactions for security analysis, incident investigation, and compliance.' }
     ]
   },
   {
-    id: 'ch15',
+    id: 'ch16',
     title: 'AI UX Patterns',
     content: `
 # AI UX Patterns
@@ -6348,7 +6740,7 @@ function AIResponseActions({ onAccept, onReject, onEdit }) {
 `,
     quizzes: [
       {
-        id: 'q15-1',
+        id: 'q16-1',
         question: 'What is the key difference between traditional software UX and AI UX?',
         options: [
           'AI is always faster',
@@ -6360,7 +6752,7 @@ function AIResponseActions({ onAccept, onReject, onEdit }) {
         explanation: 'Traditional software gives the same output for the same input. AI can give different outputs, requiring different UX patterns to handle uncertainty.'
       },
       {
-        id: 'q15-2',
+        id: 'q16-2',
         question: 'What does the "Suggestion, Not Automation" pattern mean?',
         options: [
           'AI should never automate anything',
@@ -6372,7 +6764,7 @@ function AIResponseActions({ onAccept, onReject, onEdit }) {
         explanation: 'This pattern keeps humans in control by having AI suggest options (with accept/edit/reject) rather than automatically taking actions.'
       },
       {
-        id: 'q15-3',
+        id: 'q16-3',
         question: 'When should you show confidence indicators to users?',
         options: [
           'Never - it confuses users',
@@ -6384,7 +6776,7 @@ function AIResponseActions({ onAccept, onReject, onEdit }) {
         explanation: 'Confidence indicators are most valuable when uncertainty matters for the user\'s decision, helping them calibrate trust appropriately.'
       },
       {
-        id: 'q15-4',
+        id: 'q16-4',
         question: 'What is graceful degradation in AI UX?',
         options: [
           'Making AI responses shorter over time',
@@ -6397,20 +6789,20 @@ function AIResponseActions({ onAccept, onReject, onEdit }) {
       }
     ],
     flashcards: [
-      { id: 'f15-1', front: 'Probabilistic UX', back: 'Design patterns for interfaces where the same input can produce different outputs, requiring transparency about uncertainty.' },
-      { id: 'f15-2', front: 'Suggestion Pattern', back: 'AI proposes options but humans make final decisions. Includes accept, edit, and reject actions.' },
-      { id: 'f15-3', front: 'Progressive Disclosure', back: 'Start with simple AI output, let users drill down into reasoning and sources on demand.' },
-      { id: 'f15-4', front: 'Confidence Indicator', back: 'Visual representation of how certain the AI is about its output, helping users calibrate trust.' },
-      { id: 'f15-5', front: 'Graceful Degradation', back: 'Providing useful alternatives (retry, search, human help) when AI fails rather than dead-end errors.' },
-      { id: 'f15-6', front: 'Feedback Loop', back: 'UI elements letting users rate or correct AI outputs, improving the system over time.' },
-      { id: 'f15-7', front: 'Regeneration', back: 'Offering multiple AI-generated options or the ability to generate new alternatives.' },
-      { id: 'f15-8', front: 'AI Visibility', back: 'Clearly labeling AI-generated content so users know what came from AI vs. humans.' },
-      { id: 'f15-9', front: 'Inline Editing', back: 'Allowing users to directly edit AI output in place, maintaining context while adding control.' },
-      { id: 'f15-10', front: 'Typing Indicator', back: 'Visual feedback showing AI is generating a response, reducing perceived wait time.' }
+      { id: 'f16-1', front: 'Probabilistic UX', back: 'Design patterns for interfaces where the same input can produce different outputs, requiring transparency about uncertainty.' },
+      { id: 'f16-2', front: 'Suggestion Pattern', back: 'AI proposes options but humans make final decisions. Includes accept, edit, and reject actions.' },
+      { id: 'f16-3', front: 'Progressive Disclosure', back: 'Start with simple AI output, let users drill down into reasoning and sources on demand.' },
+      { id: 'f16-4', front: 'Confidence Indicator', back: 'Visual representation of how certain the AI is about its output, helping users calibrate trust.' },
+      { id: 'f16-5', front: 'Graceful Degradation', back: 'Providing useful alternatives (retry, search, human help) when AI fails rather than dead-end errors.' },
+      { id: 'f16-6', front: 'Feedback Loop', back: 'UI elements letting users rate or correct AI outputs, improving the system over time.' },
+      { id: 'f16-7', front: 'Regeneration', back: 'Offering multiple AI-generated options or the ability to generate new alternatives.' },
+      { id: 'f16-8', front: 'AI Visibility', back: 'Clearly labeling AI-generated content so users know what came from AI vs. humans.' },
+      { id: 'f16-9', front: 'Inline Editing', back: 'Allowing users to directly edit AI output in place, maintaining context while adding control.' },
+      { id: 'f16-10', front: 'Typing Indicator', back: 'Visual feedback showing AI is generating a response, reducing perceived wait time.' }
     ]
   },
   {
-    id: 'ch16',
+    id: 'ch17',
     title: 'Local & Edge AI',
     content: `
 # Local & Edge AI
@@ -6780,7 +7172,7 @@ ollama serve
 `,
     quizzes: [
       {
-        id: 'q16-1',
+        id: 'q17-1',
         question: 'What is the primary advantage of running AI models locally?',
         options: [
           'Always faster than cloud',
@@ -6792,7 +7184,7 @@ ollama serve
         explanation: 'Privacy is the killer feature of local AI - sensitive data never leaves your infrastructure, which is critical for healthcare, legal, and financial applications.'
       },
       {
-        id: 'q16-2',
+        id: 'q17-2',
         question: 'What does Q4 quantization do to a model?',
         options: [
           'Increases quality by 4x',
@@ -6804,7 +7196,7 @@ ollama serve
         explanation: 'Q4 (4-bit) quantization reduces model size to about 25% of the original while maintaining ~95% of quality, enabling larger models to run on consumer hardware.'
       },
       {
-        id: 'q16-3',
+        id: 'q17-3',
         question: 'Which tool provides the easiest way to run local LLMs?',
         options: [
           'llama.cpp',
@@ -6816,7 +7208,7 @@ ollama serve
         explanation: 'Ollama provides a simple CLI and manages model downloads, serving, and an OpenAI-compatible API with minimal configuration.'
       },
       {
-        id: 'q16-4',
+        id: 'q17-4',
         question: 'When does local AI typically become more cost-effective than cloud APIs?',
         options: [
           'Immediately - local is always cheaper',
@@ -6829,20 +7221,20 @@ ollama serve
       }
     ],
     flashcards: [
-      { id: 'f16-1', front: 'Ollama', back: 'Easy-to-use tool for running LLMs locally. Manages downloads, serving, and provides OpenAI-compatible API.' },
-      { id: 'f16-2', front: 'llama.cpp', back: 'High-performance C++ implementation for running LLMs on CPU and GPU. Foundation for many local AI tools.' },
-      { id: 'f16-3', front: 'Quantization', back: 'Reducing model precision (e.g., 16-bit to 4-bit) to decrease memory requirements with minimal quality loss.' },
-      { id: 'f16-4', front: 'GGUF', back: 'File format for quantized models used by llama.cpp and Ollama. Replaced older GGML format.' },
-      { id: 'f16-5', front: 'vLLM', back: 'High-throughput LLM serving engine with PagedAttention. Best for production local deployments.' },
-      { id: 'f16-6', front: 'Edge AI', back: 'Running AI models on edge devices (phones, browsers, IoT) rather than cloud servers.' },
-      { id: 'f16-7', front: 'WebLLM', back: 'Library for running LLMs in web browsers using WebGPU acceleration.' },
-      { id: 'f16-8', front: 'Speculative Decoding', back: 'Optimization using a small model to draft tokens, verified by a large model for faster inference.' },
-      { id: 'f16-9', front: 'KV Cache', back: 'Cached key-value pairs from attention computation, reused across tokens to speed up generation.' },
-      { id: 'f16-10', front: 'Air-Gapped Deployment', back: 'Running AI completely offline with no network connection, maximum security for sensitive applications.' }
+      { id: 'f17-1', front: 'Ollama', back: 'Easy-to-use tool for running LLMs locally. Manages downloads, serving, and provides OpenAI-compatible API.' },
+      { id: 'f17-2', front: 'llama.cpp', back: 'High-performance C++ implementation for running LLMs on CPU and GPU. Foundation for many local AI tools.' },
+      { id: 'f17-3', front: 'Quantization', back: 'Reducing model precision (e.g., 16-bit to 4-bit) to decrease memory requirements with minimal quality loss.' },
+      { id: 'f17-4', front: 'GGUF', back: 'File format for quantized models used by llama.cpp and Ollama. Replaced older GGML format.' },
+      { id: 'f17-5', front: 'vLLM', back: 'High-throughput LLM serving engine with PagedAttention. Best for production local deployments.' },
+      { id: 'f17-6', front: 'Edge AI', back: 'Running AI models on edge devices (phones, browsers, IoT) rather than cloud servers.' },
+      { id: 'f17-7', front: 'WebLLM', back: 'Library for running LLMs in web browsers using WebGPU acceleration.' },
+      { id: 'f17-8', front: 'Speculative Decoding', back: 'Optimization using a small model to draft tokens, verified by a large model for faster inference.' },
+      { id: 'f17-9', front: 'KV Cache', back: 'Cached key-value pairs from attention computation, reused across tokens to speed up generation.' },
+      { id: 'f17-10', front: 'Air-Gapped Deployment', back: 'Running AI completely offline with no network connection, maximum security for sensitive applications.' }
     ]
   },
   {
-    id: 'ch17',
+    id: 'ch18',
     title: 'MCP Servers - Model Context Protocol',
     content: `
 # MCP Servers - Model Context Protocol
@@ -7022,28 +7414,28 @@ The ecosystem is growing rapidly. Building MCP servers is a valuable skill for A
 `,
     quizzes: [
       {
-        id: 'q17-1',
+        id: 'q18-1',
         question: 'What are the three main primitives in MCP?',
         options: ['Requests, Responses, Errors', 'Resources, Tools, Prompts', 'Read, Write, Execute', 'Input, Output, Context'],
         correctIndex: 1,
         explanation: 'MCP provides three primitives: Resources (read-only data), Tools (actions/functions), and Prompts (reusable templates).'
       },
       {
-        id: 'q17-2',
+        id: 'q18-2',
         question: 'What transport protocols does MCP support?',
         options: ['HTTP only', 'WebSockets only', 'stdio and SSE (Server-Sent Events)', 'gRPC only'],
         correctIndex: 2,
         explanation: 'MCP uses JSON-RPC 2.0 over stdio (for local processes) or SSE (for remote connections).'
       },
       {
-        id: 'q17-3',
+        id: 'q18-3',
         question: 'Which is the correct use of MCP Resources vs Tools?',
         options: ['Resources for actions, Tools for data', 'Resources for read-only data, Tools for actions', 'Resources and Tools are interchangeable', 'Resources for prompts, Tools for responses'],
         correctIndex: 1,
         explanation: 'Resources provide read-only access to data (like GET requests), while Tools enable actions that can modify state (like POST/PUT/DELETE).'
       },
       {
-        id: 'q17-4',
+        id: 'q18-4',
         question: 'What security practice is most important for MCP servers?',
         options: ['Using HTTPS only', 'Principle of least privilege - only expose necessary functionality', 'Requiring API keys for all requests', 'Encrypting all data at rest'],
         correctIndex: 1,
@@ -7051,408 +7443,16 @@ The ecosystem is growing rapidly. Building MCP servers is a valuable skill for A
       }
     ],
     flashcards: [
-      { id: 'f17-1', front: 'MCP (Model Context Protocol)', back: 'Open standard by Anthropic for connecting AI assistants to external data sources and tools via a unified protocol.' },
-      { id: 'f17-2', front: 'MCP Resources', back: 'Read-only data that AI can access. Used for exposing database records, files, API responses.' },
-      { id: 'f17-3', front: 'MCP Tools', back: 'Actions/functions that AI can invoke. Used for CRUD operations, sending messages, triggering workflows.' },
-      { id: 'f17-4', front: 'MCP Prompts', back: 'Reusable prompt templates that can be parameterized and shared across conversations.' },
-      { id: 'f17-5', front: 'stdio Transport', back: 'MCP communication over standard input/output, used for local process communication.' },
-      { id: 'f17-6', front: 'SSE Transport', back: 'Server-Sent Events transport for MCP, used for remote server connections.' },
-      { id: 'f17-7', front: 'MCP Inspector', back: 'Developer tool for testing MCP servers. Provides UI to list resources, call tools, and view logs.' },
-      { id: 'f17-8', front: 'claude_desktop_config.json', back: 'Configuration file for connecting MCP servers to Claude Desktop.' },
-      { id: 'f17-9', front: 'JSON-RPC 2.0', back: 'The underlying protocol MCP uses for client-server communication.' },
-      { id: 'f17-10', front: 'MCP Capabilities', back: 'Server-declared features (resources, tools, prompts) that tell clients what functionality is available.' }
-    ]
-  },
-  {
-    id: 'ch18',
-    title: 'AI Product Strategy',
-    content: `
-# AI Product Strategy
-
-Building AI features requires different thinking than traditional software. This chapter covers the strategic decisions that determine success.
-
-## Identifying Good AI Use Cases
-
-[INTERACTIVE: USE_CASE_EVAL]
-
-Not every problem needs AI. Good AI use cases share characteristics:
-
-### High-Value Indicators
-
-**Tolerance for imperfection**: Tasks where 90% accuracy is valuable
-- Content suggestions (wrong suggestion is ignorable)
-- Draft generation (human reviews anyway)
-- Search/discovery (multiple results shown)
-
-**High volume, low stakes per instance**: Many small decisions
-- Email categorization
-- Content moderation (with human review)
-- Lead scoring
-
-**Augmentation over automation**: AI assists humans
-- Writing assistance
-- Code completion
-- Research summarization
-
-### Red Flags
-
-**Zero tolerance for errors**: Legal documents, medical diagnoses (without human review)
-**Deterministic requirements**: Same input must always give same output
-**Simple rules suffice**: If-then logic would work fine
-**Data doesn't exist**: No training data, no examples, no feedback loop
-
-## Build vs Buy vs API
-
-[INTERACTIVE: BUILD_BUY]
-
-### Use APIs (OpenAI, Anthropic, etc.)
-
-**When**:
-- Speed to market matters
-- Use case is general (chat, summarization, code)
-- Scale is uncertain
-- ML expertise is limited
-
-**Trade-offs**:
-- Ongoing costs
-- Data leaves your infrastructure
-- Dependent on provider
-- Limited customization
-
-### Use Open Source Models
-
-**When**:
-- Data privacy is critical
-- Need full control
-- High volume makes API costs prohibitive
-- Specific customization needed
-
-**Trade-offs**:
-- Infrastructure complexity
-- ML expertise required
-- Responsible for updates/security
-- Higher upfront investment
-
-### Build Custom
-
-**When**:
-- Unique task with no existing solution
-- Competitive differentiation required
-- Massive scale justifies investment
-- Have strong ML team
-
-**Trade-offs**:
-- Highest cost and time
-- Ongoing maintenance burden
-- Risk of failure
-- Opportunity cost
-
-## Pricing AI Features
-
-### Cost Structure
-
-\`\`\`
-Per-request cost = 
-  (input_tokens × input_price) + 
-  (output_tokens × output_price) + 
-  infrastructure_overhead
-\`\`\`
-
-### Pricing Models
-
-**Per-use**: Charge per request/generation
-- Aligns costs with revenue
-- Complex to communicate
-- Usage anxiety for users
-
-**Subscription tiers**: Include AI in plans
-- Predictable for users
-- Risk of heavy users
-- Need usage limits
-
-**Hybrid**: Base subscription + overage
-- Balanced approach
-- More complex
-- Common in enterprise
-
-### Margin Considerations
-
-- AI costs can be 50-80% of feature revenue
-- Optimize before scaling
-- Build in buffer for model price changes
-- Consider caching and tiering
-
-## User Experience Design
-
-### Setting Expectations
-
-**Be honest about capabilities**:
-- "AI-generated suggestions"
-- "May contain errors"
-- "Review before sending"
-
-**Show confidence levels** when appropriate:
-- High confidence: Direct presentation
-- Low confidence: "Here are some options..."
-
-### Handling Failures
-
-**Graceful degradation**:
-- Fallback to simpler features
-- Clear error messages
-- Easy retry options
-
-**Feedback mechanisms**:
-- Thumbs up/down
-- Report issues
-- Suggest corrections
-
-### Latency Considerations
-
-Users expect:
-- < 200ms: Feels instant
-- 200ms-1s: Noticeable but acceptable
-- 1-3s: Need loading indicator
-- > 3s: Need progress/streaming
-
-**Techniques**:
-- Streaming for long responses
-- Optimistic UI updates
-- Background processing with notifications
-
-## Managing User Expectations
-
-### The Hype Problem
-
-Users may expect:
-- Perfect accuracy
-- Human-level understanding
-- Consistent behavior
-
-Reality:
-- Probabilistic outputs
-- No true understanding
-- Can fail unpredictably
-
-### Education Strategies
-
-- Onboarding that shows capabilities AND limitations
-- Examples of good and bad use cases
-- Clear documentation
-- In-context tips
-
-## Legal and Compliance
-
-### Data Privacy
-
-- Where does user data go?
-- Is it used for training?
-- GDPR/CCPA compliance
-- Data retention policies
-
-### Content Liability
-
-- Who's responsible for AI-generated content?
-- Terms of service updates
-- Indemnification clauses
-- Content moderation requirements
-
-### Industry-Specific
-
-- Healthcare: HIPAA, clinical decision support rules
-- Finance: Fair lending, explainability requirements
-- Education: FERPA, age restrictions
-
-## Competitive Analysis
-
-### Defensibility
-
-AI features are often easy to copy. Defensibility comes from:
-
-**Data moats**: Proprietary data that improves your model
-**Feedback loops**: User interactions that compound advantage
-**Integration depth**: Hard to rip out once embedded
-**Brand trust**: Users trust your AI more
-
-### Monitoring Competition
-
-- Feature parity tracking
-- Pricing comparison
-- User perception research
-- Technology trend analysis
-
-## Future-Proofing
-
-### Model Upgrades
-
-- Abstract model selection
-- Version your prompts
-- Maintain eval sets
-- Plan for capability jumps
-
-### Cost Trajectory
-
-- API costs generally decrease over time
-- But usage often increases faster
-- Build cost monitoring from day one
-- Have optimization roadmap ready
-
-### Emerging Capabilities
-
-- Multimodal (images, audio, video)
-- Longer context windows
-- Better reasoning
-- Faster inference
-
-Plan for features that will become possible.
-
-## Summary
-
-[INTERACTIVE: CH10_SUMMARY]
-`,
-    quizzes: [
-      {
-        id: 'q18-1',
-        question: 'What makes a good AI use case?',
-        options: [
-          'Any task that sounds impressive',
-          'Tasks with tolerance for imperfection, high volume, and augmentation over automation',
-          'Only tasks that require 100% accuracy',
-          'Tasks where simple rules would work'
-        ],
-        correctIndex: 1,
-        explanation: 'Good AI use cases tolerate imperfection (90% accuracy is valuable), involve high volume, and augment rather than replace humans.'
-      },
-      {
-        id: 'q18-2',
-        question: 'When should you use APIs (OpenAI, etc.) over open source?',
-        options: [
-          'Always',
-          'When speed to market matters, use case is general, and ML expertise is limited',
-          'Never—open source is always better',
-          'Only for prototypes'
-        ],
-        correctIndex: 1,
-        explanation: 'APIs are best when you need speed, the use case is general, scale is uncertain, and you lack ML expertise.'
-      },
-      {
-        id: 'q18-3',
-        question: 'What is a key risk of subscription pricing for AI features?',
-        options: [
-          'Users won\'t understand it',
-          'Heavy users can make the feature unprofitable',
-          'It\'s too simple',
-          'It requires per-use tracking'
-        ],
-        correctIndex: 1,
-        explanation: 'Subscription pricing risks heavy users consuming expensive AI resources without additional revenue. Usage limits help.'
-      },
-      {
-        id: 'q18-4',
-        question: 'What latency do users expect for AI features to feel "instant"?',
-        options: [
-          '< 200ms',
-          '< 5 seconds',
-          '< 30 seconds',
-          'Latency doesn\'t matter'
-        ],
-        correctIndex: 0,
-        explanation: 'Under 200ms feels instant. 200ms-1s is noticeable. Over 3s needs streaming or progress indicators.'
-      },
-      {
-        id: 'q18-5',
-        question: 'What creates defensibility for AI features?',
-        options: [
-          'Being first to market',
-          'Data moats, feedback loops, integration depth, and brand trust',
-          'Using the newest model',
-          'Lower prices'
-        ],
-        correctIndex: 1,
-        explanation: 'AI features are easy to copy. Defensibility comes from proprietary data, compounding feedback loops, deep integration, and trust.'
-      },
-      {
-        id: 'q18-6',
-        question: 'How should you handle AI failures in UX?',
-        options: [
-          'Hide them from users',
-          'Graceful degradation, clear errors, easy retry, and feedback mechanisms',
-          'Show technical error messages',
-          'Disable the feature entirely'
-        ],
-        correctIndex: 1,
-        explanation: 'Good UX includes fallbacks, clear error messages, retry options, and ways for users to report issues.'
-      },
-      {
-        id: 'q18-7',
-        question: 'What is a "data moat"?',
-        options: [
-          'A type of database',
-          'Proprietary data that improves your model and is hard for competitors to replicate',
-          'A security feature',
-          'A pricing strategy'
-        ],
-        correctIndex: 1,
-        explanation: 'Data moats are proprietary datasets that improve your AI and create competitive advantage because competitors can\'t easily get the same data.'
-      },
-      {
-        id: 'q18-8',
-        question: 'What is a red flag for AI use cases?',
-        options: [
-          'High volume of requests',
-          'Zero tolerance for errors or simple rules would suffice',
-          'Users want assistance',
-          'Task involves text'
-        ],
-        correctIndex: 1,
-        explanation: 'Red flags include zero error tolerance (without human review), deterministic requirements, and cases where simple rules work.'
-      },
-      {
-        id: 'q18-9',
-        question: 'How should you set user expectations for AI features?',
-        options: [
-          'Promise perfect accuracy',
-          'Be honest about capabilities and limitations, show confidence levels',
-          'Hide that it\'s AI',
-          'Don\'t mention limitations'
-        ],
-        correctIndex: 1,
-        explanation: 'Honest communication about capabilities, limitations, and confidence levels builds trust and reduces disappointment.'
-      },
-      {
-        id: 'q18-10',
-        question: 'What should you plan for regarding AI costs?',
-        options: [
-          'Costs will stay constant',
-          'API costs decrease but usage often increases faster; build monitoring from day one',
-          'Costs don\'t matter',
-          'Only plan for cost increases'
-        ],
-        correctIndex: 1,
-        explanation: 'While per-token costs decrease, usage growth often outpaces savings. Build cost monitoring early and have optimization plans ready.'
-      }
-    ],
-    flashcards: [
-      { id: 'f18-1', front: 'Data Moat', back: 'Proprietary data that improves your model and is hard for competitors to replicate.' },
-      { id: 'f18-2', front: 'Feedback Loop', back: 'User interactions that generate data to improve the model, creating compounding advantage.' },
-      { id: 'f18-3', front: 'Graceful Degradation', back: 'Falling back to simpler features when AI fails, maintaining user experience.' },
-      { id: 'f18-4', front: 'Augmentation vs Automation', back: 'AI that assists humans (augmentation) vs replaces them (automation). Augmentation is often safer.' },
-      { id: 'f18-5', front: 'Per-Use Pricing', back: 'Charging per AI request/generation. Aligns costs with revenue but can cause usage anxiety.' },
-      { id: 'f18-6', front: 'Subscription Tiers', back: 'Including AI in subscription plans. Predictable but risks heavy users being unprofitable.' },
-      { id: 'f18-7', front: 'Time to First Token', back: 'Latency until streaming begins. Critical for perceived speed in chat interfaces.' },
-      { id: 'f18-8', front: 'Optimistic UI', back: 'Showing expected result immediately while processing in background.' },
-      { id: 'f18-9', front: 'Confidence Level', back: 'Indicator of how certain the AI is about its output. Helps users calibrate trust.' },
-      { id: 'f18-10', front: 'Build vs Buy vs API', back: 'Strategic decision: custom development vs open source vs cloud APIs.' },
-      { id: 'f18-11', front: 'Model Abstraction', back: 'Designing systems so the underlying model can be swapped without major changes.' },
-      { id: 'f18-12', front: 'Usage Anxiety', back: 'User hesitation to use AI features due to per-use pricing concerns.' },
-      { id: 'f18-13', front: 'Content Liability', back: 'Legal responsibility for AI-generated content. Requires clear terms of service.' },
-      { id: 'f18-14', front: 'Capability Jump', back: 'Sudden improvement in model capabilities requiring product adaptation.' },
-      { id: 'f18-15', front: 'Integration Depth', back: 'How embedded AI is in the product. Deeper = harder for users to switch.' },
-      { id: 'f18-16', front: 'Hype Management', back: 'Setting realistic expectations vs inflated AI promises.' },
-      { id: 'f18-17', front: 'Feature Parity', back: 'Matching competitor AI capabilities.' },
-      { id: 'f18-18', front: 'Cost Attribution', back: 'Tracking AI costs by feature, user, or use case for pricing and optimization.' },
-      { id: 'f18-19', front: 'Explainability', back: 'Ability to explain why AI made a decision. Required in some regulated industries.' },
-      { id: 'f18-20', front: 'AI Ethics', back: 'Considerations around bias, fairness, transparency, and societal impact of AI features.' }
+      { id: 'f18-1', front: 'MCP (Model Context Protocol)', back: 'Open standard by Anthropic for connecting AI assistants to external data sources and tools via a unified protocol.' },
+      { id: 'f18-2', front: 'MCP Resources', back: 'Read-only data that AI can access. Used for exposing database records, files, API responses.' },
+      { id: 'f18-3', front: 'MCP Tools', back: 'Actions/functions that AI can invoke. Used for CRUD operations, sending messages, triggering workflows.' },
+      { id: 'f18-4', front: 'MCP Prompts', back: 'Reusable prompt templates that can be parameterized and shared across conversations.' },
+      { id: 'f18-5', front: 'stdio Transport', back: 'MCP communication over standard input/output, used for local process communication.' },
+      { id: 'f18-6', front: 'SSE Transport', back: 'Server-Sent Events transport for MCP, used for remote server connections.' },
+      { id: 'f18-7', front: 'MCP Inspector', back: 'Developer tool for testing MCP servers. Provides UI to list resources, call tools, and view logs.' },
+      { id: 'f18-8', front: 'claude_desktop_config.json', back: 'Configuration file for connecting MCP servers to Claude Desktop.' },
+      { id: 'f18-9', front: 'JSON-RPC 2.0', back: 'The underlying protocol MCP uses for client-server communication.' },
+      { id: 'f18-10', front: 'MCP Capabilities', back: 'Server-declared features (resources, tools, prompts) that tell clients what functionality is available.' }
     ]
   },
 ];
