@@ -7062,7 +7062,7 @@ The ecosystem is growing rapidly. Building MCP servers is a valuable skill for A
       { id: 'f17-9', front: 'JSON-RPC 2.0', back: 'The underlying protocol MCP uses for client-server communication.' },
       { id: 'f17-10', front: 'MCP Capabilities', back: 'Server-declared features (resources, tools, prompts) that tell clients what functionality is available.' }
     ]
-  }
+  },
   {
     id: 'ch18',
     title: 'AI Product Strategy',
