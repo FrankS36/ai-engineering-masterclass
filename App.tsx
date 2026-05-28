@@ -108,7 +108,7 @@ export default function App() {
           h-16 flex items-center border-b border-stone-800 bg-stone-900
           ${isDesktopSidebarCollapsed ? 'justify-center px-2' : 'px-5'}
         `}>
-          <div className="flex items-center gap-3 min-w-0">
+          <a href="https://sellhausen.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-400/25 shrink-0">
               <Sparkles size={18} className="text-white" />
             </div>
@@ -120,7 +120,7 @@ export default function App() {
                 <p className="text-[10px] text-brand-400 font-mono tracking-wider uppercase">Sellhausen AI Systems</p>
               </div>
             )}
-          </div>
+          </a>
           
           {/* Mobile close button */}
           <button 
