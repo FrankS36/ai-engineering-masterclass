@@ -293,8 +293,8 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
     return (
       <div className="my-10 grid gap-4">
         {items.map((item, i) => {
-          // Parse "**Term**: Description" format
-          const match = item.match(/^\*\*(.*?)\*\*[:\s]+(.*)$/);
+          // Parse "**Term**: Description" or "**Term** -- Description" format
+          const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
           const term = match ? match[1] : null;
           const description = match ? match[2] : item;
           
@@ -334,7 +334,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
         
         <div className="space-y-6">
           {items.map((item, i) => {
-            const match = item.match(/^\*\*(.*?)\*\*[:\s]*(.*)$/);
+            const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
             const title = match ? match[1] : `Step ${i + 1}`;
             const description = match ? match[2] : item;
             
@@ -366,7 +366,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
     return (
       <div className="my-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item, i) => {
-          const match = item.match(/^\*\*(.*?)\*\*[:\s]*(.*)$/);
+          const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
           const title = match ? match[1] : null;
           const description = match ? match[2] : item;
           
@@ -429,9 +429,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
           <thead>
             <tr className="bg-stone-900 text-white">
               {headers.map((h, i) => (
-                <th key={i} className="px-6 py-4 text-left text-sm font-semibold tracking-wide">
-                  {h.trim()}
-                </th>
+                <th key={i} className="px-6 py-4 text-left text-sm font-semibold tracking-wide" dangerouslySetInnerHTML={{ __html: formatInline(h.trim()) }} />
               ))}
             </tr>
           </thead>
@@ -441,9 +439,9 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
                 {row.map((cell, j) => (
                   <td key={j} className="px-6 py-4 text-stone-600">
                     {j === 0 ? (
-                      <span className="font-medium text-stone-900">{cell.trim()}</span>
+                      <span className="font-medium text-stone-900" dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
                     ) : (
-                      cell.trim()
+                      <span dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
                     )}
                   </td>
                 ))}
@@ -547,7 +545,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
               return (
                 <div key={index} className="my-10 relative">
                   <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-brand-400 to-brand-600 rounded-full" />
-                  <div className="bg-gradient-to-br from-brand-50 to-orange-50 rounded-2xl p-6 pl-8 border border-brand-100">
+                  <div className="bg-gradient-to-br from-brand-50 to-stone-50 rounded-2xl p-6 pl-8 border border-brand-100">
                     <Lightbulb className="text-brand-500 w-6 h-6 mb-3" />
                     <div className="text-lg text-stone-700 leading-relaxed">
                       {block.content.map((line, i) => (

@@ -109,15 +109,15 @@ export default function App() {
           ${isDesktopSidebarCollapsed ? 'justify-center px-2' : 'px-5'}
         `}>
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/25 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-400/25 shrink-0">
               <Sparkles size={18} className="text-white" />
             </div>
             {!isDesktopSidebarCollapsed && (
               <div className="min-w-0">
-                <h1 className="text-sm font-bold text-white tracking-tight truncate">
+                <h1 className="text-sm font-bold text-white tracking-tight truncate font-serif">
                   AI Engineering
                 </h1>
-                <p className="text-[10px] text-stone-500 font-mono tracking-wider uppercase">Masterclass</p>
+                <p className="text-[10px] text-brand-400 font-mono tracking-wider uppercase">Sellhausen AI Systems</p>
               </div>
             )}
           </div>
