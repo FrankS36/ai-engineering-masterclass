@@ -304,17 +304,17 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
               className="group relative bg-gradient-to-br from-white to-stone-50/50 rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-lg transition-all duration-300"
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-400 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="p-6 flex items-start gap-5">
+              <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-5">
                 {term && (
-                  <div className="shrink-0 w-52">
+                  <div className="shrink-0 sm:w-52">
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-stone-900 text-white text-sm font-semibold tracking-tight">
                       <Zap size={14} className="text-brand-400" />
                       {term}
                     </span>
                   </div>
                 )}
-                <p 
-                  className="flex-1 text-stone-600 leading-relaxed text-[16px]"
+                <p
+                  className="flex-1 text-stone-600 leading-relaxed text-sm sm:text-[16px]"
                   dangerouslySetInnerHTML={{ __html: formatInline(description) }}
                 />
               </div>
@@ -330,26 +330,24 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
     return (
       <div className="my-10 relative">
         {/* Connecting line */}
-        <div className="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-brand-300 via-brand-400 to-brand-300" />
-        
+        <div className="absolute left-4 sm:left-6 top-8 bottom-8 w-px bg-gradient-to-b from-brand-300 via-brand-400 to-brand-300" />
+
         <div className="space-y-6">
           {items.map((item, i) => {
             const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
             const title = match ? match[1] : `Step ${i + 1}`;
             const description = match ? match[2] : item;
-            
+
             return (
-              <div key={i} className="relative flex gap-6 group">
-                {/* Step number */}
-                <div className="relative z-10 w-12 h-12 rounded-xl bg-stone-900 text-white flex items-center justify-center font-bold text-lg shadow-lg group-hover:bg-brand-600 transition-colors">
+              <div key={i} className="relative flex gap-4 sm:gap-6 group">
+                <div className="relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-stone-900 text-white flex items-center justify-center font-bold text-sm sm:text-lg shadow-lg group-hover:bg-brand-600 transition-colors shrink-0">
                   {i + 1}
                 </div>
-                
-                {/* Content */}
-                <div className="flex-1 pt-1">
-                  <h4 className="text-lg font-bold text-stone-900 mb-2">{title}</h4>
-                  <p 
-                    className="text-stone-600 leading-relaxed"
+
+                <div className="flex-1 pt-0 sm:pt-1">
+                  <h4 className="text-base sm:text-lg font-bold text-stone-900 mb-1 sm:mb-2">{title}</h4>
+                  <p
+                    className="text-sm sm:text-base text-stone-600 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: formatInline(description) }}
                   />
                 </div>
@@ -424,31 +422,33 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
     const data = rows.slice(2).map(r => r.split('|').filter(c => c.trim()));
 
     return (
-      <div className="my-10 overflow-hidden rounded-2xl border border-stone-200 shadow-sm">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-stone-900 text-white">
-              {headers.map((h, i) => (
-                <th key={i} className="px-6 py-4 text-left text-sm font-semibold tracking-wide" dangerouslySetInnerHTML={{ __html: formatInline(h.trim()) }} />
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-stone-100">
-            {data.map((row, i) => (
-              <tr key={i} className="bg-white hover:bg-stone-50 transition-colors">
-                {row.map((cell, j) => (
-                  <td key={j} className="px-6 py-4 text-stone-600">
-                    {j === 0 ? (
-                      <span className="font-medium text-stone-900" dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
-                    ) : (
-                      <span dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
-                    )}
-                  </td>
+      <div className="my-10 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="min-w-[480px] rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-stone-900 text-white">
+                {headers.map((h, i) => (
+                  <th key={i} className="px-3 py-3 sm:px-6 sm:py-4 text-left text-xs sm:text-sm font-semibold tracking-wide" dangerouslySetInnerHTML={{ __html: formatInline(h.trim()) }} />
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-stone-100">
+              {data.map((row, i) => (
+                <tr key={i} className="bg-white hover:bg-stone-50 transition-colors">
+                  {row.map((cell, j) => (
+                    <td key={j} className="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-stone-600">
+                      {j === 0 ? (
+                        <span className="font-medium text-stone-900" dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
+                      ) : (
+                        <span dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };
@@ -458,7 +458,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
 
   return (
     <div className="bg-gradient-to-b from-stone-50 to-white min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 md:px-8 py-12 md:py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-20">
         
         {blocks.map((block, index) => {
           switch (block.type) {
