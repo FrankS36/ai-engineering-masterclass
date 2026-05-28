@@ -34,7 +34,7 @@ This field didn't emerge gradually. Several forces hit at the same time:
 
 **2. APIs democratized access.** OpenAI, Google, and Anthropic made frontier models available through simple REST APIs. You no longer need infrastructure expertise — just an API key and a credit card.
 
-**3. Costs dropped dramatically.** Inference pricing fell roughly 10-30x between 2022 and 2025 across major providers. Tasks that were economically impossible at $0.06 per 1K tokens became viable at $0.002. This is real but not the "100x" number you see in blog posts — it depends heavily on which models and tasks you compare.
+**3. Costs dropped dramatically.** Inference pricing has fallen roughly 10-30x since 2022 and continues to decline. Tasks that were economically impossible at early pricing tiers became viable as costs dropped by an order of magnitude. The exact savings depend on which models and tasks you compare — check [current provider pricing](https://openai.com/pricing) for the latest numbers.
 
 **4. Context windows expanded.** From 4K tokens (GPT-3) to 200K+ (Claude) and 1M+ (Gemini). This means models can now process entire codebases, books, or long conversation histories in a single call — fundamentally changing what's possible with retrieval and document analysis.
 
@@ -104,33 +104,35 @@ Monitoring, cost optimization, model updates, drift detection, incident response
 
 Choosing a model is one of the highest-leverage decisions you'll make. It's not about picking "the best" — it's about the right tradeoff between capability, cost, latency, and context for your specific use case.
 
-### Current Landscape (2025)
+### How to Evaluate Models
 
-**OpenAI**
-- *GPT-4.1*: Strong general-purpose, excellent function calling. ~$2/M input, ~$8/M output. 1M context.
-- *GPT-4.1 Mini*: 80% of GPT-4.1 quality at ~15% of the cost. Good default for most tasks.
-- *o3/o4-mini*: Reasoning-optimized models. Higher latency, higher cost, better on complex multi-step problems.
+The model landscape changes quarterly. Rather than memorizing today's options, learn to evaluate on four axes:
 
-**Anthropic**
-- *Claude Sonnet 4*: Best balance of quality, speed, and cost. Strong on long documents and instruction following. ~$3/M input, ~$15/M output. 200K context.
-- *Claude Opus 4*: Highest capability, best for complex analysis. ~$15/M input, ~$75/M output.
-- *Claude Haiku 4*: Fast and cheap for simple tasks. ~$0.25/M input.
+| Axis | What to measure | How |
+|------|----------------|-----|
+| **Capability** | Does it handle your task well enough? | Run your eval suite against 2-3 candidates |
+| **Cost** | What's the per-request cost at your volume? | Check provider pricing pages (linked below) |
+| **Latency** | Does time-to-first-token meet your UX needs? | Benchmark with realistic prompts |
+| **Context** | Can it fit your inputs? | Compare context windows against your longest real inputs |
 
-**Google**
-- *Gemini 2.5 Pro*: Competitive quality, massive 1M+ context window, strong multimodal. Good value.
-- *Gemini 2.5 Flash*: Fast, cheap, good for high-volume simple tasks.
+**Current pricing and models — check the source:**
+- [OpenAI models and pricing](https://openai.com/pricing)
+- [Anthropic models and pricing](https://docs.anthropic.com/en/docs/about-claude/models)
+- [Google AI models](https://ai.google.dev/pricing)
+
+Every major provider offers a range from cheap/fast (for simple tasks) to expensive/capable (for complex reasoning). The names and prices will change. The tiering pattern won't.
 
 ### How to Choose
 
-**Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for GPT-4 when GPT-4.1 Mini or Claude Haiku would handle 80% of their traffic.
+**Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for a frontier model when a mid-tier model would handle 80% of their traffic.
 
 **Model tiering** is the production pattern: route simple queries to a cheap/fast model, complex queries to an expensive/capable one. This alone can cut costs 40-70%.
 
 ## Cost Optimization
 
-A single GPT-4 call might cost $0.03. At 1M requests/month, that's $30,000. Smart optimization cuts this dramatically.
+At scale, per-token costs add up fast. Smart optimization cuts bills dramatically.
 
-**1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send "What are your hours?" to Haiku. Send "Analyze this contract for liability risks" to Opus.
+**1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send simple queries to a fast/cheap model. Send complex analysis to a frontier model.
 
 **2. Prompt caching (30-60% savings):** Anthropic offers 90% discounts on cached prompt prefixes. OpenAI offers 50% on repeated prefixes >1024 tokens. Structure your prompts with static content first.
 
@@ -462,7 +464,7 @@ When the model generates output, it produces a probability distribution over the
 
 ## Context Windows: What Is Possible and What It Costs
 
-Context windows have grown dramatically: from GPT-3's 2K tokens (2020) to Gemini 1.5 Pro's 1M tokens and Claude's 200K tokens (2024-2025).
+Context windows have grown dramatically: from GPT-3's 2K tokens (2020) to models supporting 200K-1M+ tokens today. Check provider documentation for current context limits — they increase frequently.
 
 Longer context windows enable new architectures — you can fit entire codebases, long documents, or extended conversation histories into a single prompt. But there are engineering tradeoffs:
 
@@ -498,13 +500,13 @@ Foundation models increasingly handle more than text. Understanding the two main
 
 **Composite / pipeline models** bolt vision encoders or audio encoders onto a language model backbone. LLaVA, for instance, connects a CLIP vision encoder to a Llama language model. These are easier to build and iterate on, but can struggle with deep cross-modal reasoning.
 
-**What works well in 2025:**
+**What works well today:**
 - Image understanding (describing, analyzing, extracting data from images and charts)
 - Code generation from screenshots or mockups
 - Document parsing (PDFs, receipts, forms) with vision models
 - Audio transcription and understanding (Gemini, GPT-4o)
 
-**What is still limited:**
+**What remains limited:**
 - Fine-grained spatial reasoning ("what is 3cm to the left of the red box")
 - Consistent image generation that follows complex multi-constraint prompts
 - Real-time video understanding at scale
@@ -1427,6 +1429,8 @@ The next chapter covers embeddings and retrieval -- the foundation of RAG system
     content: `# Chapter 4: Building with LLM APIs
 
 Every production AI feature starts the same way: an HTTP request carrying a prompt, and a response carrying generated text. The gap between that first successful curl and a system that serves thousands of users reliably is where most engineering effort lives. This chapter covers the full surface area -- from authentication through structured outputs and streaming -- so you can build features that are correct, fast, and economical.
+
+> **Note on code examples:** Code samples throughout this course use specific model IDs (like "gpt-4o" or "claude-sonnet-4") for clarity. Model IDs change as providers release new versions. The patterns and techniques are stable -- swap in the current model ID from your provider's documentation.
 
 ---
 
@@ -7575,15 +7579,17 @@ Desktop app for running local models with a visual interface. Download models fr
 
 ## Choosing a Local Model
 
-The open-source model landscape moves fast. As of 2025, these are the strongest options by size:
+The open-source model landscape moves fast. The pattern by size tier is stable:
 
-| Size | Model | Strengths | Limitations |
-|------|-------|-----------|-------------|
-| 1-3B | Phi-3.5 Mini, Qwen2.5-3B | Fast, runs on phones/edge | Limited reasoning, short context |
-| 7-8B | Llama 3.1 8B, Mistral 7B, Qwen2.5-7B | Best quality-per-FLOP, runs on consumer GPUs | Can't match 70B+ on complex tasks |
-| 13-14B | Qwen2.5-14B | Sweet spot for many tasks | Needs 12GB+ VRAM at Q4 |
-| 32-34B | Qwen2.5-32B, CodeLlama 34B | Near-API quality on many tasks | Needs 24GB+ VRAM at Q4 |
-| 70B+ | Llama 3.1 70B, Qwen2.5-72B | Competitive with commercial APIs | Needs datacenter GPU (A100/H100) |
+| Size | What to expect | Minimum hardware |
+|------|---------------|-----------------|
+| 1-3B | Simple tasks, classification, extraction. Runs on phones and edge devices. | 4GB RAM/VRAM |
+| 7-8B | Best quality-per-FLOP. Handles most production tasks. Runs on consumer GPUs. | 8GB VRAM (Q4) |
+| 13-14B | Sweet spot for quality vs. cost. Strong general capability. | 12GB VRAM (Q4) |
+| 30-34B | Near-API quality on many tasks. Needs serious hardware. | 24GB VRAM (Q4) |
+| 70B+ | Competitive with commercial APIs on most benchmarks. | A100 80GB or multi-GPU |
+
+Browse current open models at [HuggingFace Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) and [Ollama model library](https://ollama.com/library).
 
 **The general rule:** Start with the smallest model that passes your eval suite. A 7B model running at Q4 handles 80% of production use cases people throw at 70B models.
 
@@ -7694,18 +7700,17 @@ volumes:
 
 ### Break-Even Calculation
 
-**Scenario:** 10M tokens/day, GPT-4.1 Mini pricing ($0.40/M input, $1.60/M output, ~50/50 split)
+The math depends on your volume and which API you're comparing against. Here's the framework:
 
-**API cost:**
-- Daily: 5M input x $0.40/M + 5M output x $1.60/M = **$10/day**
-- Monthly: **$300/month**
+**API cost formula:**
+- Daily tokens x (input price per token + output price per token) = daily cost
+- Check [current pricing](https://openai.com/pricing) — prices drop regularly
 
-**Local cost (Llama 3.1 8B on RTX 4090):**
-- Hardware: $1,600 one-time (amortized over 2 years = $67/month)
-- Power: ~350W x 24h x 30 days x $0.12/kWh = **$30/month**
-- Total: **~$97/month**
+**Local cost formula:**
+- GPU hardware (amortized over 2-3 years) + power (~350W x 24h x $0.12/kWh for a single GPU) + ops time
+- A mid-range GPU typically costs $50-100/month amortized
 
-**Break-even: ~3.3M tokens/day.** Below that, API is cheaper. Above that, local wins.
+**The break-even** depends entirely on your API pricing tier and volume. Run the numbers with current prices — the crossover is typically in the millions-of-tokens-per-day range for mid-tier API models.
 
 **Caveats:**
 - Assumes the local model's quality is acceptable for your use case
