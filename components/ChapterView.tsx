@@ -418,8 +418,16 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
 
   // --- Table Renderer ---
   const renderTable = (rows: string[]) => {
-    const headers = rows[0].split('|').filter(c => c.trim());
-    const data = rows.slice(2).map(r => r.split('|').filter(c => c.trim()));
+    // Split on | and drop the leading/trailing empty strings from outer pipes
+    const splitRow = (r: string) => {
+      const cells = r.split('|');
+      // Remove first and last (empty from leading/trailing |)
+      if (cells.length > 0 && cells[0].trim() === '') cells.shift();
+      if (cells.length > 0 && cells[cells.length - 1].trim() === '') cells.pop();
+      return cells;
+    };
+    const headers = splitRow(rows[0]);
+    const data = rows.slice(2).map(splitRow);
 
     return (
       <div className="my-10 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
