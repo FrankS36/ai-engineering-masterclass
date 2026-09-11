@@ -98,33 +98,23 @@ Monitoring, cost optimization, model updates, drift detection, incident response
 
 Choosing a model is one of the highest-leverage decisions you'll make. It's not about picking "the best" — it's about the right tradeoff between capability, cost, latency, and context for your specific use case.
 
-### Current Landscape (2025)
+The model landscape changes quarterly. Rather than memorizing today's options, evaluate on four axes: capability, cost, latency, and context. Check official pricing pages. Every provider has cheap/fast through flagship — names change, the tiers do not.
 
-**OpenAI**
-- *GPT-4.1*: Strong general-purpose, excellent function calling. ~$2/M input, ~$8/M output. 1M context.
-- *GPT-4.1 Mini*: 80% of GPT-4.1 quality at ~15% of the cost. Good default for most tasks.
-- *o3/o4-mini*: Reasoning-optimized models. Higher latency, higher cost, better on complex multi-step problems.
-
-**Anthropic**
-- *Claude Sonnet 4*: Best balance of quality, speed, and cost. Strong on long documents and instruction following. ~$3/M input, ~$15/M output. 200K context.
-- *Claude Opus 4*: Highest capability, best for complex analysis. ~$15/M input, ~$75/M output.
-- *Claude Haiku 4*: Fast and cheap for simple tasks. ~$0.25/M input.
-
-**Google**
-- *Gemini 2.5 Pro*: Competitive quality, massive 1M+ context window, strong multimodal. Good value.
-- *Gemini 2.5 Flash*: Fast, cheap, good for high-volume simple tasks.
+> **Look up now.** Prompt: "What are the current list prices, context windows, and recommended IDs for the cheapest and most capable models from OpenAI, Anthropic, and Google? Cite official docs."
 
 ### How to Choose
 
-**Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for GPT-4 when GPT-4.1 Mini or Claude Haiku would handle 80% of their traffic.
+**Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for a frontier model when a mid-tier model would handle 80% of their traffic.
 
 **Model tiering** is the production pattern: route simple queries to a cheap/fast model, complex queries to an expensive/capable one. This alone can cut costs 40-70%.
 
+[INTERACTIVE: MODEL_COMPARISON]
+
 ## Cost Optimization
 
-A single GPT-4 call might cost $0.03. At 1M requests/month, that's $30,000. Smart optimization cuts this dramatically.
+At scale, per-token costs add up fast. Smart optimization cuts bills dramatically.
 
-**1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send "What are your hours?" to Haiku. Send "Analyze this contract for liability risks" to Opus.
+**1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send simple queries to a fast/cheap model. Send complex analysis to a frontier model.
 
 **2. Prompt caching (30-60% savings):** Anthropic offers 90% discounts on cached prompt prefixes. OpenAI offers 50% on repeated prefixes >1024 tokens. Structure your prompts with static content first.
 

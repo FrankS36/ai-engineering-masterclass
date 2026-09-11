@@ -143,6 +143,8 @@ Every major provider offers a range from cheap/fast (for simple tasks) to expens
 
 **Model tiering** is the production pattern: route simple queries to a cheap/fast model, complex queries to an expensive/capable one. This alone can cut costs 40-70%.
 
+[INTERACTIVE: MODEL_COMPARISON]
+
 ## Cost Optimization
 
 At scale, per-token costs add up fast. Smart optimization cuts bills dramatically.
@@ -156,6 +158,8 @@ At scale, per-token costs add up fast. Smart optimization cuts bills dramaticall
 **4. Response caching (varies):** Cache responses to identical or semantically similar queries. A customer support bot answering the same FAQ 1,000 times should hit cache 999 times.
 
 **5. Batching (15-30% savings):** Some providers offer batch APIs at discounted rates for non-time-sensitive work. Classification, extraction, and analysis tasks often don't need real-time responses.
+
+[INTERACTIVE: COST_OPTIMIZATION]
 
 ## The Evaluation Gap
 
