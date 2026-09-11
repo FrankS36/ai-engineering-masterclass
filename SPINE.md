@@ -1,6 +1,6 @@
 # Course spine
 
-**Read this first.** Source of truth for the masterclass. Do not invent a parallel plan.
+**Read `AGENTS.md` first if you are an agent.** That is the harness (how to work). This file is the curriculum (what to write next). Do not invent a third plan.
 
 Repo: `github.com/FrankS36/ai-engineering-masterclass`  
 Branch: `cursor/progress-dark-mode-9f6c`  
@@ -110,3 +110,4 @@ If you only have time for one thing after ch1: **ch2**.
 - ch16 / ch17 wired. ch15 in app.
 - **Stack moved to Next.js 15 + Tailwind v4 + parent fonts/tokens** (same form as sellhausen.com).
 - **ch1 rewritten** to Ng’s four skills. Sidebar labeled to the map. `SKILL_HOME` on every chapter.
+- **Harness defined:** `AGENTS.md` + `scripts/inject-chapter.mjs` + `chapters/chN.assessments.json`. Do not hand-edit `constants.ts`.

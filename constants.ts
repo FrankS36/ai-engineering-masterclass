@@ -144,109 +144,109 @@ You now have the map. Chapter 2 is LLM foundations: a mental model of tokenize, 
 The field is young. The tools will change before you finish the course. The four skills will not.
 `,
     quizzes: [
-      {
-            "id": "q1-1",
-            "question": "Andrew Ng’s AI Engineering Skills Map treats “AI engineer” as:",
-            "options": [
-                  "A job title you hire for, with a fixed reporting line",
-                  "A set of skills people and teams can hold in combination",
-                  "A synonym for ML researcher who trains foundation models",
-                  "A certification track equivalent to Claude Certified Architect"
-            ],
-            "correctIndex": 1,
-            "explanation": "Ng is explicit: these are skills, not a job title. People hold several; teams split them."
-      },
-      {
-            "id": "q1-2",
-            "question": "What does Ng call the distinguisher of Skill 1 (building and deploying AI applications)?",
-            "options": [
-                  "Knowing this quarter’s flagship model IDs",
-                  "Standing up a multi-agent swarm before you have a workflow",
-                  "Evaluation-driven development — traces, error analysis, a loop you can defend",
-                  "Fine-tuning a base model as the first move"
-            ],
-            "correctIndex": 2,
-            "explanation": "Evals and error analysis are the loop. Guessing which component to improve is how projects stall."
-      },
-      {
-            "id": "q1-3",
-            "question": "Why does the skills map put software engineering fundamentals next to building AI apps?",
-            "options": [
-                  "So you can write every line by hand instead of using an agent",
-                  "So you can brief an agent in engineering language and name the tradeoffs",
-                  "Because Ng wants everyone to become a full-time SRE",
-                  "Because coding agents removed the need to understand architecture"
-            ],
-            "correctIndex": 1,
-            "explanation": "Agents pick tradeoffs if you cannot name them — usually the ones that make the demo look finished."
-      },
-      {
-            "id": "q1-4",
-            "question": "You have a coding agent and a vague wish. What does Skill 3 say to do first?",
-            "options": [
-                  "Let it run overnight and review the diff in the morning",
-                  "Plan: brainstorm, write a spec, then execute with a verifier",
-                  "Switch to the most expensive model and try again",
-                  "Add more MCP servers until the agent looks busy"
-            ],
-            "correctIndex": 1,
-            "explanation": "Ng’s workflow is Planning → Execution → Deployment. Long-horizon unattended runs are overhyped."
-      },
-      {
-            "id": "q1-5",
-            "question": "A teammate wants you to memorize current list prices and context windows. What do you do?",
-            "options": [
-                  "Memorize them; the exam will ask",
-                  "Look them up against official docs when the fact moves; keep the tiering principle",
-                  "Copy last quarter’s table from a blog post",
-                  "Always pick the flagship so price does not matter"
-            ],
-            "correctIndex": 1,
-            "explanation": "Prices, windows, and IDs are look-ups. Start cheap, escalate when the eval says you must."
-      }
-],
+            {
+                  "id": "q1-1",
+                  "question": "Andrew Ng’s AI Engineering Skills Map treats “AI engineer” as:",
+                  "options": [
+                        "A job title you hire for, with a fixed reporting line",
+                        "A set of skills people and teams can hold in combination",
+                        "A synonym for ML researcher who trains foundation models",
+                        "A certification track equivalent to Claude Certified Architect"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Ng is explicit: these are skills, not a job title. People hold several; teams split them."
+            },
+            {
+                  "id": "q1-2",
+                  "question": "What does Ng call the distinguisher of Skill 1 (building and deploying AI applications)?",
+                  "options": [
+                        "Knowing this quarter’s flagship model IDs",
+                        "Standing up a multi-agent swarm before you have a workflow",
+                        "Evaluation-driven development — traces, error analysis, a loop you can defend",
+                        "Fine-tuning a base model as the first move"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Evals and error analysis are the loop. Guessing which component to improve is how projects stall."
+            },
+            {
+                  "id": "q1-3",
+                  "question": "Why does the skills map put software engineering fundamentals next to building AI apps?",
+                  "options": [
+                        "So you can write every line by hand instead of using an agent",
+                        "So you can brief an agent in engineering language and name the tradeoffs",
+                        "Because Ng wants everyone to become a full-time SRE",
+                        "Because coding agents removed the need to understand architecture"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Agents pick tradeoffs if you cannot name them — usually the ones that make the demo look finished."
+            },
+            {
+                  "id": "q1-4",
+                  "question": "You have a coding agent and a vague wish. What does Skill 3 say to do first?",
+                  "options": [
+                        "Let it run overnight and review the diff in the morning",
+                        "Plan: brainstorm, write a spec, then execute with a verifier",
+                        "Switch to the most expensive model and try again",
+                        "Add more MCP servers until the agent looks busy"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Ng’s workflow is Planning → Execution → Deployment. Long-horizon unattended runs are overhyped."
+            },
+            {
+                  "id": "q1-5",
+                  "question": "A teammate wants you to memorize current list prices and context windows. What do you do?",
+                  "options": [
+                        "Memorize them; the exam will ask",
+                        "Look them up against official docs when the fact moves; keep the tiering principle",
+                        "Copy last quarter’s table from a blog post",
+                        "Always pick the flagship so price does not matter"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Prices, windows, and IDs are look-ups. Start cheap, escalate when the eval says you must."
+            }
+    ],
     flashcards: [
-      {
-            "id": "f1-1",
-            "front": "The four skills (Ng)",
-            "back": "Building and deploying AI applications · Software engineering fundamentals · Using coding agents · Shaping the build. Skills, not a job title."
-      },
-      {
-            "id": "f1-2",
-            "front": "Skill 1 distinguisher",
-            "back": "Evaluation-driven development: traces, error analysis, a loop before any model or architecture change."
-      },
-      {
-            "id": "f1-3",
-            "front": "Skill 1 — six capabilities",
-            "back": "LLM foundations · Grounding with data · Agentic systems · Evaluation-driven development · Operating in production · Machine learning foundations."
-      },
-      {
-            "id": "f1-4",
-            "front": "Skill 2 — five literacies",
-            "back": "Full-stack · Managing data · System architecture · Secure and reliable · Scaling and operating. Purpose: steer the agent in engineering language."
-      },
-      {
-            "id": "f1-5",
-            "front": "Skill 3 workflow",
-            "back": "Planning (brainstorm + spec + plan) → Execution (build / test / verify) → Deployment and monitoring."
-      },
-      {
-            "id": "f1-6",
-            "front": "Skill 4 — shaping the build",
-            "back": "Decide what belongs in the spec: product sense, ownership, MVP vs slow down. Chapter 14; written down in Chapter 17."
-      },
-      {
-            "id": "f1-7",
-            "front": "Model tiering",
-            "back": "Start with the cheapest tier that clears your eval. Escalate only when measurement says you must. Names change; the pattern does not."
-      },
-      {
-            "id": "f1-8",
-            "front": "Look-up vs remember",
-            "back": "Remember principles, failure modes, and the four skills. Look up prices, windows, current model IDs, and current tool docs."
-      }
-]
+            {
+                  "id": "f1-1",
+                  "front": "The four skills (Ng)",
+                  "back": "Building and deploying AI applications · Software engineering fundamentals · Using coding agents · Shaping the build. Skills, not a job title."
+            },
+            {
+                  "id": "f1-2",
+                  "front": "Skill 1 distinguisher",
+                  "back": "Evaluation-driven development: traces, error analysis, a loop before any model or architecture change."
+            },
+            {
+                  "id": "f1-3",
+                  "front": "Skill 1 — six capabilities",
+                  "back": "LLM foundations · Grounding with data · Agentic systems · Evaluation-driven development · Operating in production · Machine learning foundations."
+            },
+            {
+                  "id": "f1-4",
+                  "front": "Skill 2 — five literacies",
+                  "back": "Full-stack · Managing data · System architecture · Secure and reliable · Scaling and operating. Purpose: steer the agent in engineering language."
+            },
+            {
+                  "id": "f1-5",
+                  "front": "Skill 3 workflow",
+                  "back": "Planning (brainstorm + spec + plan) → Execution (build / test / verify) → Deployment and monitoring."
+            },
+            {
+                  "id": "f1-6",
+                  "front": "Skill 4 — shaping the build",
+                  "back": "Decide what belongs in the spec: product sense, ownership, MVP vs slow down. Chapter 14; written down in Chapter 17."
+            },
+            {
+                  "id": "f1-7",
+                  "front": "Model tiering",
+                  "back": "Start with the cheapest tier that clears your eval. Escalate only when measurement says you must. Names change; the pattern does not."
+            },
+            {
+                  "id": "f1-8",
+                  "front": "Look-up vs remember",
+                  "back": "Remember principles, failure modes, and the four skills. Look up prices, windows, current model IDs, and current tool docs."
+            }
+    ]
   },
   {
     id: 'ch2',

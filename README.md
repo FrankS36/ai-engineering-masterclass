@@ -2,7 +2,7 @@
 
 Course aligned to Andrew Ng’s AI Engineering Skills Map. Stack matches sellhausen.com: Next.js 15, Tailwind v4, DM Sans / Instrument Serif / Geist Mono.
 
-**Read `SPINE.md` before changing structure or curriculum.**
+**Agents: read `AGENTS.md`.** Curriculum: `SPINE.md`.
 
 ## Run
 
