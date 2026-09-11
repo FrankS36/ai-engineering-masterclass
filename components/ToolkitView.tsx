@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Code, FileText, GitCompare, GitBranch, Calculator, Box, Copy, Check, ChevronDown, ChevronUp, ExternalLink, Download } from 'lucide-react';
+import { LookUpPrompt } from './LookUpPrompt';
 
 type TabId = 'code' | 'templates' | 'comparisons' | 'decisions' | 'calculator' | 'architecture';
 
@@ -20,12 +21,13 @@ const codeExamples: CodeExample[] = [
         description: 'Simple chat completion with OpenAI',
         category: 'Getting Started',
         language: 'python',
-        code: `from openai import OpenAI
+        code: `import os
+from openai import OpenAI
 
 client = OpenAI()
 
 response = client.chat.completions.create(
-    model="gpt-4o",
+    model=os.environ["MODEL_ID"],
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Hello!"}
@@ -40,12 +42,13 @@ print(response.choices[0].message.content)`
         description: 'Stream tokens as they are generated',
         category: 'Getting Started',
         language: 'python',
-        code: `from openai import OpenAI
+        code: `import os
+from openai import OpenAI
 
 client = OpenAI()
 
 stream = client.chat.completions.create(
-    model="gpt-4o",
+    model=os.environ["MODEL_ID"],
     messages=[{"role": "user", "content": "Write a haiku"}],
     stream=True
 )
@@ -82,7 +85,7 @@ tools = [{
 }]
 
 response = client.chat.completions.create(
-    model="gpt-4o",
+    model=os.environ["MODEL_ID"],
     messages=[{"role": "user", "content": "What's the weather in Paris?"}],
     tools=tools
 )
@@ -110,7 +113,7 @@ class Person(BaseModel):
     occupation: str
 
 person = client.chat.completions.create(
-    model="gpt-4o",
+    model=os.environ["MODEL_ID"],
     messages=[{
         "role": "user", 
         "content": "John Smith is a 32 year old software engineer."
@@ -154,7 +157,7 @@ results = collection.query(query_texts=[query], n_results=2)
 # Generate with context
 context = "\\n".join(results['documents'][0])
 response = client.chat.completions.create(
-    model="gpt-4o",
+    model=os.environ["MODEL_ID"],
     messages=[
         {"role": "system", "content": f"Answer based on: {context}"},
         {"role": "user", "content": query}
@@ -220,7 +223,7 @@ def run_agent(query: str, max_steps: int = 5):
     
     for step in range(max_steps):
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=os.environ["MODEL_ID"],
             messages=messages,
             tools=tools
         )
@@ -261,7 +264,7 @@ system_prompt = """You are an expert legal assistant...
 
 # First call - creates cache
 response = client.messages.create(
-    model="claude-3-5-sonnet-20241022",
+    model=os.environ["MODEL_ID"],
     max_tokens=1024,
     system=[{
         "type": "text",
@@ -273,7 +276,7 @@ response = client.messages.create(
 
 # Subsequent calls get 90% discount on cached tokens!
 response2 = client.messages.create(
-    model="claude-3-5-sonnet-20241022",
+    model=os.environ["MODEL_ID"],
     max_tokens=1024,
     system=[{
         "type": "text",
@@ -289,7 +292,8 @@ response2 = client.messages.create(
         description: 'Run models locally with OpenAI-compatible API',
         category: 'Local AI',
         language: 'python',
-        code: `from openai import OpenAI
+        code: `import os
+from openai import OpenAI
 
 # Point to local Ollama server
 client = OpenAI(
@@ -327,7 +331,7 @@ def encode_image(image_path: str) -> str:
         return base64.b64encode(f.read()).decode("utf-8")
 
 response = client.chat.completions.create(
-    model="gpt-4o",
+    model=os.environ["MODEL_ID"],
     messages=[{
         "role": "user",
         "content": [
@@ -559,15 +563,15 @@ interface ComparisonTable {
 const comparisons: ComparisonTable[] = [
     {
         id: 'llm-providers',
-        title: 'LLM Provider Comparison',
-        description: 'Compare major LLM API providers',
-        headers: ['Provider', 'Best Model', 'Context', 'Strengths', 'Price (Input/Output)'],
+        title: 'What to compare across providers',
+        description: 'Axes stay stable. SKUs and list prices do not — look them up.',
+        headers: ['Provider family', 'Ask about', 'Typical strength', 'Typical watch-out', 'Where to look'],
         rows: [
-            ['OpenAI', 'GPT-4o', '128K', 'Versatile, tools, vision', '$2.50 / $10.00'],
-            ['Anthropic', 'Claude 3.5 Sonnet', '200K', 'Code, long context, safety', '$3.00 / $15.00'],
-            ['Google', 'Gemini 1.5 Pro', '1M+', 'Longest context, multimodal', '$1.25 / $5.00'],
-            ['Mistral', 'Mistral Large', '128K', 'Open weights, EU hosting', '$2.00 / $6.00'],
-            ['Groq', 'Llama 3.1 70B', '128K', 'Fastest inference', '$0.59 / $0.79'],
+            ['OpenAI', 'Cheap/fast vs flagship vs reasoning IDs', 'Tools, ecosystem, generalists', 'Price and ID churn', 'platform.openai.com'],
+            ['Anthropic', 'Budget vs mid vs flagship + cache', 'Long context, coding, safety posture', 'Availability / rate limits', 'docs.anthropic.com'],
+            ['Google', 'Flash vs Pro + context class', 'Long context, multimodal', 'Quality varies by task', 'ai.google.dev'],
+            ['Open-weight hosts', 'Current Llama / Qwen / Mixtral SKU', 'Cost, residency, speed', 'You own evals and ops', 'Groq, Together, Fireworks, Bedrock'],
+            ['Enterprise wrappers', 'Region, VPC, logging, DPA', 'Compliance path', 'Slower to get new models', 'Azure / Bedrock / Vertex'],
         ]
     },
     {
@@ -598,29 +602,26 @@ const comparisons: ComparisonTable[] = [
     },
     {
         id: 'embedding-models',
-        title: 'Embedding Model Comparison',
-        description: 'Compare text embedding models',
-        headers: ['Model', 'Provider', 'Dimensions', 'Quality (MTEB)', 'Price'],
+        title: 'Embedding checklist',
+        description: 'Pick a family, then look up the current ID and dims — do not hardcode last year\'s name.',
+        headers: ['Family', 'When to reach for it', 'What to look up', 'Watch-out'],
         rows: [
-            ['text-embedding-3-large', 'OpenAI', '3072', 'Excellent', '$0.13/M tokens'],
-            ['text-embedding-3-small', 'OpenAI', '1536', 'Good', '$0.02/M tokens'],
-            ['embed-v3', 'Cohere', '1024', 'Excellent', '$0.10/M tokens'],
-            ['voyage-3', 'Voyage AI', '1024', 'Excellent', '$0.06/M tokens'],
-            ['bge-large-en-v1.5', 'BAAI', '1024', 'Good', 'Free (local)'],
-            ['nomic-embed-text', 'Nomic', '768', 'Good', 'Free (local)'],
+            ['Hosted general', 'You want one API and decent English', 'Current ID, dims, $/M', 'Vendor lock-in on dim size'],
+            ['Hosted multilingual / domain', 'Legal, code, or non-English', 'Domain SKUs + rerank pair', 'Dims change across versions'],
+            ['Open / local', 'Privacy or zero API spend', 'Current MTEB-ish rank + VRAM', 'You own serving quality'],
         ]
     },
     {
         id: 'open-models',
-        title: 'Open Source Model Comparison',
-        description: 'Compare open source LLMs',
-        headers: ['Model', 'Provider', 'Sizes', 'License', 'Strengths'],
+        title: 'Open-weight families',
+        description: 'Families persist. Version numbers and "best open model" claims do not.',
+        headers: ['Family', 'Who', 'Why people use it', 'Look up'],
         rows: [
-            ['Llama 3.1', 'Meta', '8B, 70B, 405B', 'Llama 3.1', 'Best overall open'],
-            ['Qwen 2.5', 'Alibaba', '7B-72B', 'Apache 2.0', 'Multilingual, code'],
-            ['Mistral/Mixtral', 'Mistral', '7B, 8x7B', 'Apache 2.0', 'Efficient MoE'],
-            ['Gemma 2', 'Google', '9B, 27B', 'Gemma', 'Efficient, instruction'],
-            ['DeepSeek V3', 'DeepSeek', '671B MoE', 'MIT', 'Reasoning, code'],
+            ['Llama', 'Meta', 'Default open generalist', 'Current sizes + license'],
+            ['Qwen', 'Alibaba', 'Multilingual, code, math', 'Current sizes + license'],
+            ['Mistral / Mixtral', 'Mistral', 'Efficient MoE, EU option', 'Current MoE vs dense'],
+            ['Gemma', 'Google', 'Small / efficient instruct', 'Current sizes'],
+            ['DeepSeek', 'DeepSeek', 'Reasoning and code', 'Current distill vs full'],
         ]
     }
 ];
@@ -656,35 +657,35 @@ const decisionTrees: DecisionTree[] = [
             quality: {
                 question: 'What\'s the main task?',
                 options: [
-                    { label: 'Code generation', next: null, recommendation: 'Claude 3.5 Sonnet - Best at code, handles complex codebases' },
-                    { label: 'Long document processing', next: null, recommendation: 'Gemini 1.5 Pro - 1M+ context, excellent comprehension' },
-                    { label: 'Complex reasoning', next: null, recommendation: 'OpenAI o1 - Designed for reasoning tasks' },
-                    { label: 'General purpose', next: null, recommendation: 'GPT-4o or Claude 3.5 Sonnet - Both excellent' }
+                    { label: 'Code generation', next: null, recommendation: 'Start with a mid-tier workhorse. Escalate to flagship only when your coding evals fail. Look up the current "best at code" ID — it rotates.' },
+                    { label: 'Long document processing', next: null, recommendation: 'Prefer the current longest-context API, or chunk + RAG if the corpus is large or changing. Confirm the live window on the provider docs.' },
+                    { label: 'Complex reasoning', next: null, recommendation: 'Use a reasoning / slow-think tier, or a mid-tier plus a verifier loop. Measure both on your task — thinking tokens are expensive.' },
+                    { label: 'General purpose', next: null, recommendation: 'Mid-tier from two providers, behind one client. Pick with YOUR eval set, not a leaderboard screenshot.' }
                 ]
             },
             cost: {
                 question: 'How much volume?',
                 options: [
-                    { label: 'Low volume (<1M tokens/day)', next: null, recommendation: 'GPT-4o-mini - Best price/performance ratio' },
-                    { label: 'High volume (>10M tokens/day)', next: null, recommendation: 'Llama 3.1 70B via Groq or Together - 10x cheaper' },
-                    { label: 'Variable/unpredictable', next: null, recommendation: 'GPT-4o-mini with Llama fallback via LiteLLM' }
+                    { label: 'Low volume (<1M tokens/day)', next: null, recommendation: 'Cheap/fast hosted model. Look up current $/M. Abstraction (LiteLLM or your own wrapper) still pays off later.' },
+                    { label: 'High volume (>10M tokens/day)', next: null, recommendation: 'Cheap/fast + cache + routing. Consider a fast host for current open weights. Run the cost formula with live prices.' },
+                    { label: 'Variable/unpredictable', next: null, recommendation: 'Cheap/fast default with a flagship fallback through a unified API. Set per-user and per-feature budgets.' }
                 ]
             },
             privacy: {
                 question: 'What infrastructure do you have?',
                 options: [
-                    { label: 'Have GPUs (A100/H100)', next: null, recommendation: 'Llama 3.1 70B via vLLM - Best open model' },
-                    { label: 'Consumer GPUs (RTX 3090/4090)', next: null, recommendation: 'Llama 3.1 8B or Qwen 2.5 14B via Ollama' },
-                    { label: 'CPU only', next: null, recommendation: 'Llama 3.1 8B Q4 via llama.cpp - Slower but works' },
-                    { label: 'No infrastructure', next: null, recommendation: 'Azure OpenAI - Enterprise compliance, your Azure tenant' }
+                    { label: 'Have datacenter GPUs', next: null, recommendation: 'Serve the current capable open-weight family with vLLM (or equivalent). Benchmark on your evals before committing.' },
+                    { label: 'Consumer GPUs', next: null, recommendation: 'A small/medium open-weight instruct model via Ollama or llama.cpp. Look up what fits your VRAM today.' },
+                    { label: 'CPU only', next: null, recommendation: 'Quantized small open-weight model via llama.cpp. Expect slower tokens; keep prompts short.' },
+                    { label: 'No infrastructure', next: null, recommendation: 'Enterprise-wrapped API (Azure / Bedrock / Vertex) in your tenant. Confirm region, DPA, and logging.' }
                 ]
             },
             speed: {
                 question: 'What latency is acceptable?',
                 options: [
-                    { label: 'Sub-100ms TTFT', next: null, recommendation: 'Groq (Llama 3.1) - Fastest inference available' },
-                    { label: 'Sub-500ms TTFT', next: null, recommendation: 'GPT-4o-mini or Claude 3.5 Haiku - Fast cloud options' },
-                    { label: 'Sub-1s is fine', next: null, recommendation: 'Any major provider works - optimize for your other needs' }
+                    { label: 'Sub-100ms TTFT', next: null, recommendation: 'A specialized fast-inference host for open weights, or the cheapest/fastest hosted tier. Confirm live TTFT on your prompt, not a blog number.' },
+                    { label: 'Sub-500ms TTFT', next: null, recommendation: 'Cheap/fast hosted models from major providers. Avoid reasoning tiers.' },
+                    { label: 'Sub-1s is fine', next: null, recommendation: 'Optimize for quality and cost first. Any major provider works if your evals pass.' }
                 ]
             }
         }
@@ -771,8 +772,8 @@ const decisionTrees: DecisionTree[] = [
 
 // ============ COST CALCULATOR ============
 interface CostCalculatorState {
-    provider: string;
-    model: string;
+    inputPricePerMillion: number;
+    outputPricePerMillion: number;
     inputTokensPerRequest: number;
     outputTokensPerRequest: number;
     requestsPerDay: number;
@@ -974,7 +975,7 @@ const architectureDiagrams: ArchitectureDiagram[] = [
                              ▼
                     ┌──────────────────┐
                     │   Vision LLM     │
-                    │   (GPT-4o)       │
+                    │   (current ID)   │
                     └────────┬─────────┘
                              │
                              ▼
@@ -1143,6 +1144,15 @@ const TemplatesTab = () => {
 const ComparisonsTab = () => {
     return (
         <div className="space-y-8">
+            <LookUpPrompt
+                why="These tables are checklists. Paste this prompt to fill in today's SKUs and prices."
+                prompt="For OpenAI, Anthropic, and Google: what are the current cheap/fast, mid-tier, and flagship model IDs, list prices per 1M input/output tokens, and context windows? Cite official docs only."
+                sources={[
+                    { label: 'OpenAI pricing', href: 'https://openai.com/pricing' },
+                    { label: 'Anthropic models', href: 'https://docs.anthropic.com/en/docs/about-claude/models' },
+                    { label: 'Google AI pricing', href: 'https://ai.google.dev/pricing' },
+                ]}
+            />
             {comparisons.map(table => (
                 <div key={table.id} className="bg-white border border-stone-200 rounded-xl overflow-hidden">
                     <div className="p-4 border-b border-stone-200">
@@ -1286,76 +1296,62 @@ const DecisionTreesTab = () => {
 
 const CostCalculatorTab = () => {
     const [state, setState] = useState<CostCalculatorState>({
-        provider: 'openai',
-        model: 'gpt-4o',
+        inputPricePerMillion: 3,
+        outputPricePerMillion: 15,
         inputTokensPerRequest: 1000,
         outputTokensPerRequest: 500,
         requestsPerDay: 1000
     });
-    
-    const pricing: Record<string, Record<string, { input: number; output: number }>> = {
-        openai: {
-            'gpt-4o': { input: 2.5, output: 10 },
-            'gpt-4o-mini': { input: 0.15, output: 0.6 },
-            'gpt-4-turbo': { input: 10, output: 30 },
-        },
-        anthropic: {
-            'claude-3.5-sonnet': { input: 3, output: 15 },
-            'claude-3-haiku': { input: 0.25, output: 1.25 },
-            'claude-3-opus': { input: 15, output: 75 },
-        },
-        google: {
-            'gemini-1.5-pro': { input: 1.25, output: 5 },
-            'gemini-1.5-flash': { input: 0.075, output: 0.3 },
-        },
-        groq: {
-            'llama-3.1-70b': { input: 0.59, output: 0.79 },
-            'llama-3.1-8b': { input: 0.05, output: 0.08 },
-            'mixtral-8x7b': { input: 0.24, output: 0.24 },
-        }
-    };
-    
-    const models = Object.keys(pricing[state.provider] || {});
-    const price = pricing[state.provider]?.[state.model] || { input: 0, output: 0 };
-    
+
     const dailyInputTokens = state.inputTokensPerRequest * state.requestsPerDay;
     const dailyOutputTokens = state.outputTokensPerRequest * state.requestsPerDay;
-    
-    const dailyCost = (dailyInputTokens / 1_000_000 * price.input) + (dailyOutputTokens / 1_000_000 * price.output);
+
+    const dailyCost =
+        (dailyInputTokens / 1_000_000 * state.inputPricePerMillion) +
+        (dailyOutputTokens / 1_000_000 * state.outputPricePerMillion);
     const monthlyCost = dailyCost * 30;
     const yearlyCost = dailyCost * 365;
     
     return (
         <div className="space-y-6">
+            <LookUpPrompt
+                why="Prices are inputs, not a catalog. Paste this, then type the $/M you find into the calculator."
+                prompt="What is the current list price per 1M input tokens and 1M output tokens for one cheap/fast model and one flagship model from my provider? Cite the official pricing page."
+                sources={[
+                    { label: 'OpenAI pricing', href: 'https://openai.com/pricing' },
+                    { label: 'Anthropic pricing', href: 'https://docs.anthropic.com/en/docs/about-claude/pricing' },
+                    { label: 'Google AI pricing', href: 'https://ai.google.dev/pricing' },
+                ]}
+            />
+            <p className="text-sm text-stone-600">
+                Formula: <code className="font-mono text-xs bg-stone-100 px-1.5 py-0.5 rounded">cost = input_tokens × in_$/M + output_tokens × out_$/M</code>
+            </p>
             <div className="bg-white border border-stone-200 rounded-xl p-6">
-                <h3 className="font-bold text-stone-900 mb-4">Configure Your Usage</h3>
+                <h3 className="font-bold text-stone-900 mb-4">Enter current prices and usage</h3>
                 
                 <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-stone-700 mb-2">Provider</label>
-                        <select
-                            value={state.provider}
-                            onChange={e => setState({ ...state, provider: e.target.value, model: Object.keys(pricing[e.target.value])[0] })}
+                        <label className="block text-sm font-medium text-stone-700 mb-2">Input price ($ / 1M tokens)</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={state.inputPricePerMillion}
+                            onChange={e => setState({ ...state, inputPricePerMillion: parseFloat(e.target.value) || 0 })}
                             className="w-full p-3 border border-stone-200 rounded-lg"
-                        >
-                            <option value="openai">OpenAI</option>
-                            <option value="anthropic">Anthropic</option>
-                            <option value="google">Google</option>
-                            <option value="groq">Groq</option>
-                        </select>
+                        />
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-stone-700 mb-2">Model</label>
-                        <select
-                            value={state.model}
-                            onChange={e => setState({ ...state, model: e.target.value })}
+                        <label className="block text-sm font-medium text-stone-700 mb-2">Output price ($ / 1M tokens)</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={state.outputPricePerMillion}
+                            onChange={e => setState({ ...state, outputPricePerMillion: parseFloat(e.target.value) || 0 })}
                             className="w-full p-3 border border-stone-200 rounded-lg"
-                        >
-                            {models.map(m => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
+                        />
                     </div>
                     
                     <div>
@@ -1432,11 +1428,11 @@ const CostCalculatorTab = () => {
                     </div>
                     <div className="flex justify-between mt-2">
                         <span>Input Price:</span>
-                        <span>${price.input}/M tokens</span>
+                        <span>${state.inputPricePerMillion}/M tokens</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Output Price:</span>
-                        <span>${price.output}/M tokens</span>
+                        <span>${state.outputPricePerMillion}/M tokens</span>
                     </div>
                 </div>
             </div>

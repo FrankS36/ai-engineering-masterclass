@@ -166,6 +166,7 @@ Also in the app (not chapters): Interview, Toolkit, System Design, Glossary. Ref
 - ch15: Moroney “pair-program the SDLC” section.
 - `lib/courseOrder.ts` + sidebar sections for the 17-chapter map.
 - Drafts: `chapters/ch16-se-fundamentals.md`, `chapters/ch17-spec-driven.md`.
+- **Perishable-content pass:** ModelComparison is qualitative tiers (no SKU catalog). Toolkit calculator takes user-entered $/M. Cheat Sheets / Resources / Interview / System Design drop dated prices and model IDs. Chapters use **Look up now** prompts + env `MODEL_ID` instead of hardcoded list prices. Shared `LookUpPrompt` component.
 
 ### Not done (next sessions, in this order)
 
@@ -177,7 +178,7 @@ Also in the app (not chapters): Interview, Toolkit, System Design, Glossary. Ref
 6. **ch7** — evals as the gate (Ng + CCAR-P).
 7. **ch8/ch9** — reliability, fail closed, tool authorization, HITL.
 8. **ch14** — shaping the build + what belongs in the spec.
-9. Refresh Interview / Toolkit / System Design so they match the new spine.
+9. Refresh Interview / Toolkit / System Design so they mention coding agents, SDD, and MCP (catalogs already de-aged).
 10. Update `CURRICULUM.md` to match this file (this file wins if they drift).
 
 ### Explicitly out of scope

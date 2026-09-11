@@ -85,7 +85,7 @@ import {
     BuildBuy,
     Ch10Summary
 } from './Ch10Components';
-import { Sparkles, Zap, BookOpen, ArrowRight, Lightbulb, ChevronRight, Check, Bookmark } from 'lucide-react';
+import { Sparkles, Zap, BookOpen, ArrowRight, Lightbulb, ChevronRight, Check, Bookmark, Search, Copy } from 'lucide-react';
 import { useLearner } from '../context/LearnerContext';
 
 interface ChapterViewProps {
@@ -553,20 +553,38 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
               return <div key={index}>{renderList(block)}</div>;
 
             // --- Blockquotes ---
-            case 'blockquote':
+            case 'blockquote': {
+              const joined = block.content.join(' ');
+              const isLookUp = /^\*\*Look up now\.\*\*/i.test(block.content[0] || '') || /Look up now/i.test(joined);
+              const promptText = block.content
+                .join('\n')
+                .replace(/^\*\*Look up now\.\*\*\s*/i, '')
+                .replace(/^Prompt:\s*/i, '')
+                .replace(/^"|"$/g, '');
               return (
                 <div key={index} className="my-10 relative">
                   <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-brand-400 to-brand-600 rounded-full" />
                   <div className="bg-gradient-to-br from-brand-50 to-stone-50 rounded-2xl p-6 pl-8 border border-brand-100">
-                    <Lightbulb className="text-brand-500 w-6 h-6 mb-3" />
+                    {isLookUp ? <Search className="text-brand-500 w-6 h-6 mb-3" /> : <Lightbulb className="text-brand-500 w-6 h-6 mb-3" />}
                     <div className="text-lg text-stone-700 leading-relaxed">
                       {block.content.map((line, i) => (
                         <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
                       ))}
                     </div>
+                    {isLookUp && (
+                      <button
+                        type="button"
+                        onClick={() => navigator.clipboard.writeText(promptText)}
+                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800"
+                      >
+                        <Copy className="w-4 h-4" />
+                        Copy look-up prompt
+                      </button>
+                    )}
                   </div>
                 </div>
               );
+            }
 
             // --- Code blocks ---
             case 'code-block':

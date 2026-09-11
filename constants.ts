@@ -135,6 +135,8 @@ The model landscape changes quarterly. Rather than memorizing today's options, l
 
 Every major provider offers a range from cheap/fast (for simple tasks) to expensive/capable (for complex reasoning). The names and prices will change. The tiering pattern won't.
 
+> **Look up now.** Prompt: "What are the current list prices, context windows, and recommended IDs for the cheapest and most capable models from OpenAI, Anthropic, and Google? Cite official docs."
+
 ### How to Choose
 
 **Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for a frontier model when a mid-tier model would handle 80% of their traffic.
@@ -339,7 +341,7 @@ The term "foundation model" was coined by Stanford's Center for Research on Foun
 
 Three properties define them:
 
-**Scale.** Foundation models are trained on hundreds of billions to trillions of tokens of text (and increasingly, images, audio, and video). Training runs cost tens to hundreds of millions of dollars in compute. GPT-4's training cost is estimated at over $100M. Meta's Llama 3 405B used 15.6 trillion tokens across 30.8 million GPU-hours.
+**Scale.** Foundation models are trained on hundreds of billions to trillions of tokens of text (and increasingly, images, audio, and video). Frontier training runs cost tens to hundreds of millions of dollars in compute. Published token counts and GPU-hours for any one run go stale — treat press numbers as order-of-magnitude, not a spec.
 
 **Generality.** Unlike task-specific models (a spam classifier, a named-entity recognizer), foundation models develop broad capabilities during pre-training. A single model can summarize, translate, write code, reason about math, and answer questions — without being explicitly trained on labeled examples for each task.
 
@@ -359,7 +361,9 @@ DeepMind's Chinchilla paper (2022) refined this, finding that for compute-optima
 
 For engineers, the practical takeaway: do not assume a smaller model simply cannot do something because a paper showed emergence at scale. Test it. But also do not assume capabilities transfer uniformly — some tasks genuinely require larger models.
 
-**Cost trends.** The cost of equivalent intelligence has dropped dramatically. What cost $100 in API fees for a given task in 2021 might cost $3-10 today — roughly a 10-30x reduction, depending on the task and provider. This is driven by smaller and more efficient models, quantization, better inference infrastructure, and competition. The trend is real and continuing, but claims of 100x cost collapse overstate the case for most workloads.
+**Cost trends.** The cost of equivalent intelligence has dropped by an order of magnitude (or more) since the first public APIs. Smaller models, quantization, better serving, and competition all help. The trend is real. Exact multiples depend on which two models you compare — look up current $/M rather than memorizing a ratio.
+
+> **Look up now.** Prompt: "How have OpenAI, Anthropic, and Google list prices for a cheap/fast model and a flagship model changed over the last 18 months? Cite official pricing pages, not blogs."
 
 ---
 
@@ -385,7 +389,7 @@ Unlike RNNs, which process tokens sequentially, transformers process all tokens 
 
 ### Decoder-Only vs. Encoder-Decoder
 
-Most current LLMs (GPT-4, Claude, Llama, Gemini) use a **decoder-only** architecture: they process tokens left-to-right and generate one token at a time. Encoder-decoder models (like T5 or the original BART) use a bidirectional encoder to process the input and a decoder to generate output. Decoder-only models won out in practice because they are simpler to scale and the single architecture handles both understanding and generation.
+Most current LLMs (OpenAI, Anthropic, Google, Meta, and the open-weight families) use a **decoder-only** architecture: they process tokens left-to-right and generate one token at a time. Encoder-decoder models (like T5 or the original BART) use a bidirectional encoder to process the input and a decoder to generate output. Decoder-only models won out in practice because they are simpler to scale and the single architecture handles both understanding and generation.
 
 ---
 
@@ -420,7 +424,9 @@ DPO (Direct Preference Optimization) simplifies this by skipping the reward mode
 
 ### Stage 4: Reasoning Training
 
-A more recent addition to the pipeline, models like OpenAI's o1/o3 and Anthropic's Claude undergo additional training specifically to improve step-by-step reasoning. This typically involves reinforcement learning on reasoning tasks (math, code, logic), where the model is rewarded for producing correct chains of thought. This is an active and rapidly evolving area.
+A more recent addition to the pipeline, "reasoning" or slow-think models undergo extra training to improve step-by-step traces. This typically involves reinforcement learning on reasoning tasks (math, code, logic), where the model is rewarded for producing correct chains of thought. Names and recipes change quickly — the durable idea is **test-time compute**: spend more tokens thinking on hard problems.
+
+> **Look up now.** Prompt: "Which current models from OpenAI, Anthropic, and Google expose extended thinking or a reasoning mode, and how is that billed (tokens vs a separate SKU)?"
 
 ---
 
@@ -493,13 +499,13 @@ Longer context windows enable new architectures — you can fit entire codebases
 
 Mixture of Experts is an architecture that allows models to have a very large total parameter count while only activating a fraction of those parameters for each token.
 
-**How it works:** Instead of one large feed-forward network (FFN) per transformer layer, you have N "expert" FFNs and a routing network that selects the top-k experts for each token. Mixtral 8x7B, for example, has 8 experts per layer but routes each token through only 2, giving it 46.7B total parameters but only ~13B active per token.
+**How it works:** Instead of one large feed-forward network (FFN) per transformer layer, you have N "expert" FFNs and a routing network that selects the top-k experts for each token. A typical published pattern is "8 experts, top-2" — large total parameters, a much smaller active set per token. Exact counts change with each release.
 
 **Why it matters:**
 - **Inference efficiency.** Active parameter count determines inference cost. An MoE model can match a dense model's quality at a fraction of the per-token compute.
 - **Training efficiency.** More total parameters mean more model capacity for learning, without proportional increases in training compute.
 
-GPT-4 is widely reported to be an MoE model (rumored ~1.8T total parameters, ~280B active). DeepSeek-V2 and DBRX also use MoE architectures.
+Several frontier and open-weight families use MoE. Treat rumored total/active parameter counts as gossip unless the lab published them.
 
 **The tradeoff:** MoE models require more memory (all experts must be loaded even if only a few are active per token) and can be harder to fine-tune effectively, since not all experts see all training examples.
 
@@ -517,7 +523,7 @@ Foundation models increasingly handle more than text. Understanding the two main
 - Image understanding (describing, analyzing, extracting data from images and charts)
 - Code generation from screenshots or mockups
 - Document parsing (PDFs, receipts, forms) with vision models
-- Audio transcription and understanding (Gemini, GPT-4o)
+- Audio transcription and understanding (native multimodal APIs)
 
 **What remains limited:**
 - Fine-grained spatial reasoning ("what is 3cm to the left of the red box")
@@ -773,6 +779,8 @@ The models are impressive, but they are also engineering artifacts with knowable
     content: `# Chapter 3: Prompt Engineering and Techniques
 
 Prompt engineering is the primary interface between your intent and a language model's behavior. It is not a soft skill or an art -- it is a systematic discipline with repeatable patterns, measurable outcomes, and well-understood failure modes. This chapter covers the techniques you need to ship reliable LLM-powered features in production.
+
+> **Look up now.** Prompt: "What does the current official prompting guide from Anthropic and from OpenAI say about system vs user roles, XML/structured tags, and extended thinking? Quote the docs, not a tweet."
 
 ---
 
@@ -1443,7 +1451,9 @@ The next chapter covers embeddings and retrieval -- the foundation of RAG system
 
 Every production AI feature starts the same way: an HTTP request carrying a prompt, and a response carrying generated text. The gap between that first successful curl and a system that serves thousands of users reliably is where most engineering effort lives. This chapter covers the full surface area -- from authentication through structured outputs and streaming -- so you can build features that are correct, fast, and economical.
 
-> **Note on code examples:** Code samples throughout this course use specific model IDs (like "gpt-4o" or "claude-sonnet-4") for clarity. Model IDs change as providers release new versions. The patterns and techniques are stable -- swap in the current model ID from your provider's documentation.
+> **Note on code examples:** Samples use \`os.environ["MODEL_ID"]\` or a placeholder ID. Real SKUs change. Keep the ID in an env var. The patterns (messages, tools, structured output, retries) are what you should learn.
+
+> **Look up now.** Prompt: "What is the current recommended mid-tier model ID from OpenAI and from Anthropic for a production chat + tools app? Cite official docs."
 
 ---
 
@@ -1675,12 +1685,15 @@ LLM costs sneak up on you. A single unoptimized endpoint can burn through hundre
 cost = (input_tokens * input_price_per_token) + (output_tokens * output_price_per_token)
 \`\`\`
 
-For GPT-4o at $2.50 / 1M input and $10.00 / 1M output: a request with 2,000 input tokens and 500 output tokens costs $0.01. That is 1,000 requests for $10. Sounds cheap until your feature gets 100,000 requests a day.
+Worked example (plug in **today's** $/M, not a memorized price): 2,000 input + 500 output tokens. If input is $3/M and output is $15/M, that request is $0.0135. A thousand requests is still pocket change. A hundred thousand a day is a line item.
+
+> **Look up now.** Prompt: "Using official list prices, compute the cost of 2,000 input + 500 output tokens on the current cheap/fast and flagship models from OpenAI and Anthropic."
 
 ### Tracking Implementation
 
 \`\`\`python
 import logging
+import os
 from dataclasses import dataclass
 
 @dataclass
@@ -1692,10 +1705,12 @@ class UsageRecord:
     user_id: str
     feature: str
 
+# Load these from config or env. Hardcoded list prices rot.
 PRICING = {
-    "gpt-4o": {"input": 2.50 / 1_000_000, "output": 10.00 / 1_000_000},
-    "gpt-4o-mini": {"input": 0.15 / 1_000_000, "output": 0.60 / 1_000_000},
-    "claude-sonnet-4-20250514": {"input": 3.00 / 1_000_000, "output": 15.00 / 1_000_000},
+    os.environ["MODEL_ID"]: {
+        "input": float(os.environ["PRICE_IN_PER_M"]) / 1_000_000,
+        "output": float(os.environ["PRICE_OUT_PER_M"]) / 1_000_000,
+    },
 }
 
 def track_usage(response, model: str, user_id: str, feature: str) -> UsageRecord:
@@ -2984,7 +2999,9 @@ RAG adds overhead that does not exist in a plain LLM call. Understanding the bud
 
 **Reranking.** A cross-encoder rerank call over 25 documents adds 200-500ms and costs roughly $0.001-0.003 per query with Cohere's API. Significant latency but often worth the quality gain.
 
-**LLM generation with context.** The main cost driver. Retrieving K=10 chunks of 500 tokens each adds 5,000 input tokens to every call. At GPT-4o pricing, that is roughly $0.0125 per query just for the context tokens. Reducing K from 10 to 5 halves that cost.
+**LLM generation with context.** The main cost driver. Retrieving K=10 chunks of 500 tokens each adds 5,000 input tokens to every call. Cost = those tokens × current input $/M. Reducing K from 10 to 5 halves that part of the bill.
+
+> **Look up now.** Prompt: "Using official embedding and LLM list prices, estimate the cost of one RAG query that embeds a short question, reranks 25 docs, and sends 5,000 context tokens plus 300 output tokens to a mid-tier model."
 
 | Lever | Effect on Quality | Effect on Latency | Effect on Cost |
 |---|---|---|---|
@@ -3231,6 +3248,8 @@ RAG is not a single algorithm. It is a pipeline, and every stage of that pipelin
     content: `# Chapter 6: Agents and Tool Use
 
 The word "agent" has been stretched to mean everything from a chatbot with a system prompt to a fully autonomous coding assistant that spins up cloud infrastructure. That ambiguity costs teams real money -- they either over-build when a simple chain would suffice, or under-build when genuine autonomy is required. This chapter cuts through the noise. We will define what an agent actually is, walk through the core patterns for building them, cover the protocols that connect them to the outside world (including MCP), and establish the guardrails that keep them from going off the rails in production.
+
+> **Look up now.** Prompt: "What is the current MCP spec's distinction between tools, resources, and prompts, and how do Anthropic and OpenAI currently expose tool use in their APIs? Cite official docs."
 
 ---
 
@@ -4084,7 +4103,9 @@ The hardest skill in agent engineering is not building agents. It is knowing whe
 
 You shipped the feature. The demo looked great. Leadership is excited. Then a user pastes in a financial document and the model hallucinates a number that makes it into a quarterly report. Nobody caught it because nobody built an eval suite, and nobody built an eval suite because everyone assumed the model "mostly works."
 
-Evaluation is the practice of systematically measuring whether your AI system does what you claim it does. It is not optional. It is not a phase you bolt on after launch. It is the engineering discipline that separates a prototype from a product.
+Evaluation is the practice of systematically measuring whether your AI system does what you claim it does. It is not optional. It is not a phase you bolt on after launch. It is the engineering discipline that separates a prototype from a product. Evals are the gate before any model or architecture change — not a report you write after.
+
+> **Look up now.** Prompt: "What are the current recommended tools and metrics for RAG and agent evals (offline + online)? Name official docs or project READMEs, not a vendor landing page."
 
 This chapter covers how to build evaluation into every stage of your AI system -- from offline test suites through production monitoring. We will look at metrics, tooling, human review, adversarial testing, and the organizational habits that keep quality from silently degrading over time.
 
@@ -4716,6 +4737,8 @@ Every AI prototype works in a demo. The model responds, the output looks good, a
 
 This chapter covers everything between "it works on my laptop" and "it runs reliably at scale": architecture, observability, reliability, deployment, scaling, cost management, security, and the caching strategies that make production economics viable.
 
+> **Look up now.** Prompt: "What are the current prompt-caching rules and discounts for OpenAI and Anthropic, and do they offer a batch API discount? Cite official docs."
+
 > **Practitioner's note:** Production-ready AI isn't a quality bar for the model — it's a quality bar for the system. It handles inputs the training data didn't include, degrades predictably, and someone who didn't build it can operate it.
 
 ## The Production Gap
@@ -4994,6 +5017,7 @@ At prototype scale, cost is invisible. At production scale, it is the line item 
 Route requests to the cheapest model that can handle them. Simple tasks do not need frontier models.
 
 \`\`\`python
+import os
 from enum import Enum
 
 class Tier(Enum):
@@ -5002,9 +5026,9 @@ class Tier(Enum):
     COMPLEX = "complex"     # Multi-step reasoning, code generation, analysis
 
 MODEL_TIERS = {
-    Tier.SIMPLE: {"model": "claude-haiku-4-20250514", "cost_per_1k_input": 0.0008},
-    Tier.STANDARD: {"model": "claude-sonnet-4-20250514", "cost_per_1k_input": 0.003},
-    Tier.COMPLEX: {"model": "claude-opus-4-20250514", "cost_per_1k_input": 0.015},
+    Tier.SIMPLE: {"model": os.environ["MODEL_ID_FAST"]},
+    Tier.STANDARD: {"model": os.environ["MODEL_ID"]},
+    Tier.COMPLEX: {"model": os.environ["MODEL_ID_FLAGSHIP"]},
 }
 
 def classify_request_tier(message: str, tool_calls: list = None) -> Tier:
@@ -5208,19 +5232,18 @@ def cached_llm_call(model, messages, tools=None, ttl=1800):
 
 ### Cost Savings: A Worked Example
 
-Consider an application making 10,000 LLM calls per day with a 3,000-token system prompt and an average 500-token user message at $3/million input tokens.
+Consider 10,000 calls/day, a 3,000-token system prompt, and a 500-token user message. Plug **current** input $/M and the provider's cache discount into the same rows.
 
-| Component | Without Caching | With Caching |
+| Component | Without caching | With caching (illustrative) |
 |---|---|---|
-| System prompt tokens | 30M tokens/day | 30M tokens cached at 90% discount |
-| System prompt cost | $90.00/day | $9.00/day + $0.30 cache writes |
-| User message tokens | 5M tokens/day | 5M tokens (no caching) |
-| User message cost | $15.00/day | $15.00/day |
-| Semantic cache hits (40%) | — | 4,000 calls avoided |
-| Avoided call savings | — | $42.00/day |
-| **Daily total** | **$105.00** | **$24.30** |
+| System prompt tokens | 30M tokens/day | Same tokens, billed at the cache-hit rate |
+| User message tokens | 5M tokens/day | Still full price unless you also cache responses |
+| Semantic cache hits (40%) | — | Those calls never hit the model |
+| Pattern | You pay for the prefix every time | Prefix + response caches usually dominate savings |
 
-Actual numbers depend on your cache hit rates and token volumes. But the pattern is consistent: combining provider-level prompt caching with semantic and exact-match response caching routinely reduces costs by 60-90%.
+The dollars move with list prices. The pattern does not: provider prefix cache + exact/semantic response cache routinely cuts spend by more than half on chatty apps.
+
+> **Look up now.** Prompt: "What is the current prompt-cache discount and minimum cacheable prefix for OpenAI and Anthropic? Compute daily cost for 10,000 calls of 3,000-token system + 500-token user at today's mid-tier input price."
 
 ### Cache Invalidation
 
@@ -5351,7 +5374,7 @@ The teams that succeed in production are the ones that treat these as engineerin
                   "It improves security"
             ],
             "correctIndex": 1,
-            "explanation": "Model tiering can dramatically reduce costs by using cheaper models (like GPT-3.5) for simple tasks that don't need GPT-4."
+            "explanation": "Model tiering can dramatically reduce costs by using cheaper/fast models for simple tasks that do not need a flagship or reasoning model."
       },
       {
             "id": "q9-4",
@@ -5647,6 +5670,8 @@ The teams that succeed in production are the ones that treat these as engineerin
 Security in AI systems is not an extension of traditional application security. It is a fundamentally different problem. Traditional software executes deterministic code paths; LLMs interpret natural language instructions and generate unbounded outputs. The attack surface is the entire space of human language, and your adversaries are creative, motivated, and increasingly automated.
 
 This chapter covers the threats that matter, the defenses that work (and the ones that don't), and the organizational discipline required to keep LLM-powered systems from becoming liabilities.
+
+> **Look up now.** Prompt: "What does the current OWASP Top 10 for LLM Applications list as the highest-risk items, and what do Anthropic and OpenAI currently recommend for prompt-injection defenses? Cite official or OWASP pages."
 
 **Practitioner's note:** I started thinking about AI security like a bank examiner. If you can't evidence a control, it doesn't exist. If you can't trace a decision to a person, nobody made it. If you can't produce documentation under scrutiny, you're not governed. Most organizations discover they have 5x the AI systems they think they do when they actually look.
 
@@ -6412,6 +6437,8 @@ You can get remarkably far with prompt engineering and retrieval-augmented gener
 
 This chapter covers the decision framework, the techniques, and the practical engineering of fine-tuning. The goal is to leave you equipped to ship a fine-tuned model to production without wasting weeks on avoidable mistakes.
 
+> **Look up now.** Prompt: "Which base models do OpenAI, Anthropic, and Google currently allow you to fine-tune via API, and what is the current training + inference surcharge? Cite official docs."
+
 ---
 
 ## When to Fine-Tune (And When Not To)
@@ -6624,6 +6651,7 @@ Prevention: create your test set first, quarantine it, and never let it touch th
 The simplest path. Upload a JSONL file, start a job, wait, get a model ID you can use in the same API.
 
 \`\`\`python
+import os
 from openai import OpenAI
 
 client = OpenAI()
@@ -6634,7 +6662,7 @@ file = client.files.create(file=open("train.jsonl", "rb"), purpose="fine-tune")
 # Start fine-tuning job
 job = client.fine_tuning.jobs.create(
     training_file=file.id,
-    model="gpt-4o-mini-2024-07-18",
+    model=os.environ["MODEL_ID_FAST"],  # look up which IDs the host currently fine-tunes
     hyperparameters={"n_epochs": 3},
 )
 
@@ -6644,12 +6672,12 @@ print(status.status)  # "running", "succeeded", etc.
 
 # Use the fine-tuned model (after training completes)
 response = client.chat.completions.create(
-    model=status.fine_tuned_model,  # e.g., "ft:gpt-4o-mini-2024-07-18:org:suffix:id"
+    model=status.fine_tuned_model,  # host returns an ft:... id
     messages=[{"role": "user", "content": "Summarize this contract..."}],
 )
 \`\`\`
 
-Advantages: no infrastructure to manage, fast iteration, models are served for you. Disadvantages: limited model selection (GPT-4o-mini, GPT-4o), no control over hyperparameters beyond epochs and learning rate multiplier, data leaves your environment, ongoing per-token cost for inference.
+Advantages: no infrastructure to manage, fast iteration, models are served for you. Disadvantages: limited base-model menu (look up which IDs the host currently fine-tunes), little hyperparameter control, data leaves your environment, ongoing per-token inference cost.
 
 ### Self-Hosted (HuggingFace + Your GPUs)
 
@@ -6659,14 +6687,14 @@ Advantages: any open model (Llama, Mistral, Qwen, Phi), full hyperparameter cont
 
 ### Cost Comparison
 
-| Dimension | OpenAI fine-tuning | Self-hosted (cloud GPU) |
+| Dimension | Hosted fine-tuning API | Self-hosted (cloud GPU) |
 |---|---|---|
-| Training cost | ~$0.008/1K tokens (4o-mini) | $2-4/hr per A100 GPU |
+| Training cost | Look up current $/1K tokens | Look up current GPU $/hr |
 | Inference cost | ~1.5-2x base model pricing | Fixed GPU cost, unlimited tokens |
 | Time to first result | Hours (mostly queue time) | Hours (mostly training time) |
 | Infra effort | None | Significant |
 | Data privacy | Data sent to OpenAI | Data stays on your machines |
-| Model selection | GPT-4o-mini, GPT-4o | Any open model |
+| Model selection | Whatever the host currently offers | Any open model |
 
 For low-volume use cases (under 1M tokens/day inference), hosted fine-tuning is almost always cheaper when you account for engineering time. For high-volume or privacy-sensitive use cases, self-hosted wins.
 
@@ -6970,7 +6998,9 @@ Fine-tuning is a precision tool, not a first resort. Exhaust prompting and RAG b
     title: "Multimodal AI",
     content: `# Chapter 11: Multimodal AI
 
-Language models that only process text are increasingly the exception. The models shipping today -- GPT-4o, Claude, Gemini -- accept images, audio, and video alongside text, and the engineering patterns for working with these inputs are maturing fast. This chapter covers the practical side: how to send images and audio to APIs, how to build pipelines that process complex documents, and where these capabilities genuinely work versus where they will quietly fail on you.
+Language models that only process text are increasingly the exception. Hosted flagships from the major providers accept images, and often audio or video, alongside text. The engineering patterns for these inputs are what last. This chapter covers the practical side: how to send images and audio to APIs, how to build pipelines that process complex documents, and where these capabilities genuinely work versus where they will quietly fail on you.
+
+> **Look up now.** Prompt: "Which current models from OpenAI, Anthropic, and Google accept images, audio, and native video? Note max images per request, max file size, and how image tokens are billed. Cite official docs."
 
 ---
 
@@ -6989,15 +7019,12 @@ Modern vision-language models handle a broad range of image understanding tasks 
 
 ### Provider Capabilities
 
-| Capability | GPT-4o | Claude | Gemini |
-|---|---|---|---|
-| Max images per request | 20+ | 20 | 16 (native), 3600 frames (video) |
-| Image input formats | PNG, JPEG, GIF, WebP | PNG, JPEG, GIF, WebP | PNG, JPEG, GIF, WebP, plus native video |
-| Max image size | 20MB | 5MB per image | 20MB |
-| Resolution handling | Auto, low, high modes | Auto-scales, max 1568px on long side | Auto-scales |
-| OCR quality | Strong | Strong | Strong |
-| Spatial reasoning | Moderate | Moderate | Moderate |
-| Counting accuracy | Unreliable above ~10 | Unreliable above ~10 | Unreliable above ~10 |
+| What to check (every provider) | Why it ages | What is usually true |
+|---|---|---|
+| Images / audio / video accepted? | Endpoints appear and vanish | Text+image is common; native video is not |
+| Max images and file size | Limits move | Enough for a document page; not a dump of a folder |
+| How pixels become tokens | Billing formulas change | Higher resolution costs more; downsample first |
+| OCR / spatial / counting | Quality claims rotate | Counting and spatial reasoning stay weak |
 
 ### Where They Fail
 
@@ -7074,13 +7101,13 @@ response = client.chat.completions.create(
 
 ### Resolution and Token Cost
 
-Image tokens are expensive. A high-resolution image in GPT-4o can consume 1,000+ tokens. The cost scales with resolution:
+Image tokens are expensive. High-resolution pages can consume hundreds to thousands of tokens. The formula changes by provider — look it up — but the shape does not: more pixels, more tokens.
 
-| Resolution | Approximate tokens (GPT-4o) | Use when |
+| Resolution | Typical use | Principle |
 |---|---|---|
-| Low (512x512) | ~85 tokens | General understanding, no fine detail needed |
-| High (up to 2048x2048) | 300-1,600 tokens | OCR, reading small text, detailed analysis |
-| Auto | Varies | Let the API decide based on content |
+| Low / downsampled | Classify, caption | Cheap enough to default here |
+| High / full page | OCR, small text, dense diagrams | Pay only when evals require it |
+| Auto | When you have not measured yet | Measure, then pin a policy |
 
 Optimization strategies that matter in production:
 
@@ -7345,20 +7372,20 @@ Never trust extraction output blindly. Validate totals (do line items sum correc
 
 Multimodal requests are significantly more expensive and slower than text-only requests. Budgeting matters.
 
-| Input type | Approximate cost per unit (GPT-4o) | Latency impact |
+| Input type | How to estimate | Latency shape |
 |---|---|---|
-| Text (1K tokens) | $0.0025 input | Baseline |
-| Image (low detail) | ~$0.0007 (85 tokens) | +200-500ms |
-| Image (high detail) | $0.003-$0.01 (300-1,600 tokens) | +500-2,000ms |
-| Audio (1 minute, Whisper) | $0.006 | 5-15 seconds |
-| Video (1 min, 30 frames low-res) | ~$0.02 | +5-15 seconds |
+| Text | tokens × current $/M | Baseline |
+| Image (low detail) | Look up the provider's image-token formula | Hundreds of ms extra |
+| Image (high detail) | Same formula, more tiles/tokens | Often 1–2s extra |
+| Audio | Look up per-minute STT price | Seconds, not ms |
+| Video | frames × image cost, or native video $/min | Seconds to tens of seconds |
 
 ### Optimization Strategies
 
 1. **Resize aggressively**: Most document processing works fine at 150-200 DPI. Sending 300 DPI images doubles cost for marginal quality gain.
 2. **Crop regions of interest**: If you only need the header of an invoice, do not send the entire page.
 3. **Cache extracted content**: Once you have extracted structured data from an image, cache it. Re-extraction is wasteful.
-4. **Use cheaper models for triage**: Route images through a fast, cheap model first (GPT-4o-mini, Gemini Flash) to classify or check if detailed extraction is needed, then use a more expensive model only when necessary.
+4. **Use cheaper models for triage**: Route images through a cheap/fast vision model first to classify or check if detailed extraction is needed, then use a more expensive model only when necessary.
 5. **Batch processing**: When processing hundreds of documents, use async requests to maximize throughput without hitting per-request latency.
 
 ---
@@ -7395,27 +7422,27 @@ These limitations are real but manageable. The key is designing systems that acc
       },
       {
             "id": "q11-2",
-            "question": "Which model currently supports the longest context for video understanding?",
+            "question": "What should you verify before sending a long video to a multimodal API?",
             "options": [
-                  "GPT-4o",
-                  "Claude 3.5 Sonnet",
-                  "Gemini 1.5 Pro",
-                  "Llama 3.2 Vision"
+                  "Whether the provider still lists a native video endpoint and its token/minute limits",
+                  "That GPT-4o is the current flagship",
+                  "That Claude 3.5 Sonnet is the current flagship",
+                  "That open-weight vision models cannot do video"
             ],
-            "correctIndex": 2,
-            "explanation": "Gemini 1.5 Pro supports over 1 million tokens, enabling native processing of long videos and many images."
+            "correctIndex": 0,
+            "explanation": "Video support, context class, and billing units change. Look up the current docs; do not memorize a model name."
       },
       {
             "id": "q11-3",
-            "question": "What is the recommended approach for analyzing a 30-minute video with current models?",
+            "question": "What is the recommended approach for analyzing a 30-minute video when native long-video support is unclear or expensive?",
             "options": [
-                  "Send the entire video file to GPT-4o",
-                  "Extract key frames and combine with audio transcript",
+                  "Send the entire video file to whatever flagship you used last year",
+                  "Extract key frames and combine with an audio transcript",
                   "Convert to GIF format first",
                   "Videos cannot be analyzed by AI"
             ],
             "correctIndex": 1,
-            "explanation": "Frame sampling combined with audio transcription is the most practical approach for most models. Only Gemini supports native long video."
+            "explanation": "Frame sampling plus transcription is the portable pattern. Native long-video APIs are a look-up, not a given."
       },
       {
             "id": "q11-4",
@@ -7501,6 +7528,8 @@ There are five reasons to move inference off the cloud and onto hardware you con
 **Offline capability.** Field workers, aircraft, submarines, remote locations. If there's no internet, there's no API. Local models work anywhere.
 
 **Control.** No rate limits, no provider outages, no surprise model deprecations, no terms-of-service changes. You own the stack.
+
+> **Look up now.** Prompt: "What are the current recommended local runtimes (Ollama, llama.cpp, vLLM, MLX, etc.) and which open-weight instruct models fit in 8GB, 24GB, and 80GB VRAM? Cite project docs or Hugging Face model cards."
 
 ## Hardware Requirements
 

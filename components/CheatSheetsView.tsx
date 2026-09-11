@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FileText, Copy, Check } from 'lucide-react';
+import { LookUpPrompt } from './LookUpPrompt';
 
 type SheetId = 'prompting' | 'models' | 'rag' | 'errors' | 'costs';
 
@@ -50,36 +51,35 @@ const cheatSheets: CheatSheet[] = [
         title: 'Model Comparison',
         sections: [
             {
-                title: 'Frontier Models (Nov 2024)',
+                title: 'Tiers (look up current SKUs)',
                 items: [
-                    { label: 'OpenAI Flagship', value: 'OpenAI | 128K+ context | Multimodal, tools, reasoning' },
-                    { label: 'OpenAI Budget', value: 'OpenAI | 128K+ context | Cost-effective, fast' },
-                    { label: 'Claude Flagship', value: 'Anthropic | 200K context | Best for code, long context' },
-                    { label: 'Claude Budget', value: 'Anthropic | 200K context | Fast, cost-effective' },
-                    { label: 'Gemini Flagship', value: 'Google | 1M+ context | Longest context, multimodal' },
-                    { label: 'Gemini Budget', value: 'Google | 1M+ context | Fast, very affordable' },
+                    { label: 'Cheap / Fast', value: 'Default for volume: classify, extract, triage. Lowest TTFT.' },
+                    { label: 'Mid-tier workhorse', value: 'Most production traffic: tools, coding, RAG, chat.' },
+                    { label: 'Frontier / flagship', value: 'Hard cases only. Strongest following, highest $/request.' },
+                    { label: 'Reasoning / slow-think', value: 'Extra thinking tokens for math, logic, multi-step plans.' },
+                    { label: 'Local / open weights', value: 'Privacy, air-gap, or cost at scale. You own the ops.' },
                 ]
             },
             {
-                title: 'Open Source Models',
+                title: 'What to compare (not memorize)',
                 items: [
-                    { label: 'Llama (Large)', value: 'Meta | 128K context | Best open model, needs multi-GPU' },
-                    { label: 'Llama (Medium)', value: 'Meta | 128K context | Great balance, runs on 1-2 GPUs' },
-                    { label: 'Llama (Small)', value: 'Meta | 128K context | Fast, runs on single GPU' },
-                    { label: 'Mixtral', value: 'Mistral | 64K+ context | MoE, efficient inference' },
-                    { label: 'Qwen', value: 'Alibaba | 128K context | Strong multilingual' },
-                    { label: 'DeepSeek', value: 'DeepSeek | 128K context | MoE, strong reasoning' },
+                    { label: 'Capability', value: 'Run YOUR eval set on 2–3 candidates. Blog ranks lie.' },
+                    { label: 'Cost', value: 'cost = in_tokens × in_$/M + out_tokens × out_$/M. Look up $/M.' },
+                    { label: 'Latency', value: 'Time-to-first-token vs time-to-complete. Reasoning models are slow.' },
+                    { label: 'Context', value: 'Can it fit your longest real input + tools + history?' },
+                    { label: 'Tools / schema', value: 'Native function calling, structured output, caching.' },
+                    { label: 'Residency', value: 'Enterprise region, HIPAA, VPC, or local-only.' },
                 ]
             },
             {
-                title: 'Use Case Recommendations',
+                title: 'Use-case starting points',
                 items: [
-                    { label: 'Code Generation', value: 'Claude flagship > OpenAI flagship > DeepSeek' },
-                    { label: 'Long Documents', value: 'Gemini (1M+) > Claude (200K) > OpenAI (128K)' },
-                    { label: 'Reasoning', value: 'OpenAI reasoning models > Claude > Gemini' },
-                    { label: 'Speed Critical', value: 'Groq > Budget models > Gemini Flash' },
-                    { label: 'Budget Constrained', value: 'Budget models > Open source via inference providers' },
-                    { label: 'Privacy/On-Prem', value: 'Llama > Mixtral > Qwen' },
+                    { label: 'Code generation', value: 'Start mid-tier; escalate to flagship when evals fail' },
+                    { label: 'Long documents', value: 'Prefer the current longest-context API, or chunk + RAG' },
+                    { label: 'Hard reasoning', value: 'Reasoning tier or mid-tier + a verifier loop' },
+                    { label: 'Speed critical', value: 'Cheap/fast cloud or a fast inference host for open weights' },
+                    { label: 'Budget constrained', value: 'Cheap/fast + cache + route; open weights if volume is huge' },
+                    { label: 'Privacy / on-prem', value: 'Current open-weight family you can actually serve' },
                 ]
             },
         ]
@@ -230,6 +230,24 @@ export const CheatSheetsView = () => {
                         </button>
                     ))}
                 </div>
+
+                {activeSheet === 'models' && (
+                    <LookUpPrompt
+                        why="Provider catalogs and context windows change constantly. Copy this into your assistant and cite official docs."
+                        prompt='What are the current list prices, context windows, and recommended IDs for the cheapest and most capable models from OpenAI, Anthropic, and Google? Cite official pricing pages.'
+                        sources={[
+                            { label: 'OpenAI pricing', href: 'https://openai.com/pricing' },
+                            { label: 'Anthropic models', href: 'https://docs.anthropic.com/en/docs/about-claude/models' },
+                            { label: 'Google AI pricing', href: 'https://ai.google.dev/pricing' },
+                        ]}
+                    />
+                )}
+                {activeSheet === 'costs' && (
+                    <LookUpPrompt
+                        why="The formula is durable. The dollars per million tokens are not."
+                        prompt='Look up current input and output prices per 1M tokens for one cheap/fast model and one flagship model from OpenAI, Anthropic, and Google. Then compute cost for 2,000 input + 500 output tokens.'
+                    />
+                )}
 
                 {/* Sheet content */}
                 <div className="space-y-8">

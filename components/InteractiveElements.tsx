@@ -1586,314 +1586,147 @@ export const SummaryGrid = () => {
 };
 
 export const ModelComparison = () => {
-    const [selectedModels, setSelectedModels] = useState<string[]>(['gpt-4-1', 'claude-4-sonnet', 'gemini-2-5-pro']);
-    
-    const models = [
-        // OpenAI Models (2025)
+    const [selectedTiers, setSelectedTiers] = useState<string[]>(['fast', 'mid', 'frontier']);
+
+    const tiers = [
         {
-            id: 'gpt-4-1',
-            name: 'GPT-4.1',
-            provider: 'OpenAI',
-            tier: 'flagship',
-            inputCost: 2.00,
-            outputCost: 8.00,
-            contextWindow: 1000000,
-            latency: 'Medium',
-            latencyMs: 600,
-            capabilities: { reasoning: 96, coding: 97, creative: 92, instruction: 96 },
-            bestFor: ['Complex coding', 'Long context', 'Agentic workflows'],
-            avoid: ['Cost-sensitive high-volume']
+            id: 'fast',
+            name: 'Cheap / Fast',
+            role: 'Default for volume',
+            latency: 'Lowest TTFT',
+            context: 'Usually enough for short tasks',
+            relativeCost: '1×',
+            strengths: ['Classification', 'Extraction', 'Simple Q&A', 'Triage / routing'],
+            watchFor: ['Multi-step reasoning', 'Long messy context', 'Subtle instruction following'],
+            howToJudge: 'If a mid-tier model does not beat it on your eval set, stay here.'
         },
         {
-            id: 'gpt-4-1-mini',
-            name: 'GPT-4.1 Mini',
-            provider: 'OpenAI',
-            tier: 'efficient',
-            inputCost: 0.40,
-            outputCost: 1.60,
-            contextWindow: 1000000,
-            latency: 'Fast',
-            latencyMs: 250,
-            capabilities: { reasoning: 85, coding: 88, creative: 82, instruction: 90 },
-            bestFor: ['Balanced cost/quality', 'Long context on budget'],
-            avoid: ['Tasks needing top-tier reasoning']
+            id: 'mid',
+            name: 'Mid-tier workhorse',
+            role: 'Most production traffic',
+            latency: 'Interactive',
+            context: 'Comfortable for RAG + tools',
+            relativeCost: '~5–15× fast',
+            strengths: ['Coding', 'Summarization', 'Tool use', 'Customer-facing replies'],
+            watchFor: ['Hard STEM / proofs', 'Highest-stakes writing', 'Very long documents'],
+            howToJudge: 'Start evals here. Upgrade only when the gap is real and frequent.'
         },
         {
-            id: 'gpt-4-1-nano',
-            name: 'GPT-4.1 Nano',
-            provider: 'OpenAI',
-            tier: 'efficient',
-            inputCost: 0.10,
-            outputCost: 0.40,
-            contextWindow: 1000000,
-            latency: 'Very Fast',
-            latencyMs: 100,
-            capabilities: { reasoning: 75, coding: 78, creative: 72, instruction: 85 },
-            bestFor: ['High-volume classification', 'Simple extraction'],
-            avoid: ['Complex reasoning', 'Creative tasks']
+            id: 'frontier',
+            name: 'Frontier / flagship',
+            role: 'Hard cases only',
+            latency: 'Slower, more expensive',
+            context: 'Largest windows, strongest following',
+            relativeCost: '~20–80× fast',
+            strengths: ['Ambiguous analysis', 'Hard code review', 'Long-horizon agents'],
+            watchFor: ['High-volume endpoints', 'Latency SLOs', 'Cost blow-ups'],
+            howToJudge: 'Reserve for the slice of traffic your router cannot solve cheaper.'
         },
         {
-            id: 'o3',
-            name: 'o3',
-            provider: 'OpenAI',
-            tier: 'reasoning',
-            inputCost: 10.00,
-            outputCost: 40.00,
-            contextWindow: 200000,
-            latency: 'Slow',
-            latencyMs: 5000,
-            capabilities: { reasoning: 99, coding: 98, creative: 85, instruction: 95 },
-            bestFor: ['PhD-level reasoning', 'Math proofs', 'Complex analysis'],
-            avoid: ['Real-time apps', 'Simple tasks', 'Cost-sensitive']
+            id: 'reasoning',
+            name: 'Reasoning / slow-think',
+            role: 'When thinking time helps',
+            latency: 'Seconds, sometimes more',
+            context: 'Often smaller than flagship',
+            relativeCost: 'High, and output tokens pile up',
+            strengths: ['Math', 'Logic', 'Multi-step plans', 'Debugging'],
+            watchFor: ['Chat UX', 'Simple lookups', 'Anything that must be cheap'],
+            howToJudge: 'A/B against a mid-tier + your own verifier. If the verifier catches it, skip this tier.'
         },
         {
-            id: 'o4-mini',
-            name: 'o4-mini',
-            provider: 'OpenAI',
-            tier: 'reasoning',
-            inputCost: 1.10,
-            outputCost: 4.40,
-            contextWindow: 200000,
-            latency: 'Medium',
-            latencyMs: 1500,
-            capabilities: { reasoning: 92, coding: 94, creative: 80, instruction: 90 },
-            bestFor: ['STEM reasoning', 'Code debugging', 'Multi-step logic'],
-            avoid: ['Latency-critical', 'Creative writing']
-        },
-        // Anthropic Models (2025)
-        {
-            id: 'claude-4-opus',
-            name: 'Claude 4 Opus',
-            provider: 'Anthropic',
-            tier: 'flagship',
-            inputCost: 15.00,
-            outputCost: 75.00,
-            contextWindow: 200000,
-            latency: 'Slow',
-            latencyMs: 2000,
-            capabilities: { reasoning: 98, coding: 97, creative: 98, instruction: 98 },
-            bestFor: ['Highest quality', 'Complex creative', 'Research'],
-            avoid: ['Cost-sensitive', 'High-volume', 'Real-time']
-        },
-        {
-            id: 'claude-4-sonnet',
-            name: 'Claude 4 Sonnet',
-            provider: 'Anthropic',
-            tier: 'flagship',
-            inputCost: 3.00,
-            outputCost: 15.00,
-            contextWindow: 200000,
-            latency: 'Medium',
-            latencyMs: 700,
-            capabilities: { reasoning: 96, coding: 98, creative: 95, instruction: 96 },
-            bestFor: ['Production workloads', 'Coding', 'Extended thinking'],
-            avoid: ['Extreme cost sensitivity']
-        },
-        {
-            id: 'claude-3-5-haiku',
-            name: 'Claude (Budget)',
-            provider: 'Anthropic',
-            tier: 'efficient',
-            inputCost: 0.80,
-            outputCost: 4.00,
-            contextWindow: 200000,
-            latency: 'Fast',
-            latencyMs: 300,
-            capabilities: { reasoning: 82, coding: 85, creative: 78, instruction: 88 },
-            bestFor: ['Fast classification', 'Chat', 'Summarization'],
-            avoid: ['Complex multi-step reasoning']
-        },
-        // Google Models (2025)
-        {
-            id: 'gemini-flagship',
-            name: 'Gemini (Flagship)',
-            provider: 'Google',
-            tier: 'flagship',
-            inputCost: 1.25,
-            outputCost: 10.00,
-            contextWindow: 1000000,
-            latency: 'Medium',
-            latencyMs: 800,
-            capabilities: { reasoning: 95, coding: 95, creative: 88, instruction: 93 },
-            bestFor: ['Massive context', 'Multimodal', 'Thinking mode'],
-            avoid: ['Latency-critical real-time']
-        },
-        {
-            id: 'gemini-2-5-flash',
-            name: 'Gemini (Fast)',
-            provider: 'Google',
-            tier: 'efficient',
-            inputCost: 0.15,
-            outputCost: 0.60,
-            contextWindow: 1000000,
-            latency: 'Very Fast',
-            latencyMs: 150,
-            capabilities: { reasoning: 85, coding: 88, creative: 80, instruction: 88 },
-            bestFor: ['Speed + quality balance', 'Agentic tasks', 'High volume'],
-            avoid: ['Highest reasoning needs']
-        },
-        {
-            id: 'gemini-2-0-flash',
-            name: 'Gemini (Budget)',
-            provider: 'Google',
-            tier: 'efficient',
-            inputCost: 0.10,
-            outputCost: 0.40,
-            contextWindow: 1000000,
-            latency: 'Very Fast',
-            latencyMs: 120,
-            capabilities: { reasoning: 80, coding: 82, creative: 75, instruction: 85 },
-            bestFor: ['Real-time apps', 'Low latency', 'Native tool use'],
-            avoid: ['Complex reasoning']
+            id: 'local',
+            name: 'Local / open weights',
+            role: 'Privacy, air-gap, cost at scale',
+            latency: 'You own the hardware',
+            context: 'Varies widely by family',
+            relativeCost: 'Capex + ops, not per token',
+            strengths: ['Data residency', 'Offline', 'Fine-tune freedom'],
+            watchFor: ['Ops burden', 'Quality gap on hard tasks', 'License terms'],
+            howToJudge: 'Benchmark the current open family on your evals, not a blog rank.'
         },
     ];
 
-    const toggleModel = (id: string) => {
-        setSelectedModels(prev => 
-            prev.includes(id) 
-                ? prev.filter(m => m !== id)
-                : [...prev, id].slice(-4) // Max 4 models
+    const toggleTier = (id: string) => {
+        setSelectedTiers(prev =>
+            prev.includes(id)
+                ? prev.filter(t => t !== id)
+                : [...prev, id].slice(-4)
         );
     };
 
-    const selected = models.filter(m => selectedModels.includes(m.id));
+    const selected = tiers.filter(t => selectedTiers.includes(t.id));
 
     return (
         <div className="my-12">
-            {/* Model selector */}
+            <div className="mb-6 p-5 bg-stone-50 rounded-2xl border border-stone-200">
+                <h4 className="font-bold text-stone-900 mb-2">Compare tiers, not SKUs</h4>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                    Names, prices, and context windows change every quarter. The useful question is which <em>tier</em> you need, then look up the current model ID from the provider. Keep model IDs in env vars (<code className="font-mono text-xs bg-white px-1.5 py-0.5 rounded border border-stone-200">MODEL_ID</code>), not in source.
+                </p>
+            </div>
+
             <div className="mb-6">
-                <p className="text-sm text-stone-500 mb-3">Select up to 4 models to compare:</p>
+                <p className="text-sm text-stone-500 mb-3">Select up to 4 tiers:</p>
                 <div className="flex flex-wrap gap-2">
-                    {models.map(model => (
+                    {tiers.map(tier => (
                         <button
-                            key={model.id}
-                            onClick={() => toggleModel(model.id)}
+                            key={tier.id}
+                            onClick={() => toggleTier(tier.id)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                                selectedModels.includes(model.id)
+                                selectedTiers.includes(tier.id)
                                     ? 'bg-stone-900 text-white'
                                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                             }`}
                         >
-                            {model.name}
+                            {tier.name}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Comparison table */}
             {selected.length > 0 && (
                 <div className="overflow-x-auto">
                     <div className="inline-flex gap-4 min-w-full pb-4">
-                        {selected.map(model => (
-                            <div key={model.id} className="w-72 shrink-0 bg-white border border-stone-200 rounded-2xl overflow-hidden">
-                                {/* Header */}
-                                <div className={`p-4 ${
-                                    model.tier === 'flagship' ? 'bg-stone-900 text-white' : 
-                                    model.tier === 'reasoning' ? 'bg-stone-900 text-white' : 
-                                    'bg-stone-100'
-                                }`}>
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className={`text-xs font-mono ${
-                                            model.tier === 'flagship' || model.tier === 'reasoning' ? 'text-stone-400' : 'text-stone-500'
-                                        }`}>
-                                            {model.provider}
-                                        </span>
-                                        <span className={`text-xs px-2 py-0.5 rounded ${
-                                            model.tier === 'flagship' 
-                                                ? 'bg-brand-500 text-white' 
-                                                : model.tier === 'reasoning'
-                                                ? 'bg-stone-700 text-white'
-                                                : 'bg-stone-100 text-stone-700'
-                                        }`}>
-                                            {model.tier === 'flagship' ? 'Flagship' : model.tier === 'reasoning' ? 'Reasoning' : 'Efficient'}
-                                        </span>
-                                    </div>
-                                    <h4 className="font-bold text-lg">{model.name}</h4>
+                        {selected.map(tier => (
+                            <div key={tier.id} className="w-72 shrink-0 bg-white border border-stone-200 rounded-2xl overflow-hidden">
+                                <div className={`p-4 ${tier.id === 'fast' || tier.id === 'local' ? 'bg-stone-100' : 'bg-stone-900 text-white'}`}>
+                                    <p className={`text-xs font-mono mb-1 ${tier.id === 'fast' || tier.id === 'local' ? 'text-stone-500' : 'text-stone-400'}`}>
+                                        {tier.role}
+                                    </p>
+                                    <h4 className="font-bold text-lg">{tier.name}</h4>
                                 </div>
-                                
-                                {/* Stats */}
                                 <div className="p-4 space-y-4">
-                                    {/* Cost */}
                                     <div>
-                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Cost per 1M tokens</p>
-                                        <div className="flex gap-4">
-                                            <div>
-                                                <span className="text-lg font-bold text-stone-900">${model.inputCost.toFixed(2)}</span>
-                                                <span className="text-xs text-stone-400 ml-1">in</span>
-                                            </div>
-                                            <div>
-                                                <span className="text-lg font-bold text-stone-900">${model.outputCost.toFixed(2)}</span>
-                                                <span className="text-xs text-stone-400 ml-1">out</span>
-                                            </div>
-                                        </div>
+                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Relative cost</p>
+                                        <p className="text-lg font-bold text-stone-900">{tier.relativeCost}</p>
                                     </div>
-                                    
-                                    {/* Context */}
-                                    <div>
-                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Context Window</p>
-                                        <p className="text-lg font-bold text-stone-900">
-                                            {model.contextWindow >= 1000000 
-                                                ? `${(model.contextWindow / 1000000).toFixed(1)}M` 
-                                                : `${model.contextWindow / 1000}K`} tokens
-                                        </p>
-                                    </div>
-                                    
-                                    {/* Latency */}
                                     <div>
                                         <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Latency</p>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-sm font-semibold ${
-                                                model.latencyMs < 300 ? 'text-stone-600' :
-                                                model.latencyMs < 700 ? 'text-amber-600' : 'text-stone-600'
-                                            }`}>{model.latency}</span>
-                                            <span className="text-xs text-stone-400">~{model.latencyMs}ms</span>
-                                        </div>
+                                        <p className="text-sm font-semibold text-stone-800">{tier.latency}</p>
                                     </div>
-                                    
-                                    {/* Capabilities */}
                                     <div>
-                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">Capabilities</p>
-                                        <div className="space-y-1.5">
-                                            {Object.entries(model.capabilities).map(([key, value]) => (
-                                                <div key={key} className="flex items-center gap-2">
-                                                    <span className="text-xs text-stone-500 w-16 capitalize">{key}</span>
-                                                    <div className="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                                                        <div 
-                                                            className={`h-full rounded-full ${
-                                                                value >= 90 ? 'bg-stone-700' :
-                                                                value >= 80 ? 'bg-stone-700' : 'bg-stone-400'
-                                                            }`}
-                                                            style={{ width: `${value}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className="text-xs font-mono text-stone-400 w-6">{value}</span>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Context</p>
+                                        <p className="text-sm text-stone-700">{tier.context}</p>
                                     </div>
-                                    
-                                    {/* Best for */}
                                     <div>
-                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">Best For</p>
+                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">Usually good for</p>
                                         <div className="flex flex-wrap gap-1">
-                                            {model.bestFor.map(use => (
-                                                <span key={use} className="text-xs px-2 py-1 bg-stone-50 text-stone-700 rounded">
-                                                    {use}
-                                                </span>
+                                            {tier.strengths.map(use => (
+                                                <span key={use} className="text-xs px-2 py-1 bg-stone-50 text-stone-700 rounded">{use}</span>
                                             ))}
                                         </div>
                                     </div>
-                                    
-                                    {/* Avoid */}
                                     <div>
-                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">Avoid For</p>
+                                        <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">Usually a poor fit</p>
                                         <div className="flex flex-wrap gap-1">
-                                            {model.avoid.map(use => (
-                                                <span key={use} className="text-xs px-2 py-1 bg-red-50 text-red-700 rounded">
-                                                    {use}
-                                                </span>
+                                            {tier.watchFor.map(use => (
+                                                <span key={use} className="text-xs px-2 py-1 bg-red-50 text-red-700 rounded">{use}</span>
                                             ))}
                                         </div>
+                                    </div>
+                                    <div className="p-3 bg-brand-50 rounded-xl border border-brand-100">
+                                        <p className="text-xs font-semibold text-brand-800 mb-1">How to decide</p>
+                                        <p className="text-xs text-brand-700">{tier.howToJudge}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1901,32 +1734,32 @@ export const ModelComparison = () => {
                     </div>
                 </div>
             )}
-            
-            {/* Decision framework */}
+
             <div className="mt-8 p-6 bg-stone-50 rounded-2xl border border-stone-200">
-                <h4 className="font-bold text-stone-900 mb-4">2025 Model Selection Guide</h4>
+                <h4 className="font-bold text-stone-900 mb-4">Selection principles that do not expire</h4>
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
                     <div className="p-4 bg-white rounded-xl border border-stone-200">
-                        <p className="font-semibold text-stone-800 mb-2">Start with Flash/Nano tiers</p>
-                        <p className="text-stone-600">Use budget models for most tasks. Upgrade to flagship only when evals prove you need it.</p>
+                        <p className="font-semibold text-stone-800 mb-2">Start cheap, prove the upgrade</p>
+                        <p className="text-stone-600">Route most traffic to the cheapest tier that passes your evals. Flagship is a fallback, not a default.</p>
                     </div>
                     <div className="p-4 bg-white rounded-xl border border-stone-200">
-                        <p className="font-semibold text-stone-800 mb-2">Reasoning models for STEM</p>
-                        <p className="text-stone-600">o3/o4-mini excel at math, logic, and complex code. Higher latency but dramatically better accuracy on hard problems.</p>
+                        <p className="font-semibold text-stone-800 mb-2">Reasoning models buy thinking time</p>
+                        <p className="text-stone-600">Use them when extra tokens of thought beat a verifier loop. Do not use them for FAQ chat.</p>
                     </div>
                     <div className="p-4 bg-white rounded-xl border border-stone-200">
-                        <p className="font-semibold text-stone-800 mb-2">1M context is the new baseline</p>
-                        <p className="text-stone-600">Most 2025 models support 1M+ tokens. RAG chunking complexity is often unnecessary now.</p>
+                        <p className="font-semibold text-stone-800 mb-2">Long context is not free retrieval</p>
+                        <p className="text-stone-600">Bigger windows help, but lost-in-the-middle and cost still argue for RAG when the corpus is large or changing.</p>
                     </div>
                     <div className="p-4 bg-white rounded-xl border border-stone-200">
-                        <p className="font-semibold text-stone-800 mb-2">Multi-provider is essential</p>
-                        <p className="text-stone-600">Abstract your LLM calls. Models evolve fast—what's best today may not be tomorrow.</p>
+                        <p className="font-semibold text-stone-800 mb-2">Abstract the provider</p>
+                        <p className="text-stone-600">Wrap calls so you can swap IDs. Today&apos;s winner is next quarter&apos;s fallback.</p>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
+
 
 export const CostOptimization = () => {
     const [selectedStrategy, setSelectedStrategy] = useState<string | null>(null);
@@ -1938,8 +1771,8 @@ export const CostOptimization = () => {
             impact: '40-70%',
             difficulty: 'Easy',
             description: 'Route simple tasks to cheap models, complex tasks to expensive ones.',
-            before: { model: 'Flagship model', cost: '$10.00/1M out', monthly: '$30,000' },
-            after: { model: '90% Budget, 10% Flagship', cost: '$1.54/1M avg', monthly: '$4,620' },
+            before: { model: 'Flagship for everything', cost: '1× list price', monthly: 'full bill' },
+            after: { model: '90% cheap / 10% flagship', cost: 'often 5–10× less', monthly: 'same traffic, smaller bill' },
             implementation: [
                 'Classify incoming requests by complexity',
                 'Use budget models for classification, summarization, simple Q&A',
@@ -1948,8 +1781,8 @@ export const CostOptimization = () => {
             ],
             codeExample: `// Simple router example
 const model = taskComplexity > 0.7 
-  ? "gpt-4o" 
-  : "gpt-4o-mini";`
+  ? process.env.MODEL_ID_FLAGSHIP 
+  : process.env.MODEL_ID_FAST;`
         },
         {
             id: 'caching',
@@ -2027,7 +1860,7 @@ Return JSON array of sentiments.\`;`
             ],
             codeExample: `// OpenAI streaming
 const stream = await openai.chat.completions.create({
-  model: "gpt-4o",
+  model: process.env.MODEL_ID,
   messages: [...],
   stream: true
 });
@@ -2138,39 +1971,39 @@ export const ConvergenceForces = () => {
     const forces = [
         { 
             title: 'Model Capability', 
-            year: '2020',
-            metric: 'GPT-3 → GPT-4',
+            year: 'Scale',
+            metric: 'Useful without training',
             description: 'Emergent abilities at scale',
         },
         { 
             title: 'API Access', 
-            year: '2022',
-            metric: '1 line of code',
+            year: 'Access',
+            metric: 'One HTTP call',
             description: 'Frontier models via REST',
         },
         { 
-            title: 'Cost Collapse', 
-            year: '2023',
-            metric: '100x cheaper',
-            description: '$100 → $1 per task',
+            title: 'Cost Decline', 
+            year: 'Economics',
+            metric: 'Order-of-magnitude cheaper',
+            description: 'Look up current $/M — the trend is down',
         },
         { 
             title: 'Context Windows', 
-            year: '2024',
-            metric: '4K → 1M+ tokens',
-            description: 'Process entire codebases',
+            year: 'Memory',
+            metric: 'Thousands → hundreds of thousands+',
+            description: 'Longer inputs, still not free retrieval',
         },
         { 
             title: 'Tooling Ecosystem', 
-            year: '2023',
-            metric: 'LangChain, Vector DBs',
+            year: 'Stack',
+            metric: 'Orchestration + evals + vectors',
             description: 'Infrastructure abstraction',
         },
         { 
             title: 'Enterprise Demand', 
-            year: '2024',
-            metric: '$B+ investment',
-            description: 'Every company wants AI',
+            year: 'Demand',
+            metric: 'Every company wants a feature',
+            description: 'The talent gap is product, not research',
         },
     ];
 
@@ -2294,9 +2127,8 @@ export const ScalingLaws = () => {
         { year: '2019', model: 'GPT-2', params: '1.5B', innovation: 'Showed generalization', impact: 'First hints of emergent capabilities' },
         { year: '2020', model: 'GPT-3', params: '175B', innovation: 'In-context learning', impact: 'No fine-tuning needed for new tasks' },
         { year: '2022', model: 'Chinchilla', params: '70B', innovation: 'Optimal scaling', impact: 'Quality over size—20 tokens/param' },
-        { year: '2023', model: 'GPT-4', params: '~1T (MoE)', innovation: 'Multimodal + reasoning', impact: 'Human-level on many benchmarks' },
-        { year: '2024+', model: 'Latest Gen', params: '~1T+', innovation: 'Long context + safety', impact: '1M+ tokens, better alignment' },
-        { year: '2025', model: 'o3/Claude 4', params: '~2T+', innovation: 'Deep reasoning', impact: 'PhD-level problem solving' },
+        { year: '2023+', model: 'Frontier multimodal', params: 'undisclosed', innovation: 'Native multimodal + tools', impact: 'One model for text, images, and actions' },
+        { year: 'now', model: 'Reasoning / slow-think', params: 'varies', innovation: 'Test-time compute', impact: 'Spend more tokens thinking on hard problems' },
     ];
 
     const emergentCapabilities = [
@@ -2902,7 +2734,7 @@ export const TrainingPipeline = () => {
             duration: 'Weeks',
             cost: '$1M+',
             objective: 'Learn to think step-by-step',
-            description: 'Train models to output reasoning traces and verify their own work. This is how o1/o3 achieve PhD-level performance.',
+            description: 'Train models to output reasoning traces and verify their own work. This is how "slow-think" / reasoning models spend extra tokens at inference time.',
             inputs: ['Chain of thought data', 'Process reward models', 'Math/code solutions', 'Verification training'],
             outputs: ['Multi-step reasoning', 'Self-correction', 'Math ability', 'Complex problem solving', 'Test-time compute'],
             keyInsight: 'Reasoning training teaches models to "think longer" on hard problems, using more compute at inference time.'
@@ -3193,8 +3025,8 @@ export const TrainingData = () => {
         { year: '2021', event: 'The Pile released (800GB curated dataset)' },
         { year: '2022', event: 'Chinchilla shows optimal data/compute ratios' },
         { year: '2023', event: 'LLaMA trained on 1.4T tokens, RedPajama released' },
-        { year: '2024', event: 'Frontier models using 10-15T+ tokens, data quality > quantity' },
-        { year: '2025', event: 'Synthetic data augmentation, data contamination concerns' },
+        { year: 'now', event: 'Frontier runs use trillions of tokens; quality and contamination beat raw volume' },
+        { year: 'now', event: 'Synthetic data and eval leakage are first-class engineering concerns' },
     ];
 
     return (
@@ -3562,18 +3394,13 @@ export const ContextEvolution = () => {
     const [activeView, setActiveView] = useState<'timeline' | 'chart'>('timeline');
 
     const models = [
-        { name: 'GPT-3', year: 2020, context: 4096, deprecated: true },
-        { name: 'GPT-4', year: 2023, context: 8192, deprecated: true },
-        { name: 'Claude 2', year: 2023, context: 100000, deprecated: true },
-        { name: 'GPT-4 Turbo', year: 2024, context: 128000, deprecated: false },
-        { name: 'Claude (Flagship)', year: 2024, context: 200000, deprecated: false },
-        { name: 'GPT (Flagship)', year: 2024, context: 128000, deprecated: false },
-        { name: 'Gemini (Flagship)', year: 2024, context: 1000000, deprecated: false },
-        { name: 'Claude (Budget)', year: 2024, context: 200000, deprecated: false },
-        { name: 'Gemini (Budget)', year: 2024, context: 1000000, deprecated: false },
+        { name: 'Early APIs', year: 'era 1', context: 4000, deprecated: true },
+        { name: 'First production apps', year: 'era 2', context: 16000, deprecated: true },
+        { name: 'Long-context class', year: 'era 3', context: 128000, deprecated: false },
+        { name: 'Very-long class', year: 'era 3', context: 200000, deprecated: false },
+        { name: 'Million-token class', year: 'era 4', context: 1000000, deprecated: false },
     ];
 
-    // Only show current models for timeline
     const currentModels = models.filter(m => !m.deprecated);
     const maxContext = Math.max(...models.map(m => m.context));
 
@@ -3675,12 +3502,12 @@ export const ContextEvolution = () => {
 
                     <div className="mt-8 grid grid-cols-3 gap-4">
                         <div className="p-4 bg-stone-800 rounded-xl text-center">
-                            <p className="text-3xl font-bold text-brand-400">250x</p>
-                            <p className="text-sm text-stone-400">Growth since 2020</p>
+                            <p className="text-3xl font-bold text-brand-400">100×+</p>
+                            <p className="text-sm text-stone-400">Growth from early APIs</p>
                         </div>
                         <div className="p-4 bg-stone-800 rounded-xl text-center">
-                            <p className="text-3xl font-bold text-brand-400">1M</p>
-                            <p className="text-sm text-stone-400">Max tokens (2025)</p>
+                            <p className="text-3xl font-bold text-brand-400">Look up</p>
+                            <p className="text-sm text-stone-400">Current max window</p>
                         </div>
                         <div className="p-4 bg-stone-800 rounded-xl text-center">
                             <p className="text-3xl font-bold text-brand-400">~3 books</p>

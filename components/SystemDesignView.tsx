@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Layout, ChevronRight, Server, Database, Shield, Zap, DollarSign, Clock, Users, MessageSquare, FileSearch, Code, Filter, Layers } from 'lucide-react';
+import { LookUpPrompt } from './LookUpPrompt';
 
 type CaseStudyId = 'chatbot' | 'rag' | 'code-review' | 'moderation' | 'multi-tenant';
 
@@ -70,7 +71,7 @@ const caseStudies: CaseStudy[] = [
             { metric: 'Avg messages per conversation', value: '6' },
             { metric: 'Avg tokens per message', value: '150 in, 200 out' },
             { metric: 'Daily token usage', value: '~210M tokens' },
-            { metric: 'Estimated daily cost (budget model)', value: '~$50-80' },
+            { metric: 'Daily cost', value: '210M tokens × current $/M (look up)' },
             { metric: 'P95 latency target', value: '< 2 seconds' },
         ],
     },
@@ -123,7 +124,7 @@ const caseStudies: CaseStudy[] = [
             { metric: 'Total chunks (512 tokens each)', value: '~10M chunks' },
             { metric: 'Vector DB storage', value: '~30GB (3072-dim embeddings)' },
             { metric: 'Daily queries', value: '10,000' },
-            { metric: 'Embedding cost (one-time)', value: '~$650' },
+            { metric: 'Embedding cost (one-time)', value: 'corpus tokens × current embed $/M' },
         ],
     },
     {
@@ -175,7 +176,7 @@ const caseStudies: CaseStudy[] = [
             { metric: 'Avg files changed per PR', value: '8' },
             { metric: 'Avg tokens per file review', value: '2K in, 500 out' },
             { metric: 'Daily token usage', value: '~10M tokens' },
-            { metric: 'Estimated daily cost', value: '~$40-60' },
+            { metric: 'Daily LLM cost', value: '~10M tokens × current $/M (look up)' },
             { metric: 'Review time per PR', value: '30-90 seconds' },
         ],
     },
@@ -227,7 +228,7 @@ const caseStudies: CaseStudy[] = [
             { metric: 'Daily posts', value: '10,000,000' },
             { metric: 'Fast classifier throughput', value: '50K/sec per instance' },
             { metric: 'LLM analysis rate', value: '~1M/day (10%)' },
-            { metric: 'LLM cost per day', value: '~$200-400' },
+            { metric: 'LLM cost per day', value: '~1M LLM calls × current $/call (look up)' },
             { metric: 'Human review queue', value: '~10K/day (0.1%)' },
             { metric: 'Target false positive rate', value: '< 0.1%' },
         ],
@@ -351,6 +352,10 @@ export const SystemDesignView = () => {
             </div>
 
             <div className="max-w-5xl mx-auto px-6 py-8">
+                <LookUpPrompt
+                    why="Token counts in the case studies are durable. Dollar totals are not — plug in live $/M."
+                    prompt="Using official list prices, estimate daily cost for 210M tokens (mix of cheap/fast input and mid-tier output) and for embedding 10M chunks. Show the formula and cite the pricing pages."
+                />
                 {/* Tabs */}
                 <div className="flex gap-2 mb-8">
                     {[
