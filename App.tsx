@@ -14,15 +14,21 @@ import { ToolkitView } from './components/ToolkitView';
 import { GlobalSearch } from './components/GlobalSearch';
 import { chapters } from './constants';
 import { ViewMode } from './types';
-import { BookOpen, Copy, GraduationCap, Sparkles, Menu, X, PanelLeftClose, PanelLeftOpen, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code } from 'lucide-react';
+import { useLearner } from './context/LearnerContext';
+import { BookOpen, Copy, GraduationCap, Sparkles, Menu, X, PanelLeftClose, PanelLeftOpen, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code, Moon, Sun } from 'lucide-react';
 
 export default function App() {
-  const [activeChapterId, setActiveChapterId] = useState<string>(chapters[0].id);
-  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.NOTES);
+  const { state, theme, toggleTheme, setLastLocation, progressPercent, completedCount, totalChapters } = useLearner();
+  const [activeChapterId, setActiveChapterId] = useState<string>(state.lastChapterId);
+  const [viewMode, setViewMode] = useState<ViewMode>(state.lastViewMode);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setLastLocation(activeChapterId, viewMode);
+  }, [activeChapterId, viewMode, setLastLocation]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -179,6 +185,9 @@ export default function App() {
             <h2 className="text-lg font-bold text-stone-900 tracking-tight truncate">
               {activeChapter.title.split(': ')[1] || activeChapter.title}
             </h2>
+            <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-stone-500 bg-stone-100 border border-stone-200 shrink-0">
+              {completedCount}/{totalChapters} · {progressPercent}%
+            </span>
           </div>
 
           {/* Global Search */}
@@ -191,6 +200,15 @@ export default function App() {
             }}
           />
           
+          <button
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="p-2 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition-colors"
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
           {/* View mode tabs */}
           <div className="flex bg-stone-100 p-1 rounded-xl">
             <NavButton 

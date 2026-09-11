@@ -85,7 +85,8 @@ import {
     BuildBuy,
     Ch10Summary
 } from './Ch10Components';
-import { Sparkles, Zap, BookOpen, ArrowRight, Lightbulb, ChevronRight } from 'lucide-react';
+import { Sparkles, Zap, BookOpen, ArrowRight, Lightbulb, ChevronRight, Check, Bookmark } from 'lucide-react';
+import { useLearner } from '../context/LearnerContext';
 
 interface ChapterViewProps {
   chapter: Chapter;
@@ -112,6 +113,9 @@ interface Block {
 }
 
 export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, onNextChapter }) => {
+  const { isComplete, isBookmarked, toggleComplete, toggleBookmark } = useLearner();
+  const complete = isComplete(chapter.id);
+  const bookmarked = isBookmarked(chapter.id);
 
   // --- Parser Engine ---
   const parseBlocks = (markdown: string): Block[] => {
@@ -697,10 +701,38 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
             <p className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-6">
               End of Chapter
             </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+              <button
+                onClick={() => toggleBookmark(chapter.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                  bookmarked
+                    ? 'bg-brand-50 border-brand-200 text-brand-700'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
+                }`}
+              >
+                <Bookmark size={16} className={bookmarked ? 'fill-brand-500 text-brand-500' : ''} />
+                {bookmarked ? 'Saved' : 'Save for later'}
+              </button>
+              <button
+                onClick={() => toggleComplete(chapter.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                  complete
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
+                }`}
+              >
+                <Check size={16} />
+                {complete ? 'Completed' : 'Mark complete'}
+              </button>
+            </div>
             
             {nextChapter && onNextChapter && (
               <button
-                onClick={onNextChapter}
+                onClick={() => {
+                  if (!complete) toggleComplete(chapter.id);
+                  onNextChapter();
+                }}
                 className="group flex items-center gap-3 px-6 py-4 bg-stone-900 hover:bg-stone-800 text-white rounded-2xl transition-all hover:shadow-lg hover:shadow-stone-900/20"
               >
                 <div className="text-left">

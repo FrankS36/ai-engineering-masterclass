@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Chapter } from '../types';
 import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { useLearner } from '../context/LearnerContext';
 
 interface QuizViewProps {
   chapter: Chapter;
 }
 
 export const QuizView: React.FC<QuizViewProps> = ({ chapter }) => {
+  const { recordQuizScore, state } = useLearner();
+  const best = state.quizBestScores[chapter.id];
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
@@ -30,6 +33,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ chapter }) => {
     });
     setScore(correct);
     setShowResults(true);
+    recordQuizScore(chapter.id, correct, chapter.quizzes.length);
   };
 
   const resetQuiz = () => {
@@ -43,6 +47,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ chapter }) => {
       <div className="bg-brand-50 border border-brand-100 p-6 rounded-xl mb-6">
         <h2 className="text-2xl font-bold text-brand-900">Quiz: {chapter.title}</h2>
         <p className="text-brand-700 mt-2">Test your understanding of the concepts in this chapter.</p>
+        {best && (
+          <p className="text-sm text-brand-600 mt-2 font-medium">
+            Best score: {best.score}/{best.total}
+            {best.score / best.total >= 0.7 ? ' · Chapter marked complete' : ''}
+          </p>
+        )}
       </div>
 
       {chapter.quizzes.map((q, index) => {
