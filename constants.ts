@@ -8364,262 +8364,250 @@ These patterns are not a checklist to implement blindly. They are a vocabulary f
 
 > **From the field.** A coding agent without a closer is just a faster way to drift. The skill is not prompting the tool. The skill is deciding what the agent is allowed to touch, what evidence counts as done, and when you take the wheel.
 
-Andrew Ng put "using coding agents" on the same level as building AI applications. That is not hype. Agents are now how a large share of production code gets written. The developers who stay valuable are the ones who can steer them — not the ones who outsource judgment and hope the diff is fine.
+## What you will be able to do
 
-This chapter is about *using* agents to build software. Chapter 6 is about *building* agents as product. You need both. Confusing them is how teams ship an internal Copilot and call the job done.
+1. **Name the harness** — constitution, source of truth, injector, machine, verifier, bounds.
+2. **Keep the blob out of the window.** The live artifact is not the file you edit.
+3. **Grant autonomy only when a verifier exists.**
+4. **Pick the loop:** a tight bot for copy and chrome; a Cloud Agent for one rewrite and a PR.
+
+This chapter is Skill 3 on Ng’s map: *using* coding agents. Chapter 6 is *building* agents as product. Confusing them is how teams ship an internal Copilot and call the job done.
+
+## The harness
+
+The model is not the product. The **harness** is the loop you put around the model so it can do work without rediscovering your system every session.
+
+A harness has six parts:
+
+1. **Constitution** — a one-page file the agent reads first (\`AGENTS.md\`, \`CLAUDE.md\`, \`.cursor/rules\`). Purpose, stack, landmines, how to change a file.
+2. **Curriculum / spec** — what to do next, separate from how to work. In this course that is \`SPINE.md\`. In a product that is the feature spec (Chapter 17).
+3. **Source of truth for edits** — the files humans and agents are allowed to type in.
+4. **Injector** — the only path from source into the live artifact. A script, a codegen step, a compiler. Not a human copy-paste.
+5. **Machine** — how the environment boots (\`environment.json\`: install, start). Warm beats clever.
+6. **Verifier** — the command that means done. Build, tests, a screenshot. Without this, “done” is a paragraph.
+
+If any piece is missing, the agent fills the gap with a guess. Guesses look like competence until you read the diff.
+
+## Worked example — this workbook
+
+This masterclass *is* the example. Steal the shape. Do not steal the stack unless it is yours.
+
+| Part | In this repo | Rule the agent must obey |
+|---|---|---|
+| Constitution | \`AGENTS.md\` | One chapter per run. Next.js is locked. |
+| Curriculum | \`SPINE.md\` | What to write next. Do not invent a third plan. |
+| Source | \`chapters/chN-*.md\` and \`chapters/chN.assessments.json\` | Edit here. |
+| Live artifact | \`constants.ts\` | **Do not read or hand-edit.** |
+| Injector | \`node scripts/inject-chapter.mjs chN\` | The only way source becomes live. |
+| Machine | \`environment.json\` | \`npm install\` / \`npm run dev\`. |
+| Verifier | \`npm run build\` | If chrome changed. |
+| Bounds | Consulting repo, Field Guide hub, cert cram | Out of scope. |
+
+The failure this harness exists to prevent: an agent opens a 450KB \`constants.ts\`, “quickly fixes” a sentence, migrates the bundler, answers a billing question, and never finishes the chapter. That is context rot plus no closer.
+
+The loop that works:
+
+1. State the chapter. (\`ch15\` — this one.)
+2. Edit the markdown (and assessments if quizzes change).
+3. Run the injector.
+4. Grep a heading if you must confirm the splice. Do not dump the blob into the thread.
+5. Commit. One job.
+
+That is Ng’s Skill 3 in a repo: customize the agent and the environment. The portable names differ (\`AGENTS.md\` / Cursor rules / \`CLAUDE.md\`). The job does not.
+
+> **Look up now.** Prompt: "What does the current Cursor docs say an \`AGENTS.md\` or project rules file should contain, and what does Anthropic document for \`CLAUDE.md\`? Cite official docs."
 
 ## A mental model, not a vendor tour
 
-A coding agent is an LLM in a loop with tools: read files, edit files, run commands, search the web, sometimes control a browser. It maintains context. It plans or it doesn't. It stops when it thinks it is done, when it hits a limit, or when you interrupt.
+A coding agent is an LLM in a loop with tools: read, edit, run, search. It stops when it thinks it is done, hits a limit, or you interrupt.
 
-That loop fails in predictable ways:
+The loop fails in predictable ways:
 
-- **It optimizes for looking finished.** Tests pass because it weakened the test. The UI matches the screenshot because it hardcoded the fixture.
-- **It loses the plot as context fills.** Mid-task it "simplifies" a constraint you stated at the start.
-- **It does not know your production blast radius.** It will migrate a schema, rotate a key, or rewrite an auth check if the prompt was vague and the tools were wide.
-- **It is confident in prose and sloppy in edges.** Empty states, permissions, retries, and the one environment variable nobody documented.
+- **It optimizes for looking finished.** Tests pass because it weakened the test.
+- **It loses the plot as context fills.** Mid-task it “simplifies” a constraint you stated at the start.
+- **It does not know your blast radius.** It will migrate a schema if the tools are wide and the prompt is vague.
+- **It is confident in prose and sloppy in edges.** Empty states, permissions, the one env var nobody documented.
 
-If you cannot name those failure modes, you are not using an agent. You are supervising a very fast intern with no memory of last quarter's incident.
+If you cannot name those, you are not using an agent. You are supervising a fast intern with no memory of last quarter’s incident.
 
 ## Context is the scarce resource
 
-The agent can only work with what is in the window — plus what it can retrieve. Dumping the repository into chat is not context management. It is noise.
+Dumping the repository into chat is not context management. It is noise.
 
-**Give it a constitution, not a novel.** A short project file (the \`CLAUDE.md\` / \`AGENTS.md\` / \`.cursor/rules\` pattern) that states: what this system is for, what must not change, how to run tests, and where the landmines are. Agents that read a one-page constitution produce fewer "helpful" refactors of the payment path.
+**Constitution, not a novel.** One page: what this is for, what must not change, how to verify, where the landmines are.
 
-**Point, don't narrate.** Name the files, the failing test, the screenshot, the API contract. "Fix the billing bug" is a wish. "Failing test in \`invoice.test.ts\`; do not change the public API of \`InvoiceService\`" is a job.
+**Point, don’t narrate.** “Failing test in \`invoice.test.ts\`; do not change the public API of \`InvoiceService\`” is a job. “Fix billing” is a wish.
 
-**Reset when the thread is dirty.** Long threads accumulate contradictory instructions. Compact or start over when you change the goal. Context rot looks like competence until you read the diff.
+**Reset when the thread is dirty.** Contradictory instructions accumulate. Context rot looks like competence until you read the diff.
 
-**Separate privileged from unprivileged.** The agent that can edit \`src/\` is not the agent that should hold production credentials. If your harness can reach the database, you have an access-control problem, not a productivity win.
+**Separate privileged from unprivileged.** The agent that edits \`src/\` is not the agent that holds production credentials.
 
 ## Plan versus execute
 
-Agents that jump to editing waste tokens and produce local maxima. Agents that only plan produce slideware.
+Plan when the change crosses modules, you do not know the shape, or another human must review the spec. Skip the plan when you already have a failing test or the change is mechanical.
 
-Use planning when:
+A useful plan is gradable: files in, files out, acceptance checks, rollback. A useless plan says “ensure quality.”
 
-- The change crosses more than one module
-- You do not yet know the shape of the fix
-- You need a spec another human will review
-
-Skip the plan when:
-
-- The failure is localized and you already have a failing test
-- You are doing a mechanical rename, migrate, or apply-the-pattern task
-- The plan would be longer than the change
-
-A useful plan is a spec the agent can be graded against: files in scope, files out of scope, acceptance checks, and the rollback if the check fails. A useless plan is a list of platitudes ("ensure code quality").
-
-> Spec-driven development is not ceremony. It is how you keep intent stable across sessions. Agents forget. Markdown does not.
+Chapter 17 is the full spec loop. Here, know when *not* to bother.
 
 ## Close the loop with a verifier
 
-Ng's phrase is exact: help the agent autonomously close loops by providing verifiers or evals.
+Ng: help the agent autonomously close loops by providing verifiers or evals.
 
-Without a verifier, "done" means "the model wrote a paragraph saying it is done." With a verifier, done means:
+Without a verifier, done means the model wrote a paragraph. With one: the named tests are green, types are clean, the build passed, the eval did not regress.
 
-- The test suite you named is green
-- The typechecker is clean
-- The screenshot matches
-- The eval set did not regress
-- The linter you actually run in CI passed
+Write the verifier first when you can. A failing test is the best prompt you will ever write. If you cannot write a verifier, do not grant autonomy.
 
-Write the verifier first when you can. A failing test is the best prompt you will ever write. If you cannot write a verifier, you cannot safely grant autonomy. Stay in the loop and review every edit.
-
-This is the same muscle as evaluation-driven development in Chapter 7. Coding agents make it personal: your own repo is the system under test.
+Same muscle as Chapter 7. Your repo is the system under test.
 
 ## How much to intervene
 
-Under-steering looks like: you go to lunch, come back to a 40-file rewrite, and spend the afternoon reverting. Over-steering looks like: you type every line into the agent that you could have typed into the editor.
+1. State the outcome and the bound.
+2. Give a verifier.
+3. Watch the first loop. Interrupt if the ontology is wrong.
+4. Leave it alone through mechanical work.
+5. Review the diff as a senior engineer. You own the merge.
 
-A working rhythm:
+Autonomy is a privilege per task, not a setting you leave on.
 
-1. **State the outcome and the bound.** What good looks like. What is out of bounds.
-2. **Give a verifier.**
-3. **Watch the first loop.** If the agent misunderstands the goal, interrupt immediately. Do not let a wrong ontology compound.
-4. **Leave it alone through mechanical work.** Once the direction is right, hovering costs more than it saves.
-5. **Review the diff as a senior engineer, not as a spectator.** You own the merge. "The agent wrote it" is not a defense in an incident review.
-
-Autonomy is a privilege you grant per task, not a setting you leave on.
-
-## Specs, when they help — and when they do not
-
-Write a spec when the work will outlive one session: a feature, a migration, a public API. Put it in the repo. Let the agent implement against it. Update the spec when reality disagrees — do not let the code and the spec drift in silence.
-
-Do not write a spec for a one-line fix. Ceremony that does not reduce error is theater.
-
-A project constitution is the spec you write once and reuse. Mission, stack, test command, "never do this." That document is how you stop the agent from introducing a second HTTP client or a new state library because it saw a blog post in its training data.
+Use a **tight bot** (Grok Bot, Composer, in-editor agent) for copy and chrome on a live page. Use a **Cloud Agent** when you need a fresh machine, a branch, and a PR. Do not use High Fast for a title change. The expensive loop is for the hard rewrite.
 
 ## Orchestrating more than one agent
 
-Multiple agents are useful when the work is actually parallel: independent features, a reviewer that did not write the code, a researcher that only reads.
+Useful when the work is actually parallel: independent features, a reviewer that did not write the code. Harmful when two agents share a working tree. Use worktrees, branches, or a queue.
 
-They are harmful when they share a working tree without isolation. Two agents editing the same module is a merge conflict factory. Use worktrees, branches, or a queue.
-
-A second agent as reviewer is often worth more than a second agent as implementer. Different context, different incentive: find what the first one papered over.
-
-Do not confuse "I ran five agents" with "I shaped the build." Parallelism is a tactic. Ownership is the job.
+A second agent as reviewer is often worth more than a second implementer. Different context, different incentive.
 
 ## Production is not a sandbox
 
-The failure Ng names — an agent messing up your production database — is not hypothetical.
-
-Minimum bounds:
-
-- Read-only by default against prod
-- No credentials in the prompt or the thread
-- Migrations are human-gated
-- Secrets stay in a manager the agent cannot exfiltrate into logs
-- Destructive tools require an explicit, narrow allow
-
-If you cannot explain the blast radius of the tools you attached, you have not finished the design. This is Territory 02 leaking into Territory 03 on purpose. Fundamentals are how you steer.
+Minimum bounds: read-only prod by default, no secrets in the thread, human-gated migrations, a blast radius you can explain. If you cannot name what the tools can destroy, the design is unfinished. That is Skill 2 leaking into Skill 3 on purpose.
 
 ## Evolve the workflow on purpose
 
-The tools will change. The skill that does not expire: a routine for trying the new thing without betting the system on it.
-
-Keep a short personal log: what you delegated last week, where the agent wasted you, which verifier caught it. Promote the patterns that survive. Discard the ones that only work in a greenfield demo.
-
-A workflow you cannot explain to a new teammate is not a workflow. It is a habit. Habits do not survive an incident.
-
-## Pair-program the whole SDLC
-
-Laurence Moroney’s software-development course is this chapter applied to everyday engineering, not only to “AI features.” Treat the LLM as a teammate with roles you assign:
-
-- **Pair coder** — iterative prompting, feedback, a named role (“you are a reviewer who has not seen the ticket”).
-- **Tester** — edge cases, failing tests first, then the fix. Keep the tests you would bet an incident on; discard the ones that only please the model.
-- **Docs** — inline, API, and runbooks. You still decide what a stranger needs.
-- **Dependencies** — research a package, explain the conflict, do not silently add a second HTTP client.
-- **Design** — schemas, CDD/config files, and a handful of patterns (factory, strategy) when they earn their complexity.
-
-Chat, IDE-inline, and agentic tools have different blast radii. Chat cannot edit the repo. An agent can. Scope the tools the way you would scope a junior’s permissions (Chapter 16).
+Keep a short log: what you delegated, where the agent wasted you, which verifier caught it. Promote what survives. A workflow you cannot explain to a new teammate is a habit. Habits do not survive an incident.
 
 ## How this sits on the map
 
-| Skill Ng named | What you practice here | Where else it lives |
+| Skill Ng named | What you practice here | Where else |
 |---|---|---|
-| Mental model of agents | Loops, tools, context rot, false done | Chapter 6 |
-| Context management | Constitutions, pointers, resets | Chapter 3, Chapter 5 |
-| Plan vs execute | Specs when they earn their keep | Chapter 14 |
-| Verifiers | Tests and evals as the definition of done | Chapter 7 |
+| Harness / customize the environment | Constitution, injector, machine, verifier | This chapter’s worked example |
+| Mental model of agents | Loops, false done, context rot | Chapter 6 |
+| Plan vs execute | Specs when they earn their keep | Chapter 17, Chapter 14 |
+| Verifiers | Tests and evals as done | Chapter 7 |
 | Intervention | Autonomy as a per-task privilege | Chapter 8, Chapter 9 |
-| Multi-agent | Isolation and a reviewer that did not write the code | Chapter 6 |
 | Production safety | Blast radius, gates, secrets | Chapter 8, Chapter 9 |
 
 Using coding agents well does not replace software engineering. It *is* software engineering, performed through a stochastic intern you are responsible for.
 
 ## Summary
 
-The market now expects you to build with agents. You still own the merge.
+Give the agent a harness: a constitution, a source it is allowed to edit, an injector into the live artifact, a machine, and a verifier. Bound what it can touch. Interrupt when the goal is wrong. Review the diff as if your name is on the commit — because it is.
 
-Give the agent a constitution and a verifier. Bound what it can touch. Interrupt when the goal is wrong. Leave it alone when the work is mechanical. Review the diff as if your name is on the commit — because it is.
-
-That is the skill. The product names will change. The loop will not.
+The product names will change. The loop will not.
 `,
     quizzes: [
-      {
-        id: "q15-1",
-        question: "What is the difference between using coding agents and building agentic products?",
-        options: [
-          "There is no difference — both are just prompting",
-          "Using agents is how you write software; building agents is shipping agent loops as the product. You need both, and confusing them is a common failure.",
-          "Using agents is only for junior developers",
-          "Building agents does not require evaluation"
-        ],
-        correctIndex: 1,
-        explanation: "Chapter 15 is about steering agents to produce software you own. Chapter 6 is about designing agent loops as product. Teams that conflate them ship an internal Copilot and call the work done."
-      },
-      {
-        id: "q15-2",
-        question: "When should you grant an agent real autonomy?",
-        options: [
-          "Always — autonomy is the point",
-          "Never — review every token",
-          "When you can name a verifier that defines done; otherwise stay in the loop",
-          "Whenever the task is important"
-        ],
-        correctIndex: 2,
-        explanation: "Without a verifier, done means the model said it was done. Autonomy is a per-task privilege earned by a check you actually run."
-      },
-      {
-        id: "q15-3",
-        question: "What is a project constitution for?",
-        options: [
-          "Legal compliance only",
-          "A short, persistent file that states purpose, invariants, how to test, and landmines — so the agent does not reinvent the stack each session",
-          "A replacement for code review",
-          "A prompt you paste once and delete"
-        ],
-        correctIndex: 1,
-        explanation: "Constitutions keep intent stable across sessions. Agents forget. A one-page file in the repo does not."
-      },
-      {
-        id: "q15-4",
-        question: "Why is a second agent often more valuable as a reviewer than as a second implementer?",
-        options: [
-          "Reviewers are cheaper",
-          "Different context and incentive: find what the first agent papered over, instead of colliding in the same working tree",
-          "Implementers cannot use tools",
-          "You should never run more than one agent"
-        ],
-        correctIndex: 1,
-        explanation: "Parallel implementers without isolation create merge conflicts. A reviewer that did not write the code is a cheaper way to catch false-done."
-      },
-      {
-        id: "q15-5",
-        question: "What is the production minimum when an agent has tools?",
-        options: [
-          "Trust the system prompt",
-          "Read-only prod by default, no secrets in the thread, human-gated migrations, and a blast radius you can explain",
-          "Give it admin so it can finish the job",
-          "Only allow agents in greenfield repos"
-        ],
-        correctIndex: 1,
-        explanation: "Ng names the production-database failure for a reason. If you cannot explain the blast radius of the tools you attached, the design is unfinished."
-      }
+            {
+                  "id": "q15-1",
+                  "question": "What is a harness, in the sense of using coding agents?",
+                  "options": [
+                        "The model vendor’s latest flagship SKU",
+                        "The loop around the model: constitution, source of truth, injector, machine, verifier, and bounds",
+                        "A multi-agent swarm that writes the spec for you",
+                        "The Cloud Agent VM, and nothing else"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "The model is not the product. The harness is how the agent works without rediscovering your system every session."
+            },
+            {
+                  "id": "q15-2",
+                  "question": "In this workbook, an agent needs to fix a sentence in Chapter 1. What should it do?",
+                  "options": [
+                        "Open constants.ts and edit the string in place",
+                        "Edit chapters/ch1-landscape.md, then run node scripts/inject-chapter.mjs ch1",
+                        "Paste the whole constants.ts into chat so it has full context",
+                        "Migrate the bundler first so the sentence renders correctly"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Source is the markdown. The injector is the only path into the live artifact. Dumping the blob is context rot."
+            },
+            {
+                  "id": "q15-3",
+                  "question": "When should you grant an agent real autonomy?",
+                  "options": [
+                        "Always — autonomy is the point",
+                        "Never — review every token",
+                        "When you can name a verifier that defines done; otherwise stay in the loop",
+                        "Whenever the task is important"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Without a verifier, done means the model said it was done. Autonomy is a per-task privilege."
+            },
+            {
+                  "id": "q15-4",
+                  "question": "A teammate wants High Fast Cloud Agent for a title tweak. What do you do?",
+                  "options": [
+                        "Use the expensive loop — more thinking is always better",
+                        "Use a tight bot or in-editor agent; reserve Cloud Agent + High Fast for a hard rewrite",
+                        "Start five agents in the same working tree so one of them is cheap",
+                        "Skip the constitution so the agent can move faster"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Match the loop to the job. High Fast on a title change is how you empty a usage pool."
+            },
+            {
+                  "id": "q15-5",
+                  "question": "What is the production minimum when an agent has tools?",
+                  "options": [
+                        "Trust the system prompt",
+                        "Read-only prod by default, no secrets in the thread, human-gated migrations, and a blast radius you can explain",
+                        "Give it admin so it can finish the job",
+                        "Only allow agents in greenfield repos"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "If you cannot explain the blast radius of the tools you attached, the design is unfinished."
+            }
     ],
     flashcards: [
-      {
-        id: "f15-1",
-        front: "Coding agent",
-        back: "An LLM in a loop with tools (read, edit, run). It stops when it thinks it is done, hits a limit, or you interrupt."
-      },
-      {
-        id: "f15-2",
-        front: "False done",
-        back: "The agent optimized for looking finished — weakened tests, hardcoded fixtures — instead of meeting the real acceptance check."
-      },
-      {
-        id: "f15-3",
-        front: "Project constitution",
-        back: "A short persistent file (CLAUDE.md / AGENTS.md / rules) stating purpose, invariants, test commands, and landmines."
-      },
-      {
-        id: "f15-4",
-        front: "Verifier",
-        back: "The definition of done the agent can run: tests, types, screenshots, evals, CI lint. Without one, do not grant autonomy."
-      },
-      {
-        id: "f15-5",
-        front: "Context rot",
-        back: "A long dirty thread where contradictory instructions accumulate and the agent 'simplifies' away an early constraint."
-      },
-      {
-        id: "f15-6",
-        front: "Autonomy privilege",
-        back: "How much you leave the agent alone is granted per task, after the first loop proves it understood the goal."
-      },
-      {
-        id: "f15-7",
-        front: "Blast radius",
-        back: "What the agent's tools can destroy. If you cannot name it, you have not finished the design."
-      },
-      {
-        id: "f15-8",
-        front: "Closer",
-        back: "The human or gate that decides the work is actually done. An agent without a closer is faster drift."
-      }
+            {
+                  "id": "f15-1",
+                  "front": "Harness",
+                  "back": "The loop around the model: constitution, source, injector, machine, verifier, bounds. The model is not the product."
+            },
+            {
+                  "id": "f15-2",
+                  "front": "Constitution",
+                  "back": "A one-page AGENTS.md / CLAUDE.md / rules file: purpose, stack, landmines, how to change a file."
+            },
+            {
+                  "id": "f15-3",
+                  "front": "Injector",
+                  "back": "The only path from editable source into the live artifact. In this repo: node scripts/inject-chapter.mjs chN."
+            },
+            {
+                  "id": "f15-4",
+                  "front": "False done",
+                  "back": "The agent optimized for looking finished — weakened tests, hardcoded fixtures — instead of meeting the verifier."
+            },
+            {
+                  "id": "f15-5",
+                  "front": "Verifier",
+                  "back": "The definition of done the agent can run: tests, types, build, evals. Without one, do not grant autonomy."
+            },
+            {
+                  "id": "f15-6",
+                  "front": "Context rot",
+                  "back": "A dirty thread where contradictory instructions accumulate and the agent ‘simplifies’ away an early constraint."
+            },
+            {
+                  "id": "f15-7",
+                  "front": "Tight bot vs Cloud Agent",
+                  "back": "Bot/Composer for copy and chrome. Cloud Agent for one rewrite + branch + PR. High Fast is not for title tweaks."
+            },
+            {
+                  "id": "f15-8",
+                  "front": "Closer",
+                  "back": "The human or gate that decides the work is actually done. An agent without a closer is faster drift."
+            }
     ]
   },
   {

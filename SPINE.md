@@ -78,7 +78,7 @@ Pedagogical order = `COURSE_ORDER`. Sidebar = `COURSE_SECTIONS`.
 | ch6 | Agents & Tool Use | 1 Agentic systems | Partial Ng blurbs |
 | ch7 | Evaluation & Testing | 1 Evals | Needs “evals as the gate” |
 | ch16 | Software Engineering Fundamentals | 2 Five literacies | Wired; tighten |
-| ch15 | Using Coding Agents | 3 Workflow | In app; finish |
+| ch15 | Using Coding Agents | 3 Workflow | **Harness lesson shipped** — this repo is the worked example |
 | ch17 | Spec-Driven Development | 3 Specs | Wired; tighten |
 | ch8 | Production & Deployment | 1 Operate | Encyclopedia |
 | ch9 | LLM Security | 2 Secure/reliable | Encyclopedia |
@@ -94,7 +94,7 @@ Pedagogical order = `COURSE_ORDER`. Sidebar = `COURSE_SECTIONS`.
 
 1. **Iterate ch1** if the prototype form is wrong (type, chrome, length). Do not restyle the universe first.
 2. **Rewrite ch2** to Skill 1 / LLM foundations — mental model only, no training-run gossip.
-3. **Tighten ch16 → ch15 → ch17** (Skill 2 then Skill 3). Already wired.
+3. **Tighten ch16 → ch17** (Skill 2 then specs). ch15 harness lesson is in.
 4. **Rewrite ch6 then ch7** (agentic systems + evals-as-gate).
 5. Cut remaining encyclopedia chapters to the bar. Hide junk resource views until rewritten.
 6. Rewrite or delete `CURRICULUM.md` / `GAPS.md` so they cannot contradict this file.
@@ -111,3 +111,4 @@ If you only have time for one thing after ch1: **ch2**.
 - **Stack moved to Next.js 15 + Tailwind v4 + parent fonts/tokens** (same form as sellhausen.com).
 - **ch1 rewritten** to Ng’s four skills. Sidebar labeled to the map. `SKILL_HOME` on every chapter.
 - **Harness defined:** `AGENTS.md` + `scripts/inject-chapter.mjs` + `chapters/chN.assessments.json`. Do not hand-edit `constants.ts`.
+- **ch15 rewritten** as the workbook lesson for that harness (worked example = this repo).
