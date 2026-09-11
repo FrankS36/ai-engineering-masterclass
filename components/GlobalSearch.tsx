@@ -185,11 +185,11 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onNavigate }) => {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 rounded-lg text-stone-500 text-sm transition-colors"
+                className="flex items-center gap-2 text-sm text-surface-dark-muted transition-colors hover:text-white"
             >
                 <Search size={14} />
                 <span className="hidden md:inline">Search</span>
-                <kbd className="hidden md:flex items-center gap-0.5 px-1.5 py-0.5 bg-white rounded text-xs text-stone-400 border border-stone-200">
+                <kbd className="hidden md:flex items-center gap-0.5 border border-white/20 px-1.5 py-0.5 font-mono text-[10px] text-surface-dark-muted">
                     <Command size={10} />K
                 </kbd>
             </button>

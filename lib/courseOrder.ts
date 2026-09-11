@@ -24,6 +24,19 @@ export const COURSE_ORDER = [
 
 export type CourseChapterId = (typeof COURSE_ORDER)[number];
 
+export function chapterOrderIndex(id: string): number {
+  const index = COURSE_ORDER.indexOf(id as CourseChapterId);
+  return index >= 0 ? index + 1 : 0;
+}
+
+export function chapterOrderLabel(id: string): string {
+  return String(chapterOrderIndex(id)).padStart(2, '0');
+}
+
+export function chapterShortTitle(title: string): string {
+  return title.split(': ')[1] || title.split(':')[1]?.trim() || title;
+}
+
 export const COURSE_SECTIONS = [
   { label: 'The four skills', ids: ['ch1'] },
   { label: 'Building AI applications', ids: ['ch2', 'ch3', 'ch4', 'ch5', 'ch6', 'ch7'] },

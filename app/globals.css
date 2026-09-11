@@ -27,6 +27,16 @@
   --color-brand-700: #8f7330;
   --color-brand-800: #5e4c20;
   --color-brand-900: #3a3014;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-card-bg: var(--card-bg);
+  --color-border: var(--border);
+  --color-surface-dark: var(--surface-dark);
+  --color-surface-dark-muted: var(--surface-dark-muted);
+  --color-secondary: var(--secondary);
 }
 
 :root,
@@ -41,6 +51,8 @@
   --accent-hover: #b8963e;
   --text-inverse: #f7f6f2;
   --surface-dark: #0e0e0c;
+  --surface-dark-muted: #7a7874;
+  --secondary: #c8a96e;
 }
 
 [data-theme="dark"],
@@ -55,6 +67,8 @@ html.dark {
   --accent-hover: #d9be8a;
   --text-inverse: #0e0e0c;
   --surface-dark: #0e0e0c;
+  --surface-dark-muted: #7a7874;
+  --secondary: #c8a96e;
 }
 
 html {
@@ -247,4 +261,17 @@ html[data-theme="dark"] .text-amber-900 {
 html.dark .border-amber-200,
 html[data-theme="dark"] .border-amber-200 {
   border-color: #5e4a1c;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+.gold-grid {
+  background-image: linear-gradient(to right, #c4a574 1px, transparent 1px),
+    linear-gradient(to bottom, #c4a574 1px, transparent 1px);
+  background-size: 48px 48px;
 }
