@@ -316,15 +316,15 @@ export const ModelTypes = () => {
         { 
             id: 2, 
             name: "Foundation Models", 
-            label: "2023+",
+            label: "now",
             tagline: "General-Purpose Intelligence",
             capability: "One model, any modality, any task",
-            examples: ["GPT", "Gemini", "Claude"],
-            description: "The current frontier. Native multimodality (text, image, audio, video), million-token context windows, sophisticated reasoning, and tool use. These models can be steered to do almost anything through prompts.",
+            examples: ["GPT family", "Claude family", "Gemini family"],
+            description: "The current pattern: one general model you steer with prompts, retrieval, and tools. Multimodality, long context, and tool use are typical. Specific windows and SKUs change — look them up.",
             characteristics: [
-                "Native multimodal understanding",
-                "1M+ token context windows",
-                "Chain-of-thought reasoning",
+                "Native multimodal understanding (on many SKUs)",
+                "Long context — look up the current window",
+                "Chain-of-thought / test-time compute",
                 "Function calling & tool use"
             ],
             insight: "Cost, latency, and the need for careful evaluation at scale."

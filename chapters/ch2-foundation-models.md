@@ -148,7 +148,7 @@ When the model generates output, it produces a probability distribution over the
 
 ## Context Windows: What Is Possible and What It Costs
 
-Context windows have grown dramatically: from GPT-3's 2K tokens (2020) to Gemini 1.5 Pro's 1M tokens and Claude's 200K tokens (2024-2025).
+Context windows have grown from a few thousand tokens on early APIs to hundreds of thousands (and, on some SKUs, a million-plus). Treat any remembered number as stale.
 
 Longer context windows enable new architectures — you can fit entire codebases, long documents, or extended conversation histories into a single prompt. But there are engineering tradeoffs:
 

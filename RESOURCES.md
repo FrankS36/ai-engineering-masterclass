@@ -6,17 +6,18 @@ A curated collection of tools, frameworks, and platforms for AI engineers.
 
 ## LLM Providers & APIs
 
-| Provider | Key Models | Best For | Pricing |
-|----------|-----------|----------|---------|
-| **OpenAI** | GPT-4o, GPT-4 Turbo, o1 | General purpose, function calling, vision | Pay-per-token |
-| **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus | Long context, instruction following, safety | Pay-per-token |
-| **Google** | Gemini 1.5 Pro, Gemini Ultra | Multimodal, long context (1M tokens) | Pay-per-token |
-| **Mistral** | Mistral Large, Mixtral 8x22B | Open weights, European hosting | Pay-per-token |
-| **Cohere** | Command R+, Embed, Rerank | Enterprise RAG, multilingual | Pay-per-token |
-| **Groq** | Llama 3, Mixtral (hosted) | Ultra-fast inference | Pay-per-token |
-| **Together AI** | Open models (70+ options) | Open model hosting, fine-tuning | Pay-per-token |
-| **Fireworks AI** | Open models | Low-latency inference | Pay-per-token |
-| **Perplexity** | pplx-api | Search-augmented generation | Pay-per-token |
+Look up current SKUs and list prices on each provider's docs. The column that lasts is *what to use them for*.
+
+| Provider | What to compare | Typical strength |
+|----------|-----------------|------------------|
+| **OpenAI** | Cheap/fast vs mid vs flagship vs reasoning | Tools, ecosystem, generalists |
+| **Anthropic** | Budget vs mid vs flagship + cache rules | Long context, coding, safety posture |
+| **Google** | Flash vs Pro + context class | Multimodal, long context |
+| **Mistral** | Current dense vs MoE | Open weights, EU hosting |
+| **Cohere** | Current generate / embed / rerank IDs | Enterprise RAG, multilingual |
+| **Fast open-weight hosts** | Current Llama / Qwen / Mixtral SKU | Latency and price at volume |
+| **Together / Fireworks / Replicate** | Who hosts the family you picked | Open-weight serving |
+| **Enterprise wrappers** | Azure / Bedrock / Vertex | Region, VPC, DPA, logging |
 
 **Links:**
 - [OpenAI Platform](https://platform.openai.com)
@@ -372,39 +373,40 @@ A curated collection of tools, frameworks, and platforms for AI engineers.
 
 ## Recommended Stacks
 
+Look up current model IDs. The categories last; the SKUs do not.
+
 ### Beginner RAG Stack
-- **LLM:** OpenAI GPT-4o-mini or Claude 3.5 Sonnet
-- **Embeddings:** OpenAI text-embedding-3-small
-- **Vector DB:** Chroma (local) or Pinecone (managed)
+- **LLM:** Current cheap/fast hosted model
+- **Embeddings:** Current small hosted embedding ID
+- **Vector DB:** Chroma (local) or a managed vector store
 - **Framework:** LangChain or LlamaIndex
 - **Eval:** Promptfoo
 
 ### Production RAG Stack
-- **LLM:** GPT-4o or Claude 3.5 Sonnet
-- **Embeddings:** Cohere embed-v3 or Voyage
-- **Vector DB:** Pinecone or Qdrant Cloud
+- **LLM:** Current mid-tier or flagship (pick with your evals)
+- **Embeddings:** Current hosted embed + a reranker
+- **Vector DB:** Managed store with hybrid search
 - **Framework:** LlamaIndex or custom
-- **Reranking:** Cohere Rerank
 - **Observability:** Langfuse or LangSmith
 - **Eval:** Braintrust or Ragas
 
 ### Agent Stack
-- **LLM:** GPT-4o or Claude 3.5 Sonnet (function calling)
-- **Framework:** LangGraph or AutoGen
+- **LLM:** Current mid-tier with strong tool use
+- **Framework:** A graph/stateful agent library
 - **Memory:** Redis or Postgres
-- **Observability:** LangSmith
-- **Guardrails:** Guardrails AI or NeMo Guardrails
+- **Observability:** Trace every tool call
+- **Guardrails:** Input/output validation
 
 ### Cost-Optimized Stack
-- **LLM:** Mixtral 8x7B via Groq or Together
-- **Embeddings:** nomic-embed-text or bge
-- **Vector DB:** pgvector or Qdrant (self-hosted)
-- **Framework:** LlamaIndex
-- **Caching:** Redis semantic cache
+- **LLM:** Current open weights on a fast host + hosted fallback
+- **Embeddings:** A current open embedding family
+- **Vector DB:** pgvector or self-hosted Qdrant
+- **Framework:** Unified client (LiteLLM or equivalent)
+- **Caching:** Semantic cache
 
 ### Self-Hosted Stack
-- **LLM:** Llama 3.1 70B via vLLM
-- **Embeddings:** bge-large or e5-mistral
+- **LLM:** Current capable open-weight family via vLLM
+- **Embeddings:** Current open embed family
 - **Vector DB:** Qdrant or Milvus
 - **Framework:** LlamaIndex
 - **Infra:** Modal, RunPod, or Lambda Labs

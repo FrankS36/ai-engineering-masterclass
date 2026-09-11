@@ -232,18 +232,18 @@ volumes:
 
 ### Break-Even Calculation
 
-**Scenario:** 10M tokens/day, GPT-4.1 Mini pricing ($0.40/M input, $1.60/M output, ~50/50 split)
+**Scenario:** 10M tokens/day, roughly half input / half output. Plug **current** cheap/fast hosted $/M into:
 
-**API cost:**
-- Daily: 5M input x $0.40/M + 5M output x $1.60/M = **$10/day**
-- Monthly: **$300/month**
+`daily = 5M × in_$/M + 5M × out_$/M`
 
-**Local cost (Llama 3.1 8B on RTX 4090):**
-- Hardware: $1,600 one-time (amortized over 2 years = $67/month)
-- Power: ~350W x 24h x 30 days x $0.12/kWh = **$30/month**
-- Total: **~$97/month**
+**Local cost (small open-weight instruct on a consumer GPU):**
+- Hardware amortized over a couple of years
+- Power: GPU watts × hours × your $/kWh
+- Compare that monthly number to `daily × 30`
 
-**Break-even: ~3.3M tokens/day.** Below that, API is cheaper. Above that, local wins.
+**Break-even moves with list prices.** Below it, hosted APIs usually win. Above it, local can win if quality on your evals is acceptable.
+
+> **Look up now.** Prompt: "Using official cheap/fast hosted prices, compute monthly API cost for 5M input + 5M output tokens/day. Then compare to a current small open-weight model you can run on one consumer GPU."
 
 **Caveats:**
 - Assumes the local model's quality is acceptable for your use case

@@ -24,15 +24,17 @@ The barrier to entry dropped. The challenge shifted from "can we build this?" to
 
 This field didn't emerge gradually. Several forces hit at the same time:
 
-**1. Model capability crossed the usefulness threshold.** GPT-3 (2020) proved that scale creates emergent abilities — models suddenly became good enough for real applications without task-specific training. By 2023, models could reason through multi-step problems, write production code, and follow complex instructions.
+**1. Model capability crossed the usefulness threshold.** Early large-scale decoder models (GPT-3 in 2020 is the usual landmark) showed that scale creates abilities nobody explicitly programmed. Once a general model could write, code, and follow instructions well enough to ship, the job shifted from training to using.
 
-**2. APIs democratized access.** OpenAI, Google, and Anthropic made frontier models available through simple REST APIs. You no longer need infrastructure expertise — just an API key and a credit card.
+**2. APIs democratized access.** The major labs put frontier models behind REST APIs. You no longer need a cluster — an API key and a credit card is enough to prototype.
 
-**3. Costs dropped dramatically.** Inference pricing fell roughly 10-30x between 2022 and 2025 across major providers. Tasks that were economically impossible at $0.06 per 1K tokens became viable at $0.002. This is real but not the "100x" number you see in blog posts — it depends heavily on which models and tasks you compare.
+**3. Costs dropped dramatically.** Equivalent intelligence got cheaper by an order of magnitude (sometimes more). Exact multiples depend on which two SKUs you compare — look up current $/M rather than memorizing a ratio.
 
-**4. Context windows expanded.** From 4K tokens (GPT-3) to 200K+ (Claude) and 1M+ (Gemini). This means models can now process entire codebases, books, or long conversation histories in a single call — fundamentally changing what's possible with retrieval and document analysis.
+**4. Context windows expanded.** Early APIs held a few thousand tokens. Production windows moved to tens of thousands, then hundreds of thousands, and some classes now advertise a million-plus. The durable lesson is not a number: longer context is useful and still expensive, and it does not replace retrieval for a large or changing corpus.
 
-**5. The tooling ecosystem matured.** LangChain, LlamaIndex, vector databases (Pinecone, Weaviate, Chroma), observability platforms (LangSmith, Helicone), and structured output libraries (Instructor, Outlines) created an infrastructure layer that abstracts real complexity.
+> **Look up now.** Prompt: "What are the current maximum context windows for the cheap/fast and flagship models from OpenAI, Anthropic, and Google? Cite official docs."
+
+**5. The tooling ecosystem matured.** Orchestration libraries, vector stores, eval/observability platforms, and structured-output helpers created an infrastructure layer. Specific names rotate; the jobs (retrieve, constrain, trace, evaluate) do not.
 
 **6. Enterprise demand exploded.** Every company wants AI features. The talent gap between "ML researchers who can train models" and "developers who can use APIs" created massive demand for AI engineers who can bridge that gap.
 
@@ -42,7 +44,7 @@ This field didn't emerge gradually. Several forces hit at the same time:
 
 **Large Language Models (2020-2023)** — GPT-3, PaLM, LLaMA. Multi-task via prompting: one model could write, summarize, translate, and code. The breakthrough was that scale created abilities nobody explicitly programmed.
 
-**Foundation Models (2023+)** — GPT-4, Claude, Gemini. Native multimodality (text, images, audio, video in one model), million-token context windows, sophisticated reasoning through chain-of-thought, and tool use. The term "foundation model" (coined by Stanford's CRFM in 2021) captures the idea: these are base layers everything else builds on.
+**Foundation Models (now)** — A general base you steer with prompts, retrieval, and tools. Native multimodality, long context, and tool use are the usual capabilities. Family names (GPT, Claude, Gemini, Llama, …) are brands; the pattern is the same. Look up which current SKU you actually call.
 
 > The shift: we stopped building task-specific models and started steering general-purpose intelligence through prompts, retrieval, and tools.
 
@@ -116,13 +118,15 @@ At scale, per-token costs add up fast. Smart optimization cuts bills dramaticall
 
 **1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send simple queries to a fast/cheap model. Send complex analysis to a frontier model.
 
-**2. Prompt caching (30-60% savings):** Anthropic offers 90% discounts on cached prompt prefixes. OpenAI offers 50% on repeated prefixes >1024 tokens. Structure your prompts with static content first.
+**2. Prompt caching (often the biggest win on chatty apps):** Providers discount repeated prompt prefixes. Minimum prefix length and the discount rate change — look them up. Structure prompts with static content first so the cache can hit.
 
 **3. Prompt compression (20-40% savings):** Shorter prompts cost less. Remove examples that don't improve quality. Use concise system prompts. Every token you cut is money saved at scale.
 
 **4. Response caching (varies):** Cache responses to identical or semantically similar queries. A customer support bot answering the same FAQ 1,000 times should hit cache 999 times.
 
 **5. Batching (15-30% savings):** Some providers offer batch APIs at discounted rates for non-time-sensitive work. Classification, extraction, and analysis tasks often don't need real-time responses.
+
+[INTERACTIVE: COST_OPTIMIZATION]
 
 ## The Evaluation Gap
 

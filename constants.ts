@@ -43,15 +43,17 @@ The barrier to entry dropped. The challenge shifted from "can we build this?" to
 
 This field didn't emerge gradually. Several forces hit at the same time:
 
-**1. Model capability crossed the usefulness threshold.** GPT-3 (2020) proved that scale creates emergent abilities — models suddenly became good enough for real applications without task-specific training. By 2023, models could reason through multi-step problems, write production code, and follow complex instructions.
+**1. Model capability crossed the usefulness threshold.** Early large-scale decoder models (GPT-3 in 2020 is the usual landmark) showed that scale creates abilities nobody explicitly programmed. Once a general model could write, code, and follow instructions well enough to ship, the job shifted from training to using.
 
-**2. APIs democratized access.** OpenAI, Google, and Anthropic made frontier models available through simple REST APIs. You no longer need infrastructure expertise — just an API key and a credit card.
+**2. APIs democratized access.** The major labs put frontier models behind REST APIs. You no longer need a cluster — an API key and a credit card is enough to prototype.
 
-**3. Costs dropped dramatically.** Inference pricing has fallen roughly 10-30x since 2022 and continues to decline. Tasks that were economically impossible at early pricing tiers became viable as costs dropped by an order of magnitude. The exact savings depend on which models and tasks you compare — check [current provider pricing](https://openai.com/pricing) for the latest numbers.
+**3. Costs dropped dramatically.** Equivalent intelligence got cheaper by an order of magnitude (sometimes more). Exact multiples depend on which two SKUs you compare — look up current $/M rather than memorizing a ratio.
 
-**4. Context windows expanded.** From 4K tokens (GPT-3) to 200K+ (Claude) and 1M+ (Gemini). This means models can now process entire codebases, books, or long conversation histories in a single call — fundamentally changing what's possible with retrieval and document analysis.
+**4. Context windows expanded.** Early APIs held a few thousand tokens. Production windows moved to tens of thousands, then hundreds of thousands, and some classes now advertise a million-plus. The durable lesson is not a number: longer context is useful and still expensive, and it does not replace retrieval for a large or changing corpus.
 
-**5. The tooling ecosystem matured.** LangChain, LlamaIndex, vector databases (Pinecone, Weaviate, Chroma), observability platforms (LangSmith, Helicone), and structured output libraries (Instructor, Outlines) created an infrastructure layer that abstracts real complexity.
+> **Look up now.** Prompt: "What are the current maximum context windows for the cheap/fast and flagship models from OpenAI, Anthropic, and Google? Cite official docs."
+
+**5. The tooling ecosystem matured.** Orchestration libraries, vector stores, eval/observability platforms, and structured-output helpers created an infrastructure layer. Specific names rotate; the jobs (retrieve, constrain, trace, evaluate) do not.
 
 **6. Enterprise demand exploded.** Every company wants AI features. The talent gap between "ML researchers who can train models" and "developers who can use APIs" created massive demand for AI engineers who can bridge that gap.
 
@@ -61,7 +63,7 @@ This field didn't emerge gradually. Several forces hit at the same time:
 
 **Large Language Models (2020-2023)** — GPT-3, PaLM, LLaMA. Multi-task via prompting: one model could write, summarize, translate, and code. The breakthrough was that scale created abilities nobody explicitly programmed.
 
-**Foundation Models (2023+)** — GPT-4, Claude, Gemini. Native multimodality (text, images, audio, video in one model), million-token context windows, sophisticated reasoning through chain-of-thought, and tool use. The term "foundation model" (coined by Stanford's CRFM in 2021) captures the idea: these are base layers everything else builds on.
+**Foundation Models (now)** — A general base you steer with prompts, retrieval, and tools. Native multimodality, long context, and tool use are the usual capabilities. Family names (GPT, Claude, Gemini, Llama, …) are brands; the pattern is the same: one adaptable model, not a zoo of task-specific heads. The term "foundation model" (Stanford CRFM, 2021) is the useful idea. Look up which current SKU you actually call.
 
 > The shift: we stopped building task-specific models and started steering general-purpose intelligence through prompts, retrieval, and tools.
 
@@ -151,7 +153,7 @@ At scale, per-token costs add up fast. Smart optimization cuts bills dramaticall
 
 **1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send simple queries to a fast/cheap model. Send complex analysis to a frontier model.
 
-**2. Prompt caching (30-60% savings):** Anthropic offers 90% discounts on cached prompt prefixes. OpenAI offers 50% on repeated prefixes >1024 tokens. Structure your prompts with static content first.
+**2. Prompt caching (often the biggest win on chatty apps):** Providers discount repeated prompt prefixes. Minimum prefix length and the discount rate change — look them up. Structure prompts with static content first so the cache can hit.
 
 **3. Prompt compression (20-40% savings):** Shorter prompts cost less. Remove examples that don't improve quality. Use concise system prompts. Every token you cut is money saved at scale.
 
@@ -487,7 +489,7 @@ When the model generates output, it produces a probability distribution over the
 
 ## Context Windows: What Is Possible and What It Costs
 
-Context windows have grown dramatically: from GPT-3's 2K tokens (2020) to models supporting 200K-1M+ tokens today. Check provider documentation for current context limits — they increase frequently.
+Context windows have grown from a few thousand tokens on early APIs to hundreds of thousands (and, on some SKUs, a million-plus). Treat any number you remember as stale. Check the provider's current docs for the ID you actually call.
 
 Longer context windows enable new architectures — you can fit entire codebases, long documents, or extended conversation histories into a single prompt. But there are engineering tradeoffs:
 
@@ -733,7 +735,7 @@ The models are impressive, but they are also engineering artifacts with knowable
       {
             "id": "f3-12",
             "front": "Context Window",
-            "back": "Maximum tokens a model can process at once. Modern models range from 128K to 2M+ tokens."
+            "back": "Maximum tokens a model can process at once. Limits vary by SKU and change often — look up the model you are calling."
       },
       {
             "id": "f3-13",
@@ -7767,6 +7769,8 @@ The math depends on your volume and which API you're comparing against. Here's t
 
 **The break-even** depends entirely on your API pricing tier and volume. Run the numbers with current prices — the crossover is typically in the millions-of-tokens-per-day range for mid-tier API models.
 
+> **Look up now.** Prompt: "Using official cheap/fast hosted prices, compute monthly API cost for 5M input + 5M output tokens/day. Compare to serving a current small open-weight instruct model on one consumer GPU."
+
 **Caveats:**
 - Assumes the local model's quality is acceptable for your use case
 - Doesn't include maintenance, monitoring, or ops time
@@ -7776,7 +7780,7 @@ The math depends on your volume and which API you're comparing against. Here's t
 
 Local and edge AI is not about replacing cloud APIs — it's about having the right tool for each situation. Use local models for privacy, cost optimization at scale, and latency-sensitive applications. Use cloud APIs for frontier capability, simplicity, and low-volume use cases. The hybrid architecture gives you both.
 
-Start with Ollama and a 7-8B model. If quality is sufficient, you've saved yourself significant ongoing costs. If not, you know exactly which queries need the cloud and which don't.
+Start with a local runner and the smallest current instruct model that fits your GPU. If quality is sufficient on your evals, you've saved ongoing API cost. If not, you know which queries still need a hosted mid-tier.
 `,
     quizzes: [
       {
