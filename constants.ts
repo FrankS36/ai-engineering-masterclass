@@ -8,6 +8,19 @@ export const chapters: Chapter[] = [
 
 > **From the field — Frank Sellhausen, Sellhausen AI Systems.** AI doesn't introduce new failures — it speeds up and surfaces organizational failures that already exist. The failure patterns are inventory gaps, controls you can't demonstrate, and documentation that doesn't trace from business intent to monitoring. Tools don't fix culture. They reproduce it faster.
 
+## How this course is organized
+
+This masterclass is aligned to Andrew Ng’s [AI Engineering Skills Map](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map) — skills, not a job title — plus the courses and architect practice that teach how the work is actually done:
+
+- **Agentic AI** (Andrew Ng) — reflection, tool use, planning, multi-agent, and evals as the loop that tells you what to improve. Chapters 6 and 7.
+- **Generative AI for Software Development** (Laurence Moroney) — pair-program the whole SDLC. You keep the decisions. Chapters 16 and 15.
+- **Spec-Driven Development with Coding Agents** (Paul Everitt) — constitution, feature spec, plan–implement–verify, including on a legacy repo. Chapter 17.
+- **Claude Certified Architect** (Anthropic, Foundations + Professional) — orchestration, MCP and tool design, Claude Code workflows (\`CLAUDE.md\`, Skills, hooks, plan mode, CI), structured output, context/reliability, then production evals, safety, and integration. Folded into Chapters 3–9, 15, and 17 — not a separate cert track.
+
+Ng’s four skills are the spine: build and deploy AI applications, keep software-engineering fundamentals sharp enough to steer an agent, use coding agents on purpose, and shape the build. The full map and session checklist live in \`SPINE.md\`.
+
+Read in order when you can. Jump to the failure mode you have.
+
 ## The Paradigm Shift
 
 AI engineering exists because of a simple change: we stopped training models and started using them. Before 2020, building an AI feature meant collecting a dataset, training a model from scratch, and deploying it — a process that required ML PhDs, GPU clusters, and months of work. Now you make an API call.
@@ -3233,6 +3246,15 @@ The four components:
 - **Loop** -- the execution cycle that feeds tool results back into the model and repeats until a termination condition is met.
 
 Strip away any one of these and you have something else. An LLM with tools but no loop is function calling. An LLM with a loop but no tools is chain-of-thought with retries. An LLM with neither is just a prompt.
+
+Ng’s *Agentic AI* course teaches four design patterns that show up in almost every serious workflow. This chapter implements them in vendor-neutral terms:
+
+- **Reflection** — the model critiques its own output and iterates (code review, automated). Use it when first-pass quality is cheap to check and expensive to ship raw.
+- **Tool use** — the model chooses functions: search, databases, APIs, code execution, MCP. Section 6.3.
+- **Planning** — the model breaks a task into sub-tasks and adapts when a step fails. Section 6.4.
+- **Multi-agent** — specialized agents, like a company with roles, coordinated by an orchestrator or a sequence. Later in this chapter.
+
+The pattern that predicts whether a team actually ships: a disciplined **eval and error-analysis loop**. Guessing which component to improve is how agent projects stall. Let traces and evals point at the bottleneck (Chapter 7). Build the patterns in raw Python (or your language) before you hide them in a framework.
 
 ---
 
@@ -8508,6 +8530,18 @@ Keep a short personal log: what you delegated last week, where the agent wasted 
 
 A workflow you cannot explain to a new teammate is not a workflow. It is a habit. Habits do not survive an incident.
 
+## Pair-program the whole SDLC
+
+Laurence Moroney’s software-development course is this chapter applied to everyday engineering, not only to “AI features.” Treat the LLM as a teammate with roles you assign:
+
+- **Pair coder** — iterative prompting, feedback, a named role (“you are a reviewer who has not seen the ticket”).
+- **Tester** — edge cases, failing tests first, then the fix. Keep the tests you would bet an incident on; discard the ones that only please the model.
+- **Docs** — inline, API, and runbooks. You still decide what a stranger needs.
+- **Dependencies** — research a package, explain the conflict, do not silently add a second HTTP client.
+- **Design** — schemas, CDD/config files, and a handful of patterns (factory, strategy) when they earn their complexity.
+
+Chat, IDE-inline, and agentic tools have different blast radii. Chat cannot edit the repo. An agent can. Scope the tools the way you would scope a junior’s permissions (Chapter 16).
+
 ## How this sits on the map
 
 | Skill Ng named | What you practice here | Where else it lives |
@@ -9039,5 +9073,359 @@ Every decision in this chapter comes back to a single discipline: being honest a
             "back": "Considerations around bias, fairness, transparency, and societal impact of AI features."
       }
 ]
-  }
+  },
+  {
+    id: 'ch16',
+    title: "Software Engineering Fundamentals",
+    content: `# Software Engineering Fundamentals
+
+> Coding agents changed how we type. They did not change what software has to do: stay up, stay correct, stay cheap enough, and stay changeable. If you cannot name the tradeoffs, the agent will pick them for you — usually the ones that make the demo look finished.
+
+Andrew Ng’s skills map puts software engineering fundamentals next to building AI applications for a reason. The AI core almost always lives inside a broader application. Laurence Moroney’s *Generative AI for Software Development* course makes the same point from the other direction: use an LLM as a pair-programmer through the whole SDLC, but you still choose the data model, the tests, the dependencies, and the design.
+
+This chapter is that substrate. Chapter 15 is how you steer the agent. Chapter 17 is how you write the spec. Here is what you must already understand so those two chapters have something to steer toward.
+
+## The vibe-coding failure mode
+
+A novice can vibe-code a simple app. The agent will make bad tradeoffs in latency, availability, consistency, reliability, maintainability, simplicity, and cost — because nobody told it those axes existed.
+
+You do not need to memorize syntax. You do need to know:
+
+- What the full stack actually is
+- How data is stored and accessed
+- How the pieces are assembled
+- How the system fails and how it is secured
+- How it gets to production and stays there
+
+Those five are Ng’s list. The rest of this chapter is that list, written so you can brief an agent in the language of engineering instead of the language of wishes.
+
+## Full-stack literacy
+
+Agentic coding lets a specialist act more like a full-stack engineer. That only works if you understand the parts the agent is touching on your behalf.
+
+**Front end:** UI components, page rendering, caching, accessibility, what is computed on the server vs the client. If you cannot say where state lives, the agent will put it in three places.
+
+**Back end:** API design, authentication, sessions, async work, background jobs. If you cannot say what must be synchronous, the agent will hide a 12-second model call behind a button and call it shipped.
+
+**Testing:** Unit vs integration, what to mock, what coverage actually means. Moroney treats the LLM as a tester: ask it for edge cases, then keep the tests *you* would bet an incident on.
+
+**The boundary:** What the browser may see, what the server must enforce, what never leaves the vault. Agents love to put secrets in the client because the happy path is shorter that way.
+
+You do not have to be the world’s best at every layer. You have to be literate enough to reject a bad proposal in each one.
+
+## Data
+
+Data is hard to change even when an agent writes the migration. Choose it like you will live with it.
+
+**Access patterns first.** What do you look up, by what key, how often, how fresh? That decides relational vs document vs key-value vs graph — not the blog post the model trained on.
+
+**Transactions and concurrency.** If two users can book the last seat, you need a rule, not a vibe.
+
+**Lifecycle.** What is collected, how long it lives, who can see it, how it is deleted. Privacy and compliance are data-architecture decisions.
+
+**Freshness.** Stale context makes AI systems confidently wrong. If the agent’s input comes from your store, a bad schema is a bad prompt you cannot see.
+
+**Evolve with the product.** The prototype store is not the production store. Say that out loud before the agent “helpfully” hard-codes SQLite assumptions into twelve services.
+
+Moroney’s course walks this with real schemas, CRUD, and an ORM. The skill to keep: you can sit with an LLM and design a schema *because* you can explain the access pattern, not because the model suggested a fashionable database.
+
+## Architecture
+
+Architecture is the set of tradeoffs you chose on purpose.
+
+Ask: how many users, how important is latency, how important is cost, what happens if this is down for an hour? Then choose:
+
+- Platform and runtime
+- Front-end / back-end boundary
+- Where state lives
+- Monolith vs services (granularity is a decision, not a virtue)
+- The stack — sometimes by running a short experiment, not by copying last year’s tweet
+
+The right architecture is a moving target. Prototype ≠ first production ≠ scale. Ng’s point: the simple architecture that gets you a yes from users is often the wrong architecture to ossify. Design so you can evolve it.
+
+When you brief an agent, name the phase. “This is a spike; optimize for deletion” produces different code than “this is the path that bills customers.”
+
+## Secure and reliable
+
+Reliability is a testing strategy plus a failure plan.
+
+**Tests:** What mix of unit and integration. What must stay deterministic. What is an eval (Chapter 7) vs a unit test. Agents will weaken tests to go green. Your job is to notice.
+
+**Failures:** Rate limits, timeouts, poison messages, partial writes. Design for graceful degradation and a small blast radius.
+
+**Shift left on security.** Do not write the app and then “add security.” Authn, authz, secrets, supply chain, and cloud config are design inputs. AI tools can scan; they cannot decide your threat model.
+
+If you cannot explain the blast radius of a change, you are not ready to let an agent merge it.
+
+## Scale and operate
+
+Shipping is the rest of the SDLC: environment, release strategy, CI/CD, and enough infrastructure knowledge to not treat “the cloud” as a single button.
+
+In production you need observability, alerts, and an incident habit. To scale you need a real picture of load — then servers, load-balancing, indexing, replication, or an architecture change. Version control, code review, dependency hygiene, and technical debt are how the system stays evolvable.
+
+Moroney’s team-engineering modules (testing, documentation, dependencies) are this chapter in pair-programming form. Use the LLM to draft the runbook. You still own the on-call.
+
+## Briefing the agent in engineering language
+
+This is the payoff. Fundamentals exist so you can say things like:
+
+- “Postgres, access by \`org_id\` + \`created_at\`, no cross-tenant reads.”
+- “Synchronous for the checkout confirm; queue the receipt email.”
+- “Unit-test the service layer; do not mock away the auth check.”
+- “If the model is down, show last-known draft, do not fail the save.”
+
+Those sentences are context. Without them, the agent optimizes for looking done.
+
+## How this sits in the course
+
+| Skill | Practice here | Next |
+|---|---|---|
+| Full-stack literacy | Name every layer the agent will touch | Chapter 15 |
+| Data | Access patterns, lifecycle, freshness | Chapter 5, Chapter 8 |
+| Architecture | Phase-appropriate tradeoffs | System Design resource |
+| Secure & reliable | Tests, blast radius, shift-left | Chapter 9 |
+| Operate | SDLC, CI, observability | Chapter 8 |
+| Pair-program the SDLC | LLM as tester, docs, deps — you keep the decisions | Chapter 15, Chapter 17 |
+
+Syntax is cheap now. Taste in tradeoffs is not.
+
+## Summary
+
+Software fundamentals are how you steer. Learn the stack, the data, the architecture, the failure modes, and the path to production well enough to reject a bad default. Then give the agent that language. Then write a spec so the language survives the next session.
+`,
+    quizzes: [
+      {
+        id: "q16-1",
+        question: "Why do software fundamentals still matter when a coding agent writes the code?",
+        options: [
+          "They do not — syntax is the job",
+          "So you can name tradeoffs (latency, cost, reliability, security) and steer the agent instead of accepting demo-friendly defaults",
+          "Only for people who do not use AI",
+          "Only for interviews"
+        ],
+        correctIndex: 1,
+        explanation: "Ng's point: vibe coding without fundamentals lets the agent pick tradeoffs you did not know existed."
+      },
+      {
+        id: "q16-2",
+        question: "What should decide your data store?",
+        options: [
+          "Whatever the model suggested last week",
+          "Access patterns: what you look up, by what key, how fresh, how concurrent",
+          "Always Postgres",
+          "Always a vector database"
+        ],
+        correctIndex: 1,
+        explanation: "Data is hard to change. Access patterns decide the model, not fashion."
+      },
+      {
+        id: "q16-3",
+        question: "What does 'name the phase' mean when briefing an agent?",
+        options: [
+          "Always say production",
+          "Tell it whether this is a disposable spike or a customer-billing path so it optimizes for the right tradeoffs",
+          "Never mention production",
+          "Only name the sprint number"
+        ],
+        correctIndex: 1,
+        explanation: "Prototype architecture is not production architecture. Say which one you are in."
+      },
+      {
+        id: "q16-4",
+        question: "In Moroney's framing, what does the LLM do in the SDLC?",
+        options: [
+          "Replace code review",
+          "Act as pair coder, tester, docs, and dependency researcher — while you keep the decisions",
+          "Own the on-call",
+          "Choose the threat model"
+        ],
+        correctIndex: 1,
+        explanation: "The course is pair-programming the SDLC, not delegating ownership."
+      }
+    ],
+    flashcards: [
+      { id: "f16-1", front: "Vibe-coding failure", back: "The agent picks latency/cost/reliability tradeoffs you never named because you did not know they existed." },
+      { id: "f16-2", front: "Access pattern", back: "How you look data up — key, frequency, freshness, concurrency. This decides the store." },
+      { id: "f16-3", front: "Phase-appropriate architecture", back: "Spike ≠ first production ≠ scale. Brief the agent with the phase." },
+      { id: "f16-4", front: "Shift left", back: "Security and reliability are design inputs, not a later review." },
+      { id: "f16-5", front: "Engineering language", back: "Concrete constraints you put in context: tenant keys, sync vs queue, which tests must not be weakened." }
+    ]
+  },
+  {
+    id: 'ch17',
+    title: "Spec-Driven Development",
+    content: `# Spec-Driven Development
+
+> Vibe coding is fast. It is also how you get software that does not match what you asked for, written by a model that has already forgotten the ask. A spec is how intent survives the session.
+
+Paul Everitt’s DeepLearning.AI course with JetBrains names the practice: spec-driven development with coding agents. Andrew Ng’s skills map assumes it — “work with a clear spec, and know when not to bother.” This chapter is the workflow: constitution, feature spec, plan–implement–verify, replan, then carry the same loop into a legacy repo.
+
+You already met constitutions in Chapter 15. Here they become the operating system of the project, not a tip.
+
+## Vibe coding vs spec-driven
+
+**Vibe coding:** You talk. The agent edits. You talk again. The thread is the spec. When the thread dies, the spec dies. Cognitive debt piles up: nobody can say what the system is *for* without reading the last 40 files.
+
+**Spec-driven:** You write a markdown spec that defines what to build. The agent implements against it. You validate against it. When you replan, you change the spec first. Intent fidelity stays high because the source of truth is in the repo, not in a chat.
+
+Many strong developers already work this way and did not have a name for it. The name matters because it makes the workflow teachable and portable across agents and IDEs.
+
+Skip the spec for a one-line fix. Write the spec when the work will outlive one sitting: a feature, a migration, a public API, an MVP slice.
+
+## The constitution
+
+A project constitution is the spec you write once and reuse. Everitt’s course builds it with the agent, which is the right order: you decide, the agent drafts, you cut.
+
+A constitution that works is short:
+
+- **Mission** — what this repo is for, in one paragraph
+- **Stack** — languages, frameworks, data store, test command
+- **Invariants** — what must not change without a human
+- **Landmines** — the modules that bill, auth, or delete data
+- **Definition of done** — the verifier the agent may run
+- **Out of scope** — what we are explicitly not building
+
+Frank’s own starter repos do this as \`.cursorrules\`, \`CLAUDE.md\`, \`AGENTS.md\`, or a \`docs/ai-setup.md\` plus a feature-brief template. The filename is not the skill. The skill is: an agent that reads one page produces fewer “helpful” second HTTP clients.
+
+Keep it in the repo. Point every new session at it. When reality disagrees, edit the constitution — do not let the code and the page drift in silence.
+
+## Feature specification
+
+A feature spec is smaller and sharper than a constitution. It should be enough for an agent that has never seen the thread.
+
+Minimum fields (this matches a feature brief you can actually hand to Cursor or Claude):
+
+- User story
+- Data model changes
+- API or actions
+- UI states (empty, loading, error, success)
+- Constraints (perf, security, “do not touch X”)
+- Done criteria a machine can run
+
+If a criterion cannot fail, it is decoration. “Code is clean” is decoration. “\`npm test\` is green and the service rejects a cross-tenant id” is a criterion.
+
+Write the spec in markdown in the repo. The agent implements from the file, not from your memory of the file.
+
+## Plan → implement → verify
+
+Everitt’s loop is the whole method.
+
+**Plan.** The agent proposes files, schema, tests, and what it will not touch. You accept or cut the plan *before* it edits twenty files. A useful plan is gradable. A useless plan says “ensure quality.”
+
+**Implement.** Autonomy only after the first loop proves it understood the spec (Chapter 15). Mechanical work can run unattended. Ontology errors get an interrupt.
+
+**Verify.** Run the done criteria. If the agent weakened a test to go green, the spec failed — treat that as a product bug, not a cute agent quirk.
+
+Then **replan**. The second feature is where SDD pays off. You update the spec and the constitution if the MVP changed shape. You do not keep a stale plan in a closed PR and a new vibe in chat.
+
+An MVP in this workflow is a thin slice that satisfies the spec, not a pile of agent output that looks like a product.
+
+## Legacy codebases
+
+Greenfield SDD is easy. The valuable version is a repo that already exists.
+
+Everitt’s sequence: use the documentation you have (README, types, tests, tickets) to *generate* specs, then implement against those specs. You are not boiling the ocean. You are putting a fence around the next change.
+
+Practical start:
+
+1. Write a constitution that describes the system as it is, not as you wish it was
+2. Spec only the next feature
+3. Generate tests for the current behavior before you change it
+4. Point the agent at those tests as the verifier
+
+Existing patterns beat a clean-room rewrite. Tell the agent that. Frank’s starter rule is the right one: follow the patterns in the repo even when they differ slightly from the rules; explain why.
+
+## Package the workflow
+
+The last step in the SDD course is portability: turn your loop into an agent skill — a \`SKILL.md\` or custom command that another IDE can load. Constitutions and specs are already portable if they are files. Skills make the *ritual* portable: “read constitution → write/update spec → plan → wait for approval → implement → verify.”
+
+Agent replaceability is the test. If the workflow only works in one vendor’s chat, you do not have a workflow. You have a habit.
+
+## When not to bother
+
+Ng’s parenthetical matters. Do not spec:
+
+- A typo
+- A rename the compiler can prove
+- An experiment you will delete this afternoon
+
+Ceremony that does not reduce error is theater. SDD is for work whose intent must survive a context window.
+
+## How this sits in the course
+
+| Move | Source | Where else |
+|---|---|---|
+| Constitution | Everitt; your \`CLAUDE.md\` / \`.cursorrules\` | Chapter 15 |
+| Feature spec | Everitt; feature-brief template | Chapter 14 (what belongs in the spec) |
+| Plan–implement–verify | Everitt; Ng “close the loop with a verifier” | Chapter 7, Chapter 15 |
+| Legacy SDD | Everitt | Chapter 8 |
+| Portable skill | Everitt; builder-advisor \`SKILL.md\` pattern | Chapter 6 (MCP / tools) |
+
+Spec-driven development is how software engineering fundamentals (Chapter 16) get into the agent’s context, and how “using coding agents” (Chapter 15) stops being a vibe.
+
+## Summary
+
+Write a constitution for the repo. Write a spec for the feature. Plan, implement, verify, replan. Generate specs from what a legacy system already does before you change it. Package the ritual so the next agent can run it.
+
+The chat is not the source of truth. The repo is.
+`,
+    quizzes: [
+      {
+        id: "q17-1",
+        question: "What is the core difference between vibe coding and spec-driven development?",
+        options: [
+          "SDD is slower and always worse",
+          "In SDD the source of truth is a repo spec the agent implements against; in vibe coding the chat thread is the spec and dies with the session",
+          "SDD forbids using agents",
+          "Vibe coding requires a constitution"
+        ],
+        correctIndex: 1,
+        explanation: "Everitt: write a markdown spec, implement against it, validate against it. Intent survives the context window."
+      },
+      {
+        id: "q17-2",
+        question: "What belongs in a project constitution?",
+        options: [
+          "Every ticket in the backlog",
+          "Mission, stack, invariants, landmines, definition of done, out of scope — one short page",
+          "Only the license file",
+          "A full architecture decision record for every class"
+        ],
+        correctIndex: 1,
+        explanation: "A constitution is the spec you write once and reuse. Long novels do not get read."
+      },
+      {
+        id: "q17-3",
+        question: "When should you skip a feature spec?",
+        options: [
+          "Never",
+          "Typos, compiler-provable renames, and experiments you will delete this afternoon",
+          "Any work that touches production",
+          "Whenever the agent seems confident"
+        ],
+        correctIndex: 1,
+        explanation: "Ng: know when not to bother. Ceremony that does not reduce error is theater."
+      },
+      {
+        id: "q17-4",
+        question: "How do you start SDD on a legacy repo?",
+        options: [
+          "Rewrite it greenfield",
+          "Describe the system as it is in a constitution, spec only the next change, and generate tests for current behavior before you edit",
+          "Delete the tests so the agent has freedom",
+          "Paste the entire git history into chat"
+        ],
+        correctIndex: 1,
+        explanation: "Generate specs from what exists, then fence the next change. Follow repo patterns."
+      }
+    ],
+    flashcards: [
+      { id: "f17-1", front: "Spec-driven development", back: "Markdown spec in the repo is the source of truth. The agent implements and you verify against it." },
+      { id: "f17-2", front: "Constitution", back: "Short persistent file: mission, stack, invariants, landmines, done, out of scope." },
+      { id: "f17-3", front: "Plan–implement–verify", back: "Accept the plan before bulk edits. Autonomy after the first loop. Verify with criteria that can fail." },
+      { id: "f17-4", front: "Cognitive debt", back: "When the chat was the spec and nobody can say what the system is for without reading forty files." },
+      { id: "f17-5", front: "Agent replaceability", back: "If the workflow only works in one vendor chat, it is a habit, not a workflow." }
+    ]
+  },
+
 ];

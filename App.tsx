@@ -13,6 +13,7 @@ import { SystemDesignView } from './components/SystemDesignView';
 import { ToolkitView } from './components/ToolkitView';
 import { GlobalSearch } from './components/GlobalSearch';
 import { chapters } from './constants';
+import { COURSE_ORDER } from './lib/courseOrder';
 import { ViewMode } from './types';
 import { useLearner } from './context/LearnerContext';
 import { BookOpen, Copy, GraduationCap, Sparkles, Menu, X, PanelLeftClose, PanelLeftOpen, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code, Moon, Sun } from 'lucide-react';
@@ -43,8 +44,9 @@ export default function App() {
 
   const activeChapter = chapters.find(c => c.id === activeChapterId) || chapters[0];
 
-  const currentChapterIndex = chapters.findIndex(c => c.id === activeChapterId);
-  const nextChapter = chapters[currentChapterIndex + 1];
+  const currentChapterIndex = COURSE_ORDER.indexOf(activeChapterId as typeof COURSE_ORDER[number]);
+  const nextChapterId = currentChapterIndex >= 0 ? COURSE_ORDER[currentChapterIndex + 1] : undefined;
+  const nextChapter = nextChapterId ? chapters.find(c => c.id === nextChapterId) : undefined;
 
   const goToNextChapter = () => {
     if (nextChapter) {

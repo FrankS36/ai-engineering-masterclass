@@ -1,5 +1,6 @@
 import React from 'react';
 import { chapters } from '../constants';
+import { COURSE_SECTIONS } from '../lib/courseOrder';
 import { Bookmark, Check, ChevronRight } from 'lucide-react';
 import { useLearner } from '../context/LearnerContext';
 
@@ -9,13 +10,7 @@ interface SidebarProps {
   isCollapsed: boolean;
 }
 
-const sections = [
-  { label: 'Foundations', ids: ['ch1', 'ch2'] },
-  { label: 'Core Skills', ids: ['ch3', 'ch4', 'ch5', 'ch6', 'ch15'] },
-  { label: 'Shipping', ids: ['ch7', 'ch8', 'ch9'] },
-  { label: 'Advanced', ids: ['ch10', 'ch11', 'ch12'] },
-  { label: 'Strategy', ids: ['ch13', 'ch14'] },
-];
+const sections = COURSE_SECTIONS;
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeChapterId, onSelectChapter, isCollapsed }) => {
   const { isComplete, isBookmarked, completedCount, totalChapters, progressPercent } = useLearner();
