@@ -27,7 +27,7 @@ Same stack as sellhausen.com:
 Run: `npm install && npm run dev` → http://localhost:3000  
 Build: `npm run build`
 
-Do **not** go back to Vite. Do **not** build a Field Guide hub. Do **not** touch the consulting repo.
+Do **not** go back to Vite. Do **not** restore `outputDirectory: dist` in `vercel.json`. Do **not** build a Field Guide hub. Do **not** touch the consulting repo.
 
 ---
 

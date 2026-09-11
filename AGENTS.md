@@ -12,6 +12,7 @@ Next.js 15 App Router · React 19 · Tailwind v4 · DM Sans / Instrument Serif /
 
 - Run: `npm install && npm run dev` → http://localhost:3000
 - Build: `npm run build`
+- Vercel is Next.js (`vercel.json`). Do not restore Vite `outputDirectory: dist`.
 - Do not go back to Vite.
 
 ## Files that matter
