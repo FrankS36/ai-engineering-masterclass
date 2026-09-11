@@ -3,332 +3,248 @@ import { Chapter } from './types';
 export const chapters: Chapter[] = [
   {
     id: 'ch1',
-    title: "The AI Engineering Landscape",
-    content: `# The AI Engineering Landscape
+    title: "The Four Skills",
+    content: `# The Four Skills
 
-> **From the field — Frank Sellhausen, Sellhausen AI Systems.** AI doesn't introduce new failures — it speeds up and surfaces organizational failures that already exist. The failure patterns are inventory gaps, controls you can't demonstrate, and documentation that doesn't trace from business intent to monitoring. Tools don't fix culture. They reproduce it faster.
+> **From the field — Frank Sellhausen, Sellhausen AI Systems.** AI does not introduce new failures. It speeds up the ones you already have: inventory gaps, controls you cannot demonstrate, and documentation that does not trace from intent to monitoring. Tools do not fix culture. They reproduce it faster.
 
-## How this course is organized
+## What you will be able to do
 
-This masterclass is aligned to Andrew Ng’s [AI Engineering Skills Map](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map) — skills, not a job title — plus the courses and architect practice that teach how the work is actually done:
+Leave this chapter able to:
 
-- **Agentic AI** (Andrew Ng) — reflection, tool use, planning, multi-agent, and evals as the loop that tells you what to improve. Chapters 6 and 7.
-- **Generative AI for Software Development** (Laurence Moroney) — pair-program the whole SDLC. You keep the decisions. Chapters 16 and 15.
-- **Spec-Driven Development with Coding Agents** (Paul Everitt) — constitution, feature spec, plan–implement–verify, including on a legacy repo. Chapter 17.
-- **Claude Certified Architect** (Anthropic, Foundations + Professional) — orchestration, MCP and tool design, Claude Code workflows (\`CLAUDE.md\`, Skills, hooks, plan mode, CI), structured output, context/reliability, then production evals, safety, and integration. Folded into Chapters 3–9, 15, and 17 — not a separate cert track.
+1. **Name the four skills** Andrew Ng put on the [AI Engineering Skills Map](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map) — skills, not a job title.
+2. **Point at a chapter** for each capability under those skills.
+3. **Pick a starting move** — read in order, or jump to the failure you have today.
+4. **Choose a model tier** without memorizing this quarter’s SKUs.
 
-Ng’s four skills are the spine: build and deploy AI applications, keep software-engineering fundamentals sharp enough to steer an agent, use coding agents on purpose, and shape the build. The full map and session checklist live in \`SPINE.md\`.
+The rest of the course is the map, taught as practice. This chapter is the legend.
 
-Read in order when you can. Jump to the failure mode you have.
+## Skills, not a job title
 
-## The Paradigm Shift
+AI engineering is a set of skills. Some people hold several. Teams split them. The title on the badge matters less than whether someone can do the work.
 
-AI engineering exists because of a simple change: we stopped training models and started using them. Before 2020, building an AI feature meant collecting a dataset, training a model from scratch, and deploying it — a process that required ML PhDs, GPU clusters, and months of work. Now you make an API call.
+The work exists because models are good enough to *use*. You no longer have to train the intelligence to ship a feature. You compose it — and then you have to measure it, because the output is not deterministic.
 
-This isn't a small change. It created an entirely new engineering discipline.
+That last clause is the whole job. Traditional software fails closed or it fails loud. Language models fail politely, confidently, and differently every run. Ng’s first skill exists because of that: you need building blocks *and* statistical techniques to measure, steer, and govern the system.
 
-**Traditional ML Engineering** was about data pipelines, feature engineering, model training, and hyperparameter tuning. You built the intelligence. **AI Engineering** is about prompting, retrieval, orchestration, and evaluation. The intelligence is pre-built — your job is to make it useful for a specific problem.
+## The four skills
 
-| | ML Engineering | AI Engineering |
+1. **Building and deploying AI applications** — ship systems whose outputs you cannot fully predict. Use evals and error analysis as the loop, not a report you write after launch.
+2. **Software engineering fundamentals** — know the tradeoffs well enough to brief an agent in engineering language. Vibe-coding without this is how demos become incidents.
+3. **Using coding agents** — a mental model, a plan, verifiers, and the judgment to stop. The agent types. You decide what “done” means.
+4. **Shaping the build** — decide what belongs in the spec. Product sense, business context, ownership. When to ship an MVP, and when to slow down.
+
+Read them as one practice. Skill 1 is the product. Skill 2 is the language you use to steer. Skill 3 is how the work gets typed. Skill 4 is whether you are building the right thing.
+
+## Skill 1 — Building and deploying AI applications
+
+Ng’s detail letter breaks this into six capabilities. That is the body of this course.
+
+| Capability | What it is | Chapter |
 |---|---|---|
-| **Core work** | Train models from data | Compose applications from pre-trained models |
-| **Key skills** | Statistics, PyTorch, feature engineering | Prompt design, API integration, RAG, evaluation |
-| **Time to prototype** | Weeks to months | Hours to days |
-| **Background** | PhD/MS in ML, $150-300K+ | Software engineering, $130-250K+ |
-| **Primary challenge** | Getting the model to work | Getting the model to work *reliably, at scale, for real users* |
+| **LLM foundations** | Tokenize and generate. Context, cache, cutoff, sampling, tools. When to fine-tune or self-host. | 2, 3, 4, 11, 12 |
+| **Grounding with data** | Not “buy a vector database.” Prompt vs retrieve-via-tools. Keep the data fresh. | 5 |
+| **Agentic systems** | Workflow vs harness. Tools, memory, when *not* to multi-agent. | 6 |
+| **Evaluation-driven development** | *The* distinguisher. Traces, error analysis, judges you can defend. | 7 |
+| **Operating in production** | Observability, drift, cost, latency, statistical confidence. | 8 |
+| **Machine learning foundations** | Bias/variance, error analysis, data work. Still required. | 10 |
 
-The barrier to entry dropped. The challenge shifted from "can we build this?" to "can we deploy this responsibly and make it actually useful?"
+If you only take one sentence from Skill 1: **evals and error analysis are the loop.** Guessing which component to improve is how agent projects stall.
 
-## Why Now: Six Forces That Converged
+## Skill 2 — Software engineering fundamentals
 
-This field didn't emerge gradually. Several forces hit at the same time:
+The AI core almost always lives inside a broader application. Ng’s five literacies are what you must already understand so a coding agent has something to steer toward.
 
-**1. Model capability crossed the usefulness threshold.** Early large-scale decoder models (GPT-3 in 2020 is the usual landmark) showed that scale creates abilities nobody explicitly programmed. Once a general model could write, code, and follow instructions well enough to ship, the job shifted from training to using.
+1. **Full-stack applications** — where the request goes, and what the user actually sees. Chapter 13, Chapter 16.
+2. **Managing data** — what is stored, who can read it, how it stays true. Chapter 16.
+3. **Designing system architectures** — you provide the architecture; the agent cannot invent your constraints. Chapter 16.
+4. **Secure and reliable** — fail closed, authorize tool calls, evidence a control. Chapter 9.
+5. **Scaling and operating** — the path from laptop to something someone else can run. Chapter 8, Chapter 16.
 
-**2. APIs democratized access.** The major labs put frontier models behind REST APIs. You no longer need a cluster — an API key and a credit card is enough to prototype.
+You do not need to memorize syntax. You need to name the tradeoffs: latency, availability, consistency, reliability, maintainability, simplicity, cost. If you cannot name them, the agent will pick the ones that make the demo look finished.
 
-**3. Costs dropped dramatically.** Equivalent intelligence got cheaper by an order of magnitude (sometimes more). Exact multiples depend on which two SKUs you compare — look up current $/M rather than memorizing a ratio.
+## Skill 3 — Using coding agents
 
-**4. Context windows expanded.** Early APIs held a few thousand tokens. Production windows moved to tens of thousands, then hundreds of thousands, and some classes now advertise a million-plus. The durable lesson is not a number: longer context is useful and still expensive, and it does not replace retrieval for a large or changing corpus.
+A coding agent is an LLM in a loop with tools: read, edit, run, search. Chapter 6 is *building* agents as product. This skill is *using* them to write software.
 
-> **Look up now.** Prompt: "What are the current maximum context windows for the cheap/fast and flagship models from OpenAI, Anthropic, and Google? Cite official docs."
+Ng’s workflow is three phases:
 
-**5. The tooling ecosystem matured.** Orchestration libraries, vector stores, eval/observability platforms, and structured-output helpers created an infrastructure layer. Specific names rotate; the jobs (retrieve, constrain, trace, evaluate) do not.
+1. **Planning** — brainstorm, write a spec, make a plan.
+2. **Execution** — build, test, verify. Choose autonomy vs oversight on purpose.
+3. **Deployment and monitoring** — the same loop, in production.
 
-**6. Enterprise demand exploded.** Every company wants AI features. The talent gap between "ML researchers who can train models" and "developers who can use APIs" created massive demand for AI engineers who can bridge that gap.
+The skills underneath: direct the workflow, enable autonomy without abandoning review, review the work, customize the agent and the environment (\`AGENTS.md\` / Cursor rules / \`CLAUDE.md\`), and understand the harness well enough to see its failure modes.
 
-## The Evolution: Language Models to Foundation Models
+Chapter 15 is the practice. Chapter 17 is the artifact the agent executes against — constitution, feature spec, plan–implement–verify.
 
-**Language Models (2018-2020)** — BERT, RoBERTa, DistilBERT. Task-specific: you needed a different fine-tuned model for sentiment analysis, NER, and classification. Good at understanding text, couldn't generate it well.
+Long-horizon “hours of tokens” is overhyped. Iterative, high-skill intervention wins.
 
-**Large Language Models (2020-2023)** — GPT-3, PaLM, LLaMA. Multi-task via prompting: one model could write, summarize, translate, and code. The breakthrough was that scale created abilities nobody explicitly programmed.
+## Skill 4 — Shaping the build
 
-**Foundation Models (now)** — A general base you steer with prompts, retrieval, and tools. Native multimodality, long context, and tool use are the usual capabilities. Family names (GPT, Claude, Gemini, Llama, …) are brands; the pattern is the same: one adaptable model, not a zoo of task-specific heads. The term "foundation model" (Stanford CRFM, 2021) is the useful idea. Look up which current SKU you actually call.
+Decide what belongs in the spec. That is product sense plus ownership: who is this for, what does “better” mean, what must not change, and whether this is an MVP or a system that has to survive an audit.
 
-> The shift: we stopped building task-specific models and started steering general-purpose intelligence through prompts, retrieval, and tools.
+Chapter 14 is that skill. Chapter 17 is how the decision gets written down so an agent can execute it. Ng’s fifth letter (the detail on shaping) was not published when this chapter was written — the definition in Part 1 is enough to practice.
 
-## The AI Engineering Stack
+> The unit of a good AI feature is not a clever prompt. It is a specified outcome you can evaluate.
 
-Modern AI applications have three layers:
+## How the other sources fold in
 
-### Layer 1: Application
-Your user-facing code — the UI, API gateway, authentication, session management, and orchestration logic. This is standard software engineering. The AI-specific part is how you route requests, manage conversation state, and handle the inherent unreliability of model outputs.
+The map is Ng’s. Three other sources teach *how the work is done*. They are not a second curriculum.
 
-### Layer 2: AI
-The intelligence layer — prompt templates, RAG pipelines, agent loops, fine-tuned models, guardrails, and output parsing. This is where AI engineering lives. Your decisions here determine quality, cost, latency, and safety.
+- **Agentic AI** (Andrew Ng) — reflection, tool use, planning, multi-agent, evals-first. Chapters 6 and 7.
+- **Generative AI for Software Development** (Laurence Moroney) — pair-program the SDLC; you keep the decisions. Chapters 16 and 15.
+- **Spec-Driven Development with Coding Agents** (Paul Everitt) — vibe vs spec, constitution, plan–implement–verify, including on a legacy repo. Chapter 17.
+- **Claude Certified Architect** (Anthropic) — orchestration, MCP, Claude Code workflows, structured output, production evals. Folded into chapters, labeled when it is Claude-specific. Not a cert track.
 
-### Layer 3: Infrastructure
-Model provider APIs (OpenAI, Anthropic, Google), vector databases for embeddings, caching layers (semantic and response), observability and logging, and evaluation pipelines. You're stitching together managed services more than managing servers.
+## How to use this course
 
-## Use Cases and Their Constraints
+Read in order when you can. The order is the map: Skill 1 core, then the SWE literacy that lets you steer, then coding agents, then production, then shaping.
 
-AI features aren't magic. Each category has specific limitations that matter in production:
+Jump when you have a failure in hand:
 
-**Code generation** — Models write functional code, but it needs expert review and security scanning. Compilation rate should exceed 95% for production use. The real risk isn't wrong syntax; it's subtle logic bugs and security vulnerabilities.
+- The demo works and production lies → Chapter 7, then Chapter 8.
+- The agent writes a lot and nothing is done → Chapter 15, then Chapter 17.
+- The model is “wrong” and you cannot say why → Chapter 5 or Chapter 7.
+- You cannot brief the agent without waving → Chapter 16.
 
-**Content and writing** — Drafts, summaries, translations. Hallucination risk means fact-checking is non-negotiable. Quality ratings above 4.5/5 from human evaluators is a reasonable target. The harder problem is maintaining consistent voice and accuracy across thousands of outputs.
+Facts that move — prices, context windows, current model IDs, current MCP docs — are **look-ups**, not memorization. Copy the prompt, run it against official docs, paste the answer into your notes. The principle stays. The SKU does not.
 
-**Data extraction and analysis** — Parsing documents, extracting structured data, classification. Field accuracy above 95% is achievable but requires careful prompt engineering and validation. Edge cases will surprise you.
+## How to pick a model tier
 
-**Customer-facing assistants** — Chatbots, support agents, search. Response accuracy above 85% is a starting target, but the 15% failure rate means you need graceful degradation, escalation paths, and monitoring. A wrong answer confidently stated is worse than saying "I don't know."
+Do not pick “the best model.” Pick the cheapest tier that clears your eval. Escalate only when the eval says you must.
 
-**Education and research** — Tutoring, summarization, synthesis. Academic integrity concerns and the tendency to fabricate citations make this domain high-stakes despite seeming low-risk.
+| Tier | Use when |
+|---|---|
+| **Cheap / fast** | Classification, routing, extraction, high volume. |
+| **Mid** | Everyday chat, tools, most production traffic. |
+| **Flagship** | Hard reasoning, messy documents, when mid-tier fails the eval. |
+| **Reasoning** | Multi-step problems where extra test-time compute is worth the latency. |
+| **Local** | Data cannot leave; cost at high volume; air-gapped. |
 
-> **Practitioner's note:** The mistake teams make most often is picking the use case based on what's impressive to demo rather than what solves a real workflow problem. The impressive demo and the useful product are rarely the same thing.
-
-## Planning an AI Project: The Five Phases
-
-Shipping an AI feature follows a predictable arc. Teams that skip phases pay for it later.
-
-**Phase 1: Proof of Concept (2-4 weeks)**
-Demonstrate basic feasibility. Prompt engineering, rough accuracy assessment, initial cost estimates. Target: >70% accuracy on core task. Common mistake: spending too long here polishing instead of validating the core assumption.
-
-**Phase 2: Prototype (4-8 weeks)**
-Build evaluation infrastructure. This is the phase most teams skip, and it's the one that kills projects later. Create eval sets, establish baseline metrics, test edge cases. Deliverable: a system you can measure, not just one that works on demo inputs.
-
-**Phase 3: Alpha (8-12 weeks)**
-Production-ready code. Error handling, rate limiting, cost controls, monitoring, security review. This is where the engineering happens. The model was the easy part.
-
-**Phase 4: Beta (4-8 weeks)**
-Real user validation with limited rollout. A/B testing, user feedback loops, performance monitoring under real load. Common mistake: declaring victory based on internal testing without exposing the system to real-world messiness.
-
-**Phase 5: Production (Ongoing)**
-Monitoring, cost optimization, model updates, drift detection, incident response. This phase never ends. Most AI features degrade silently without active maintenance.
-
-## Model Selection
-
-Choosing a model is one of the highest-leverage decisions you'll make. It's not about picking "the best" — it's about the right tradeoff between capability, cost, latency, and context for your specific use case.
-
-### How to Evaluate Models
-
-The model landscape changes quarterly. Rather than memorizing today's options, learn to evaluate on four axes:
-
-| Axis | What to measure | How |
-|------|----------------|-----|
-| **Capability** | Does it handle your task well enough? | Run your eval suite against 2-3 candidates |
-| **Cost** | What's the per-request cost at your volume? | Check provider pricing pages (linked below) |
-| **Latency** | Does time-to-first-token meet your UX needs? | Benchmark with realistic prompts |
-| **Context** | Can it fit your inputs? | Compare context windows against your longest real inputs |
-
-**Current pricing and models — check the source:**
-- [OpenAI models and pricing](https://openai.com/pricing)
-- [Anthropic models and pricing](https://docs.anthropic.com/en/docs/about-claude/models)
-- [Google AI models](https://ai.google.dev/pricing)
-
-Every major provider offers a range from cheap/fast (for simple tasks) to expensive/capable (for complex reasoning). The names and prices will change. The tiering pattern won't.
+Capability, cost, latency, context. Run *your* eval on two or three candidates. Names and prices change. The tiering pattern does not.
 
 > **Look up now.** Prompt: "What are the current list prices, context windows, and recommended IDs for the cheapest and most capable models from OpenAI, Anthropic, and Google? Cite official docs."
 
-### How to Choose
-
-**Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for a frontier model when a mid-tier model would handle 80% of their traffic.
-
-**Model tiering** is the production pattern: route simple queries to a cheap/fast model, complex queries to an expensive/capable one. This alone can cut costs 40-70%.
-
 [INTERACTIVE: MODEL_COMPARISON]
 
-## Cost Optimization
-
-At scale, per-token costs add up fast. Smart optimization cuts bills dramatically.
-
-**1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send simple queries to a fast/cheap model. Send complex analysis to a frontier model.
-
-**2. Prompt caching (often the biggest win on chatty apps):** Providers discount repeated prompt prefixes. Minimum prefix length and the discount rate change — look them up. Structure prompts with static content first so the cache can hit.
-
-**3. Prompt compression (20-40% savings):** Shorter prompts cost less. Remove examples that don't improve quality. Use concise system prompts. Every token you cut is money saved at scale.
-
-**4. Response caching (varies):** Cache responses to identical or semantically similar queries. A customer support bot answering the same FAQ 1,000 times should hit cache 999 times.
-
-**5. Batching (15-30% savings):** Some providers offer batch APIs at discounted rates for non-time-sensitive work. Classification, extraction, and analysis tasks often don't need real-time responses.
+At volume, the bill is a product decision. Tier the traffic. Cache repeated prefixes. Shorten prompts that do not move the eval. Batch work that is not live.
 
 [INTERACTIVE: COST_OPTIMIZATION]
 
-## The Evaluation Gap
+## The evaluation gap
 
-Here's the thing that makes AI engineering fundamentally different from traditional software: **you can't write a unit test for it.**
+You cannot write \`assertEqual\` on a paragraph. The same prompt can be right twice in different words and wrong once in confident ones. That is why Skill 1 leads with evals.
 
-In traditional software, \`assertEqual(add(2, 2), 4)\` either passes or fails. In AI engineering, the same prompt can produce different outputs every time. "Correct" is often subjective. Edge cases are infinite. And the model's behavior changes when the provider updates it.
+Teams that invest in evaluation infrastructure early ship products. Teams that skip it ship demos. Chapter 7 is the gate before any model or architecture change — including “let’s just switch providers.”
 
-**The gap between "it works in my demo" and "it works reliably in production" is almost entirely an evaluation problem.** Teams that invest in evaluation infrastructure early ship better products. Teams that skip it ship demos that break in production.
+## Start here
 
-How to evaluate AI systems is covered in depth in Chapter 7.
+You now have the map. Chapter 2 is LLM foundations: a mental model of tokenize, generate, and the knobs that actually change behavior. If you already have that, skip to the failure you have.
 
-## Summary
-
-AI engineering is a new discipline born from a simple shift: pre-trained models became good enough to use as building blocks. The work moved from training intelligence to deploying it — and that turns out to be a different set of skills entirely.
-
-The field is young, the tools are changing fast, and the gap between what's possible and what's reliable is where the real engineering happens. The rest of this course is about closing that gap.
+The field is young. The tools will change before you finish the course. The four skills will not.
 `,
     quizzes: [
       {
-            "id": "q2-1",
-            "question": "What is the \"Critical Distinction\" between AI Engineering and Traditional ML Engineering?",
+            "id": "q1-1",
+            "question": "Andrew Ng’s AI Engineering Skills Map treats “AI engineer” as:",
             "options": [
-                  "AI Engineering requires more PhD researchers",
-                  "Traditional ML focuses on Application UX",
-                  "AI Engineers treat models as configurable building blocks, not systems to train from scratch",
-                  "AI Engineering is only for Python developers"
-            ],
-            "correctIndex": 2,
-            "explanation": "The core shift is moving from training/tuning weights (ML Engineering) to composing applications using pre-trained, capable Foundation Models (AI Engineering)."
-      },
-      {
-            "id": "q2-2",
-            "question": "Which of the following is NOT a typical \"Phase 1: Proof of Concept\" activity?",
-            "options": [
-                  "Basic functionality demonstration",
-                  "Initial prompt engineering",
-                  "Full production deployment with incident response",
-                  "Rough accuracy assessment"
-            ],
-            "correctIndex": 2,
-            "explanation": "Full production deployment and incident response belong to Phase 5. Phase 1 is about proving feasibility and value quickly."
-      },
-      {
-            "id": "q2-3",
-            "question": "Why is \"Evaluation\" considered more difficult in AI Engineering than traditional software?",
-            "options": [
-                  "Computers are slower now",
-                  "Foundation models are probabilistic and open-ended, lacking a single \"correct\" answer",
-                  "There are no tools for evaluation",
-                  "APIs are hard to test"
+                  "A job title you hire for, with a fixed reporting line",
+                  "A set of skills people and teams can hold in combination",
+                  "A synonym for ML researcher who trains foundation models",
+                  "A certification track equivalent to Claude Certified Architect"
             ],
             "correctIndex": 1,
-            "explanation": "Because models generate non-deterministic, open-ended text, you cannot simply write a unit test that asserts \"Output == X\". You need probabilistic evaluation frameworks."
+            "explanation": "Ng is explicit: these are skills, not a job title. People hold several; teams split them."
       },
       {
-            "id": "q2-4",
-            "question": "In the \"Use Case Evaluation Framework\", what is a key question for Technical Feasibility?",
+            "id": "q1-2",
+            "question": "What does Ng call the distinguisher of Skill 1 (building and deploying AI applications)?",
             "options": [
-                  "How much money will we make?",
-                  "Is the logo blue or red?",
-                  "Can existing models handle the task given context and latency constraints?",
-                  "Who is the CEO of the AI company?"
+                  "Knowing this quarter’s flagship model IDs",
+                  "Standing up a multi-agent swarm before you have a workflow",
+                  "Evaluation-driven development — traces, error analysis, a loop you can defend",
+                  "Fine-tuning a base model as the first move"
             ],
             "correctIndex": 2,
-            "explanation": "Technical feasibility focuses on whether the model capabilities (context window, reasoning ability, speed) align with the requirements of the task."
+            "explanation": "Evals and error analysis are the loop. Guessing which component to improve is how projects stall."
+      },
+      {
+            "id": "q1-3",
+            "question": "Why does the skills map put software engineering fundamentals next to building AI apps?",
+            "options": [
+                  "So you can write every line by hand instead of using an agent",
+                  "So you can brief an agent in engineering language and name the tradeoffs",
+                  "Because Ng wants everyone to become a full-time SRE",
+                  "Because coding agents removed the need to understand architecture"
+            ],
+            "correctIndex": 1,
+            "explanation": "Agents pick tradeoffs if you cannot name them — usually the ones that make the demo look finished."
+      },
+      {
+            "id": "q1-4",
+            "question": "You have a coding agent and a vague wish. What does Skill 3 say to do first?",
+            "options": [
+                  "Let it run overnight and review the diff in the morning",
+                  "Plan: brainstorm, write a spec, then execute with a verifier",
+                  "Switch to the most expensive model and try again",
+                  "Add more MCP servers until the agent looks busy"
+            ],
+            "correctIndex": 1,
+            "explanation": "Ng’s workflow is Planning → Execution → Deployment. Long-horizon unattended runs are overhyped."
+      },
+      {
+            "id": "q1-5",
+            "question": "A teammate wants you to memorize current list prices and context windows. What do you do?",
+            "options": [
+                  "Memorize them; the exam will ask",
+                  "Look them up against official docs when the fact moves; keep the tiering principle",
+                  "Copy last quarter’s table from a blog post",
+                  "Always pick the flagship so price does not matter"
+            ],
+            "correctIndex": 1,
+            "explanation": "Prices, windows, and IDs are look-ups. Start cheap, escalate when the eval says you must."
       }
 ],
     flashcards: [
       {
-            "id": "f2-1",
-            "front": "Foundation Model",
-            "back": "A model trained on broad data (text, image, audio) that can be adapted to a wide range of downstream tasks."
+            "id": "f1-1",
+            "front": "The four skills (Ng)",
+            "back": "Building and deploying AI applications · Software engineering fundamentals · Using coding agents · Shaping the build. Skills, not a job title."
       },
       {
-            "id": "f2-2",
-            "front": "AI Engineering",
-            "back": "The discipline of building applications using pretrained foundation models as configurable components."
+            "id": "f1-2",
+            "front": "Skill 1 distinguisher",
+            "back": "Evaluation-driven development: traces, error analysis, a loop before any model or architecture change."
       },
       {
-            "id": "f2-3",
-            "front": "Transfer Learning",
-            "back": "Taking a model pretrained on one task/dataset and fine-tuning or prompting it for a different specific task."
+            "id": "f1-3",
+            "front": "Skill 1 — six capabilities",
+            "back": "LLM foundations · Grounding with data · Agentic systems · Evaluation-driven development · Operating in production · Machine learning foundations."
       },
       {
-            "id": "f2-4",
-            "front": "Context Window",
-            "back": "The limit on the amount of text (tokens) a model can consider at one time (e.g., 128k, 1M+)."
+            "id": "f1-4",
+            "front": "Skill 2 — five literacies",
+            "back": "Full-stack · Managing data · System architecture · Secure and reliable · Scaling and operating. Purpose: steer the agent in engineering language."
       },
       {
-            "id": "f2-5",
-            "front": "Probabilistic System",
-            "back": "A system where the same input may result in different outputs; requires different testing strategies than deterministic code."
+            "id": "f1-5",
+            "front": "Skill 3 workflow",
+            "back": "Planning (brainstorm + spec + plan) → Execution (build / test / verify) → Deployment and monitoring."
       },
       {
-            "id": "f2-6",
-            "front": "RAG",
-            "back": "Retrieval-Augmented Generation. Connecting a model to external data sources to ground its answers."
+            "id": "f1-6",
+            "front": "Skill 4 — shaping the build",
+            "back": "Decide what belongs in the spec: product sense, ownership, MVP vs slow down. Chapter 14; written down in Chapter 17."
       },
       {
-            "id": "f2-7",
-            "front": "Token",
-            "back": "The basic unit of text processing in LLMs. Can be a word, subword, or character. Roughly 4 characters = 1 token in English."
+            "id": "f1-7",
+            "front": "Model tiering",
+            "back": "Start with the cheapest tier that clears your eval. Escalate only when measurement says you must. Names change; the pattern does not."
       },
       {
-            "id": "f2-8",
-            "front": "Prompt Engineering",
-            "back": "The practice of designing and optimizing inputs to get desired outputs from foundation models."
-      },
-      {
-            "id": "f2-9",
-            "front": "Inference",
-            "back": "Running a trained model to generate predictions or outputs. What happens when you call an LLM API."
-      },
-      {
-            "id": "f2-10",
-            "front": "Latency",
-            "back": "The time between sending a request and receiving a response. Critical metric for real-time AI applications."
-      },
-      {
-            "id": "f2-11",
-            "front": "Hallucination",
-            "back": "When an LLM generates plausible-sounding but factually incorrect or fabricated information."
-      },
-      {
-            "id": "f2-12",
-            "front": "Fine-Tuning",
-            "back": "Further training a pre-trained model on task-specific data to improve performance on that task."
-      },
-      {
-            "id": "f2-13",
-            "front": "Embedding",
-            "back": "A dense vector representation of text that captures semantic meaning. Similar texts have similar embeddings."
-      },
-      {
-            "id": "f2-14",
-            "front": "LLM (Large Language Model)",
-            "back": "Neural networks with billions of parameters trained on massive text datasets to understand and generate language."
-      },
-      {
-            "id": "f2-15",
-            "front": "API (in AI context)",
-            "back": "Interface to access AI models over the internet. Most foundation models are accessed via REST APIs."
-      },
-      {
-            "id": "f2-16",
-            "front": "Temperature",
-            "back": "Parameter controlling randomness in model outputs. 0 = deterministic, higher = more creative/random."
-      },
-      {
-            "id": "f2-17",
-            "front": "Multimodal",
-            "back": "AI systems that can process and generate multiple types of data: text, images, audio, video."
-      },
-      {
-            "id": "f2-18",
-            "front": "Grounding",
-            "back": "Anchoring LLM outputs to factual sources (via RAG or citations) to reduce hallucinations."
-      },
-      {
-            "id": "f2-19",
-            "front": "Throughput",
-            "back": "Number of requests or tokens a system can process per unit time. Important for high-volume applications."
-      },
-      {
-            "id": "f2-20",
-            "front": "Model Provider",
-            "back": "Companies that train and serve foundation models via API (OpenAI, Anthropic, Google, etc.)."
+            "id": "f1-8",
+            "front": "Look-up vs remember",
+            "back": "Remember principles, failure modes, and the four skills. Look up prices, windows, current model IDs, and current tool docs."
       }
 ]
   },

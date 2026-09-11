@@ -72,11 +72,10 @@ export function loadTheme(): Theme {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
   } catch {
     // fall through
   }
-  return 'light';
+  return 'dark';
 }
 
 export function saveTheme(theme: Theme): void {
@@ -89,4 +88,5 @@ export function saveTheme(theme: Theme): void {
 
 export function applyThemeClass(theme: Theme): void {
   document.documentElement.classList.toggle('dark', theme === 'dark');
+  document.documentElement.dataset.theme = theme;
 }

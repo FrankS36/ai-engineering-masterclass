@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { chapters } from '../constants';
 import { COURSE_SECTIONS } from '../lib/courseOrder';

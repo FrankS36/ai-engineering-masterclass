@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChapterView } from './components/ChapterView';
@@ -16,7 +18,7 @@ import { chapters } from './constants';
 import { COURSE_ORDER } from './lib/courseOrder';
 import { ViewMode } from './types';
 import { useLearner } from './context/LearnerContext';
-import { BookOpen, Copy, GraduationCap, Sparkles, Menu, X, PanelLeftClose, PanelLeftOpen, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code, Moon, Sun } from 'lucide-react';
+import { BookOpen, Copy, GraduationCap, Menu, X, PanelLeftClose, PanelLeftOpen, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code, Moon, Sun } from 'lucide-react';
 
 export default function App() {
   const { state, theme, toggleTheme, setLastLocation, progressPercent, completedCount, totalChapters } = useLearner();
@@ -116,17 +118,16 @@ export default function App() {
           h-16 flex items-center border-b border-stone-800 bg-stone-900
           ${isDesktopSidebarCollapsed ? 'justify-center px-2' : 'px-5'}
         `}>
-          <a href="https://sellhausen.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-400/25 shrink-0">
-              <Sparkles size={18} className="text-white" />
-            </div>
+          <a href="https://sellhausen.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 min-w-0 hover:opacity-90 transition-opacity">
+            <img src="/logo-mark.png" alt="" width={36} height={36} className="shrink-0" />
             {!isDesktopSidebarCollapsed && (
-              <div className="min-w-0">
-                <h1 className="text-sm font-bold text-white tracking-tight truncate font-serif">
-                  AI Engineering
-                </h1>
-                <p className="text-[10px] text-brand-400 font-mono tracking-wider uppercase">Sellhausen AI Systems</p>
-              </div>
+              <span className="min-w-0 hidden sm:flex flex-col justify-center">
+                <span className="flex items-baseline gap-[0.4em] text-[13px] font-light tracking-[0.18em] uppercase leading-none">
+                  <span className="text-white">Sellhausen</span>
+                  <span className="text-brand-400">Masterclass</span>
+                </span>
+                <span className="mt-1 block h-px w-full bg-brand-400/60" />
+              </span>
             )}
           </a>
           
@@ -174,20 +175,20 @@ export default function App() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 h-full">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-4 lg:px-6 shrink-0">
+        <header className="h-14 lg:h-16 bg-stone-900 border-b border-white/10 flex items-center justify-between px-4 lg:px-6 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             {/* Mobile menu button */}
             <button 
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden p-2 -ml-2 text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 -ml-2 text-white/80 hover:bg-white/5 transition-colors"
             >
               <Menu size={22} />
             </button>
             
-            <h2 className="text-lg font-bold text-stone-900 tracking-tight truncate">
+            <h2 className="text-sm sm:text-base font-serif text-white tracking-tight truncate">
               {activeChapter.title.split(': ')[1] || activeChapter.title}
             </h2>
-            <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-stone-500 bg-stone-100 border border-stone-200 shrink-0">
+            <span className="hidden md:inline-flex items-center px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider text-stone-400 border border-white/15 shrink-0">
               {completedCount}/{totalChapters} · {progressPercent}%
             </span>
           </div>
@@ -205,14 +206,14 @@ export default function App() {
           <button
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="p-2 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition-colors"
+            className="p-2 text-white/70 hover:text-white hover:bg-white/5 transition-colors"
             title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
           {/* View mode tabs */}
-          <div className="flex bg-stone-100 p-1 rounded-xl">
+          <div className="flex border border-white/15 p-0.5">
             <NavButton 
               active={viewMode === ViewMode.NOTES} 
               onClick={() => setViewMode(ViewMode.NOTES)}
@@ -237,10 +238,10 @@ export default function App() {
               <button
                 onClick={() => setIsResourcesDropdownOpen(!isResourcesDropdownOpen)}
                 className={`
-                  flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                  flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors
                   ${[ViewMode.RESOURCES, ViewMode.GLOSSARY, ViewMode.CHEATSHEETS, ViewMode.INTERVIEW, ViewMode.PROJECTS, ViewMode.SYSTEM_DESIGN, ViewMode.TOOLKIT].includes(viewMode)
-                    ? 'bg-white text-brand-600 shadow-sm' 
-                    : 'text-stone-500 hover:text-stone-800'}
+                    ? 'bg-white/10 text-white' 
+                    : 'text-white/60 hover:text-white'}
                 `}
               >
                 <Wrench size={16} />
@@ -249,7 +250,7 @@ export default function App() {
               </button>
               
               {isResourcesDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
+                <div className="absolute right-0 top-full mt-2 w-48 bg-stone-900 border border-white/15 py-2 z-50">
                   <DropdownItem 
                     active={viewMode === ViewMode.RESOURCES}
                     onClick={() => { setViewMode(ViewMode.RESOURCES); setIsResourcesDropdownOpen(false); }}
@@ -311,10 +312,10 @@ const NavButton = ({ active, onClick, icon, label }: { active: boolean; onClick:
   <button
     onClick={onClick}
     className={`
-      flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+      flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors
       ${active 
-        ? 'bg-white text-brand-600 shadow-sm' 
-        : 'text-stone-500 hover:text-stone-800'}
+        ? 'bg-white/10 text-white' 
+        : 'text-white/60 hover:text-white'}
     `}
   >
     {icon}
@@ -328,8 +329,8 @@ const DropdownItem = ({ active, onClick, icon, label }: { active: boolean; onCli
     className={`
       w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors
       ${active 
-        ? 'bg-brand-50 text-brand-600' 
-        : 'text-stone-700 hover:bg-stone-50'}
+        ? 'bg-white/10 text-brand-400' 
+        : 'text-white/70 hover:bg-white/5'}
     `}
   >
     {icon}
