@@ -24,7 +24,7 @@ Next.js 15 App Router · React 19 · Tailwind v4 · DM Sans / Instrument Serif /
 | Chapter source | `chapters/chN-*.md` | Edit here. |
 | Quizzes / cards | `chapters/chN.assessments.json` | Optional. Injected with the chapter. |
 | Live text | `constants.ts` | **Do not read or hand-edit.** Inject only. |
-| Chrome | `app/`, `App.tsx`, `components/ChapterView.tsx` | Parent-site editorial form. |
+| Chrome | `app/`, `App.tsx`, `components/ChapterView.tsx` | Parent-site editorial form. Learn / Cards / Quiz stay first-class in the header. |
 
 ## How to change a chapter
 
@@ -50,6 +50,7 @@ Never open `constants.ts` to “quickly fix” a sentence.
 - A Skills Map hub or parent-site marketing page.
 - A Claude Certified Architect cram track. Fold skills in; label Claude-specific.
 - Restyling the universe. Iterate the form on ch1, then rewrite the next chapter on the map.
+- Burying Learn / Cards / Quiz. Those stay first-class in the top bar. Resources is a quieter sibling.
 
 ## How to run (Cloud Agent)
 

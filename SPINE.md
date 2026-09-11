@@ -22,6 +22,7 @@ Same stack as sellhausen.com:
 | Content | Canonical chapter text in `constants.ts`. Editable source in `chapters/*.md` |
 | Order | `lib/courseOrder.ts` (`COURSE_ORDER`, `COURSE_SECTIONS`, `SKILL_HOME`) |
 | Learner | `lib/learnerState.ts` — localStorage keys `aem-theme`, `aem-learner-v1` |
+| Header | **Learn / Cards / Quiz** stay first-class in the top bar. Do not bury them. Resources is a quieter sibling. |
 
 Run: `npm install && npm run dev` → http://localhost:3000  
 Build: `npm run build`

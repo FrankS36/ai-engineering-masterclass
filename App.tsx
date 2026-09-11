@@ -193,59 +193,59 @@ export default function App() {
             </span>
           </div>
 
-          {/* Global Search */}
-          <GlobalSearch 
-            onNavigate={(chapterId, viewMode) => {
-              setActiveChapterId(chapterId);
-              setViewMode(viewMode);
-              const mainContent = document.querySelector('main');
-              if (mainContent) mainContent.scrollTo(0, 0);
-            }}
-          />
-          
-          <button
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="p-2 text-white/70 hover:text-white hover:bg-white/5 transition-colors"
-            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-
-          {/* View mode tabs */}
-          <div className="flex border border-white/15 p-0.5">
-            <NavButton 
-              active={viewMode === ViewMode.NOTES} 
-              onClick={() => setViewMode(ViewMode.NOTES)}
-              icon={<BookOpen size={16} />}
-              label="Learn"
-            />
-            <NavButton 
-              active={viewMode === ViewMode.FLASHCARDS} 
-              onClick={() => setViewMode(ViewMode.FLASHCARDS)}
-              icon={<Copy size={16} />}
-              label="Cards"
-            />
-            <NavButton 
-              active={viewMode === ViewMode.QUIZ} 
-              onClick={() => setViewMode(ViewMode.QUIZ)}
-              icon={<GraduationCap size={16} />}
-              label="Quiz"
+          <div className="flex items-center gap-2 shrink-0">
+            <GlobalSearch 
+              onNavigate={(chapterId, viewMode) => {
+                setActiveChapterId(chapterId);
+                setViewMode(viewMode);
+                const mainContent = document.querySelector('main');
+                if (mainContent) mainContent.scrollTo(0, 0);
+              }}
             />
             
-            {/* Resources Dropdown */}
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="p-2 text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            {/* Learn / Cards / Quiz stay first-class. Do not bury them. */}
+            <div className="flex border border-white/20 p-0.5">
+              <NavButton 
+                active={viewMode === ViewMode.NOTES} 
+                onClick={() => setViewMode(ViewMode.NOTES)}
+                icon={<BookOpen size={16} />}
+                label="Learn"
+              />
+              <NavButton 
+                active={viewMode === ViewMode.FLASHCARDS} 
+                onClick={() => setViewMode(ViewMode.FLASHCARDS)}
+                icon={<Copy size={16} />}
+                label="Cards"
+              />
+              <NavButton 
+                active={viewMode === ViewMode.QUIZ} 
+                onClick={() => setViewMode(ViewMode.QUIZ)}
+                icon={<GraduationCap size={16} />}
+                label="Quiz"
+              />
+            </div>
+
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsResourcesDropdownOpen(!isResourcesDropdownOpen)}
                 className={`
-                  flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors
+                  flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-white/10 transition-colors
                   ${[ViewMode.RESOURCES, ViewMode.GLOSSARY, ViewMode.CHEATSHEETS, ViewMode.INTERVIEW, ViewMode.PROJECTS, ViewMode.SYSTEM_DESIGN, ViewMode.TOOLKIT].includes(viewMode)
                     ? 'bg-white/10 text-white' 
-                    : 'text-white/60 hover:text-white'}
+                    : 'text-white/55 hover:text-white hover:border-white/20'}
                 `}
               >
                 <Wrench size={16} />
-                <span className="hidden sm:inline">Resources</span>
+                <span className="hidden lg:inline">Resources</span>
                 <ChevronDown size={14} className={`transition-transform ${isResourcesDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
@@ -281,19 +281,19 @@ export default function App() {
                     icon={<Rocket size={16} />}
                     label="Project Ideas"
                   />
-<DropdownItem 
-                                    active={viewMode === ViewMode.SYSTEM_DESIGN}
-                                    onClick={() => { setViewMode(ViewMode.SYSTEM_DESIGN); setIsResourcesDropdownOpen(false); }}
-                                    icon={<Layout size={16} />}
-                                    label="System Design"
-                                  />
-                                  <DropdownItem 
-                                    active={viewMode === ViewMode.TOOLKIT}
-                                    onClick={() => { setViewMode(ViewMode.TOOLKIT); setIsResourcesDropdownOpen(false); }}
-                                    icon={<Code size={16} />}
-                                    label="Dev Toolkit"
-                                  />
-                                </div>
+                  <DropdownItem 
+                    active={viewMode === ViewMode.SYSTEM_DESIGN}
+                    onClick={() => { setViewMode(ViewMode.SYSTEM_DESIGN); setIsResourcesDropdownOpen(false); }}
+                    icon={<Layout size={16} />}
+                    label="System Design"
+                  />
+                  <DropdownItem 
+                    active={viewMode === ViewMode.TOOLKIT}
+                    onClick={() => { setViewMode(ViewMode.TOOLKIT); setIsResourcesDropdownOpen(false); }}
+                    icon={<Code size={16} />}
+                    label="Dev Toolkit"
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -319,7 +319,7 @@ const NavButton = ({ active, onClick, icon, label }: { active: boolean; onClick:
     `}
   >
     {icon}
-    <span className="hidden sm:inline">{label}</span>
+    <span>{label}</span>
   </button>
 );
 
