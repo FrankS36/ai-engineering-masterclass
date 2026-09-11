@@ -16,6 +16,37 @@ The course stays vendor-neutral in the prose. Claude-specific material (Claude C
 
 ---
 
+## Why the live site feels bad (honest)
+
+It is two products glued together:
+
+1. A long 2023–24 API encyclopedia (ch1–14 body, most widgets, Toolkit / Interview / stacks).
+2. A half-started 2026 spine (Ng skills map + Moroney + Everitt + CCA skills), visible as opening blurbs, three newer chapters, and a pile of “Look up now” stickers.
+
+Catalog cleanup without rewriting the teaching made it worse: disclaimers on top of leftover lineups. `CURRICULUM.md` and `GAPS.md` still describe a 10-chapter 2024 course. `chapters/*.md` and `constants.ts` drift.
+
+**Stop:** another find-replace on model names. **Start:** rewrite one chapter at a time to the bar below.
+
+---
+
+## What “good” looks like
+
+A working engineer can ship an AI feature after this course — not recite last quarter’s SKUs.
+
+Each chapter earns its keep if it has:
+
+1. **One job** in the first screenful (what you will be able to do).
+2. **Principles that survive a model generation** (tiers, formulas, failure modes, evals-as-gate).
+3. **One worked example** you could steal (pattern from Frank’s repos, not a vendor cookbook).
+4. **Look-up prompts only where the fact actually moves** (price, window, current ID, current MCP/tool docs) — not on every paragraph.
+5. **Quizzes that test judgment** (“when do you escalate a tier?”) not trivia (“which model has 1M context?”).
+
+Resource views (Toolkit, Interview, System Design) either match that bar or get hidden. No junk drawer.
+
+Length target: a chapter you can finish in one sitting. Cut the encyclopedia in half if needed.
+
+---
+
 ## Guardrails (do not break)
 
 - Work **only** in this repo. Do not touch any AI transformation / Field Guide / sellhausen.com consulting repo.
@@ -168,18 +199,36 @@ Also in the app (not chapters): Interview, Toolkit, System Design, Glossary. Ref
 - Drafts: `chapters/ch16-se-fundamentals.md`, `chapters/ch17-spec-driven.md`.
 - **Perishable-content pass:** ModelComparison is qualitative tiers (no SKU catalog). Toolkit calculator takes user-entered $/M. Cheat Sheets / Resources / Interview / System Design drop dated prices and model IDs. Chapters use **Look up now** prompts + env `MODEL_ID` instead of hardcoded list prices. Shared `LookUpPrompt` component.
 
-### Not done (next sessions, in this order)
+### Not done (quality-first order — rewrite, don’t sticker)
 
-1. **Wire ch16 and ch17 into `constants.ts`** (content + quizzes + flashcards) so they appear in the sidebar.
-2. **ch1 blurb** — add Claude Certified Architect as source #4 (Foundations domains + Professional fold-ins). Point here.
-3. **ch15 CCA D3 pass** — `CLAUDE.md` hierarchy, Skills, slash commands, hooks, plan mode, CI, permissions. Keep it portable (same ideas as Cursor rules / agent skills).
-4. **ch6 CCA/Ng pass** — first-class Reflection section; MCP vs tool vs skill vs resource; orchestrator/subagent and context isolation; when not to multi-agent.
-5. **ch3/ch4 CCA D4 + D5 pass** — structured output, schemas, caching, compaction, token budgets.
-6. **ch7** — evals as the gate (Ng + CCAR-P).
-7. **ch8/ch9** — reliability, fail closed, tool authorization, HITL.
-8. **ch14** — shaping the build + what belongs in the spec.
-9. Refresh Interview / Toolkit / System Design so they mention coding agents, SDD, and MCP (catalogs already de-aged).
-10. Update `CURRICULUM.md` to match this file (this file wins if they drift).
+Do **one chapter per sitting**. Ship it in `constants.ts` + matching `chapters/chN-*.md` + quizzes. Then the next.
+
+**P0 — the course people will judge in 10 minutes**
+
+1. **ch1 rewrite** — orientation, not landscape dump. Why this field, four skills, how to use the course, how to pick a *tier*. No era catalogs presented as current. CCA mentioned as a source, not a track.
+2. **ch16 tighten** — already drafted/wired; make it one sitting, Ng’s five literacies, brief-the-agent language.
+3. **ch15 finish** — Moroney SDLC + portable agent config (rules / `AGENTS.md` / `CLAUDE.md`), Skills, plan vs execute, verifiers, CI. The chapter that has to feel 2026.
+4. **ch17 finish** — vibe vs spec, constitution, plan–implement–verify, replan, legacy. Steal patterns from Frank’s repos.
+
+**P1 — the loop that makes agents real**
+
+5. **ch6 rewrite** — Ng’s four patterns; reflection first-class; tool vs resource vs skill vs MCP; when not to multi-agent.
+6. **ch7 rewrite** — evals as the gate before any model/arch change. Error analysis. Kill benchmark tourism.
+
+**P2 — cut the encyclopedia to a useful core**
+
+7. **ch3 / ch4** — prompting + APIs as *control surfaces* (structure, schema, cache, compaction, token budget). Half the current length.
+8. **ch5** — RAG as grounding, not a vector-DB buyer’s guide.
+9. **ch8 / ch9** — fail closed, HITL, tool auth, production loop. Short.
+10. **ch2** — keep as mental model only; no training-run gossip.
+
+**P3 — only after P0–P1 don’t embarrass us**
+
+11. ch10–ch13: same cut (principles + look-up). ch14: shaping the build + what belongs in the spec.
+12. Resource views: keep System Design + Interview if they match the spine; Toolkit = formula + look-up; hide or delete the rest until rewritten.
+13. Delete or rewrite `CURRICULUM.md` / `GAPS.md` so they cannot contradict this file.
+
+If you only have time for one thing: **rewrite ch1**. That is what the preview opens on.
 
 ### Explicitly out of scope
 
