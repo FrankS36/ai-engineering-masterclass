@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Chapter } from '../types';
 import { 
@@ -85,7 +87,10 @@ import {
     BuildBuy,
     Ch10Summary
 } from './Ch10Components';
-import { Sparkles, Zap, BookOpen, ArrowRight, Lightbulb, ChevronRight } from 'lucide-react';
+import { ArrowRight, Check, Bookmark, Search, Copy } from 'lucide-react';
+import { useLearner } from '../context/LearnerContext';
+import { COURSE_ORDER, SKILL_HOME, chapterOrderLabel, chapterShortTitle } from '../lib/courseOrder';
+import { EditorialHero, ArticleShell } from './EditorialChrome';
 
 interface ChapterViewProps {
   chapter: Chapter;
@@ -112,6 +117,9 @@ interface Block {
 }
 
 export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, onNextChapter }) => {
+  const { isComplete, isBookmarked, toggleComplete, toggleBookmark } = useLearner();
+  const complete = isComplete(chapter.id);
+  const bookmarked = isBookmarked(chapter.id);
 
   // --- Parser Engine ---
   const parseBlocks = (markdown: string): Block[] => {
@@ -282,118 +290,81 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
   // --- Inline Formatting Helper ---
   const formatInline = (text: string) => {
     return text
-      .replace(/`([^`]+)`/g, '<code class="font-mono text-[0.85em] bg-stone-100 text-stone-800 px-1.5 py-0.5 rounded border border-stone-200/80">$1</code>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-stone-900">$1</strong>')
-      .replace(/(?<!\*)\*(?!\*)(.*?)\*/g, '<em class="italic text-stone-700">$1</em>')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-brand-600 font-medium underline decoration-brand-300 hover:decoration-brand-500 underline-offset-2 transition-all">$1</a>');
+      .replace(/`([^`]+)`/g, '<code class="font-mono text-[0.85em] bg-card-bg text-foreground px-1.5 py-0.5 border border-border">$1</code>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+      .replace(/(?<!\*)\*(?!\*)(.*?)\*/g, '<em class="italic">$1</em>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="font-medium text-accent underline decoration-accent/50 underline-offset-2 hover:decoration-accent">$1</a>');
   };
 
   // --- CONCEPT CARDS: Replaces bullet lists with definition-style items ---
   const ConceptCards = ({ items }: { items: string[] }) => {
     return (
-      <div className="my-10 grid gap-4">
+      <ul className="my-4 space-y-3">
         {items.map((item, i) => {
-          // Parse "**Term**: Description" or "**Term** -- Description" format
           const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
           const term = match ? match[1] : null;
           const description = match ? match[2] : item;
-          
+
           return (
-            <div 
-              key={i} 
-              className="group relative bg-gradient-to-br from-white to-stone-50/50 rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-400 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-5">
-                {term && (
-                  <div className="shrink-0 sm:w-52">
-                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-stone-900 text-white text-sm font-semibold tracking-tight">
-                      <Zap size={14} className="text-brand-400" />
-                      {term}
-                    </span>
-                  </div>
-                )}
-                <p
-                  className="flex-1 text-stone-600 leading-relaxed text-sm sm:text-[16px]"
-                  dangerouslySetInnerHTML={{ __html: formatInline(description) }}
-                />
-              </div>
-            </div>
+            <li key={i} className="flex items-start gap-3 text-base leading-relaxed text-muted sm:text-[17px]">
+              <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-accent" />
+              <span>
+                {term && <strong className="font-semibold text-foreground">{term}</strong>}
+                {term ? ' — ' : ''}
+                <span dangerouslySetInnerHTML={{ __html: formatInline(description) }} />
+              </span>
+            </li>
           );
         })}
-      </div>
+      </ul>
     );
   };
 
   // --- PROCESS STEPS: For ordered lists ---
   const ProcessSteps = ({ items }: { items: string[] }) => {
     return (
-      <div className="my-10 relative">
-        {/* Connecting line */}
-        <div className="absolute left-4 sm:left-6 top-8 bottom-8 w-px bg-gradient-to-b from-brand-300 via-brand-400 to-brand-300" />
+      <ul className="my-4 space-y-3">
+        {items.map((item, i) => {
+          const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
+          const title = match ? match[1] : null;
+          const description = match ? match[2] : item;
+          const num = String(i + 1).padStart(2, '0');
 
-        <div className="space-y-6">
-          {items.map((item, i) => {
-            const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
-            const title = match ? match[1] : `Step ${i + 1}`;
-            const description = match ? match[2] : item;
-
-            return (
-              <div key={i} className="relative flex gap-4 sm:gap-6 group">
-                <div className="relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-stone-900 text-white flex items-center justify-center font-bold text-sm sm:text-lg shadow-lg group-hover:bg-brand-600 transition-colors shrink-0">
-                  {i + 1}
-                </div>
-
-                <div className="flex-1 pt-0 sm:pt-1">
-                  <h4 className="text-base sm:text-lg font-bold text-stone-900 mb-1 sm:mb-2">{title}</h4>
-                  <p
-                    className="text-sm sm:text-base text-stone-600 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: formatInline(description) }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+          return (
+            <li key={i} className="flex items-start gap-3 text-base leading-relaxed text-muted sm:text-[17px]">
+              <span className="mt-0.5 font-mono text-xs text-accent">{num}</span>
+              <span>
+                {title && <strong className="font-semibold text-foreground">{title}</strong>}
+                {title ? ' — ' : ''}
+                <span dangerouslySetInnerHTML={{ __html: formatInline(description) }} />
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     );
   };
 
   // --- FEATURE GRID: For simple unordered lists without definitions ---
   const FeatureGrid = ({ items }: { items: string[] }) => {
     return (
-      <div className="my-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <ul className="my-4 space-y-3">
         {items.map((item, i) => {
           const match = item.match(/^\*\*(.*?)\*\*[:\s]*(?:--|—)?\s*(.*)$/);
           const title = match ? match[1] : null;
           const description = match ? match[2] : item;
-          
+
           return (
-            <div 
-              key={i} 
-              className="p-5 rounded-xl bg-white border border-stone-200 hover:border-brand-300 hover:shadow-md transition-all group"
-            >
-              {title ? (
-                <>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-brand-500 group-hover:scale-125 transition-transform" />
-                    <h4 className="font-bold text-stone-900">{title}</h4>
-                  </div>
-                  <p 
-                    className="text-sm text-stone-600 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: formatInline(description) }}
-                  />
-                </>
-              ) : (
-                <p 
-                  className="text-stone-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: formatInline(description) }}
-                />
-              )}
-            </div>
+            <li key={i} className="flex items-start gap-3 text-base leading-relaxed text-muted sm:text-[17px]">
+              <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-accent" />
+              <span>
+                {title && <strong className="font-semibold text-foreground">{title} </strong>}
+                <span dangerouslySetInnerHTML={{ __html: formatInline(description) }} />
+              </span>
+            </li>
           );
         })}
-      </div>
+      </ul>
     );
   };
 
@@ -430,115 +401,101 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
     const data = rows.slice(2).map(splitRow);
 
     return (
-      <div className="my-10 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="min-w-[480px] rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-stone-900 text-white">
-                {headers.map((h, i) => (
-                  <th key={i} className="px-3 py-3 sm:px-6 sm:py-4 text-left text-xs sm:text-sm font-semibold tracking-wide" dangerouslySetInnerHTML={{ __html: formatInline(h.trim()) }} />
+      <div className="my-8 overflow-x-auto">
+        <table className="w-full min-w-[480px] border-t border-border">
+          <thead>
+            <tr className="border-b border-border">
+              {headers.map((h, i) => (
+                <th key={i} className="px-0 py-3 pr-6 text-left font-mono text-[11px] uppercase tracking-[0.15em] text-accent" dangerouslySetInnerHTML={{ __html: formatInline(h.trim()) }} />
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {data.map((row, i) => (
+              <tr key={i}>
+                {row.map((cell, j) => (
+                  <td key={j} className="px-0 py-3 pr-6 text-sm leading-relaxed text-muted">
+                    {j === 0 ? (
+                      <span className="font-medium text-foreground" dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
+                    ) : (
+                      <span dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
+                    )}
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100">
-              {data.map((row, i) => (
-                <tr key={i} className="bg-white hover:bg-stone-50 transition-colors">
-                  {row.map((cell, j) => (
-                    <td key={j} className="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-stone-600">
-                      {j === 0 ? (
-                        <span className="font-medium text-stone-900" dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
-                      ) : (
-                        <span dangerouslySetInnerHTML={{ __html: formatInline(cell.trim()) }} />
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   };
 
   // --- Main Render ---
   const blocks = parseBlocks(chapter.content);
+  const skill = SKILL_HOME[chapter.id];
+  const chapterNum = chapterOrderLabel(chapter.id);
+  const title = chapterShortTitle(chapter.content.match(/^#\s+(.+)$/m)?.[1] || chapter.title);
+  const ledeIndex = blocks.findIndex((block, i) => i > 0 && (block.type === 'p' || block.type === 'blockquote'));
+  const ledeBlock = ledeIndex >= 0 ? blocks[ledeIndex] : null;
+  const lede = ledeBlock
+    ? ledeBlock.content.join(' ').replace(/\*\*/g, '').replace(/^From the field —\s*/i, '')
+    : undefined;
+  const total = COURSE_ORDER.length;
+  let headingCount = 0;
+  const sectionNumbers = blocks.map((block) => (block.type === 'h2' ? ++headingCount : 0));
 
   return (
-    <div className="bg-gradient-to-b from-stone-50 to-white min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-20">
-        
+    <div>
+      <EditorialHero
+        kicker={`Masterclass · ${chapterNum} of ${String(total).padStart(2, '0')}`}
+        number={chapterNum}
+        title={title}
+        lede={lede}
+        byline={skill && skill.skill > 0
+          ? `Frank Sellhausen · Skill ${skill.skill} · ${skill.capability}`
+          : 'Frank Sellhausen · The four skills'}
+      />
+
+      <ArticleShell>
         {blocks.map((block, index) => {
+          if (index === ledeIndex) return null;
+
           switch (block.type) {
-            // --- H1: Chapter Title - Full-width hero style ---
             case 'h1':
+              return null;
+
+            case 'h2': {
+              const num = String(sectionNumbers[index]).padStart(2, '0');
               return (
-                <div key={index} className="mb-16 -mx-6 md:-mx-8 px-6 md:px-8 py-12 bg-stone-900 rounded-3xl relative overflow-hidden">
-                  {/* Background pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-400 rounded-full blur-3xl" />
-                  </div>
-                  
-                  <div className="relative">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 rounded-lg bg-brand-500/20 border border-brand-500/30">
-                        <BookOpen size={20} className="text-brand-400" />
-                      </div>
-                      <span className="text-brand-400 text-sm font-mono tracking-wider uppercase">
-                        Chapter Notes
-                      </span>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-                      {block.content[0].replace(/^.*?:\s*/, '').replace(' - Complete Notes', '')}
-                    </h1>
-                  </div>
+                <div key={index} className="mb-6 mt-12 scroll-mt-24 first:mt-0">
+                  <p className="font-mono text-xs text-accent">{num}</p>
+                  <h2 className="mt-2 font-serif text-2xl leading-snug text-foreground sm:text-3xl">
+                    {block.content[0]}
+                  </h2>
                 </div>
               );
+            }
 
-            // --- H2: Section headers ---
-            case 'h2':
-              return (
-                <div key={index} className="mt-20 mb-8 pt-8 border-t border-stone-200">
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
-                      <Sparkles size={18} className="text-white" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight leading-snug">
-                      {block.content[0]}
-                    </h2>
-                  </div>
-                </div>
-              );
-
-            // --- H3: Subsection headers ---
             case 'h3':
               return (
-                <div key={index} className="mt-12 mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-0.5 bg-brand-400 rounded-full" />
-                    <h3 className="text-xl font-bold text-stone-800">
-                      {block.content[0]}
-                    </h3>
-                  </div>
-                </div>
+                <h3 key={index} className="mt-10 mb-4 font-serif text-xl leading-snug text-foreground sm:text-2xl">
+                  {block.content[0]}
+                </h3>
               );
 
-            // --- H4: Minor headers ---
             case 'h4':
               return (
-                <h4 key={index} className="text-lg font-semibold text-stone-700 mt-8 mb-4 flex items-center gap-2">
-                  <ArrowRight size={16} className="text-brand-500" />
+                <h4 key={index} className="mt-8 mb-3 flex items-center gap-2 text-base font-semibold text-foreground">
+                  <ArrowRight size={14} className="text-accent" />
                   {block.content[0]}
                 </h4>
               );
 
-            // --- Paragraphs ---
             case 'p':
               return (
-                <p 
-                  key={index} 
-                  className="text-[17px] leading-8 text-stone-600 mb-6"
+                <p
+                  key={index}
+                  className="mb-5 text-base leading-relaxed text-muted sm:text-[17px]"
                   dangerouslySetInnerHTML={{ __html: formatInline(block.content.join(' ')) }}
                 />
               );
@@ -549,37 +506,57 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
               return <div key={index}>{renderList(block)}</div>;
 
             // --- Blockquotes ---
-            case 'blockquote':
-              return (
-                <div key={index} className="my-10 relative">
-                  <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-brand-400 to-brand-600 rounded-full" />
-                  <div className="bg-gradient-to-br from-brand-50 to-stone-50 rounded-2xl p-6 pl-8 border border-brand-100">
-                    <Lightbulb className="text-brand-500 w-6 h-6 mb-3" />
-                    <div className="text-lg text-stone-700 leading-relaxed">
+            case 'blockquote': {
+              const joined = block.content.join(' ');
+              const isLookUp = /^\*\*Look up now\.\*\*/i.test(block.content[0] || '') || /Look up now/i.test(joined);
+              const promptText = block.content
+                .join('\n')
+                .replace(/^\*\*Look up now\.\*\*\s*/i, '')
+                .replace(/^Prompt:\s*/i, '')
+                .replace(/^"|"$/g, '');
+              if (isLookUp) {
+                return (
+                  <div key={index} className="my-6 border-l-2 border-accent bg-card-bg p-5">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent">
+                      <Search className="mr-2 inline h-3.5 w-3.5" />
+                      Look up now
+                    </span>
+                    <div className="mt-3 space-y-3 text-base leading-relaxed text-muted sm:text-[17px]">
                       {block.content.map((line, i) => (
-                        <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
+                        <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line.replace(/^\*\*Look up now\.\*\*\s*/i, '').replace(/^Prompt:\s*/i, '')) }} />
                       ))}
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(promptText)}
+                      className="mt-4 inline-flex items-center border border-border px-4 py-2 text-sm font-semibold text-foreground hover:border-accent hover:text-accent"
+                    >
+                      <Copy className="mr-2 h-4 w-4" />
+                      Copy look-up prompt
+                    </button>
                   </div>
-                </div>
+                );
+              }
+              return (
+                <blockquote key={index} className="my-8 border-l-2 border-accent pl-5 font-serif text-xl italic leading-snug text-foreground sm:text-2xl">
+                  {block.content.map((line, i) => (
+                    <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
+                  ))}
+                </blockquote>
               );
+            }
 
             // --- Code blocks ---
             case 'code-block':
               return (
-                <div key={index} className="my-8 rounded-2xl overflow-hidden bg-stone-900 shadow-2xl ring-1 ring-white/10">
-                  <div className="flex items-center justify-between px-4 py-3 bg-stone-800/50 border-b border-stone-700/50">
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                      <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                    </div>
-                    <span className="text-xs font-mono text-stone-500 uppercase tracking-wider">
+                <div key={index} className="my-8 border border-border bg-card-bg">
+                  <div className="flex items-center justify-between border-b border-border px-4 py-2">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent">
                       {block.meta || 'code'}
                     </span>
                   </div>
-                  <div className="p-6 overflow-x-auto">
-                    <pre className="font-mono text-sm leading-relaxed text-stone-300">
+                  <div className="overflow-x-auto p-5">
+                    <pre className="font-mono text-sm leading-relaxed text-foreground">
                       {block.content.join('\n')}
                     </pre>
                   </div>
@@ -673,46 +650,44 @@ export const ChapterView: React.FC<ChapterViewProps> = ({ chapter, nextChapter, 
 
             // --- Horizontal rules ---
             case 'hr':
-              return (
-                <div key={index} className="my-16 flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-stone-300" />
-                  <div className="w-16 h-px bg-stone-200" />
-                  <div className="w-2 h-2 rounded-full bg-stone-300" />
-                  <div className="w-16 h-px bg-stone-200" />
-                  <div className="w-2 h-2 rounded-full bg-stone-300" />
-                </div>
-              );
+              return <hr key={index} className="my-12 border-border" />;
 
             default:
               return null;
           }
         })}
 
-        {/* End of chapter marker */}
-        <div className="mt-24 pt-12 border-t border-stone-200">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center mb-4">
-              <BookOpen size={20} className="text-stone-400" />
-            </div>
-            <p className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-6">
-              End of Chapter
-            </p>
-            
-            {nextChapter && onNextChapter && (
-              <button
-                onClick={onNextChapter}
-                className="group flex items-center gap-3 px-6 py-4 bg-stone-900 hover:bg-stone-800 text-white rounded-2xl transition-all hover:shadow-lg hover:shadow-stone-900/20"
-              >
-                <div className="text-left">
-                  <p className="text-xs text-stone-400 uppercase tracking-wide">Next Chapter</p>
-                  <p className="font-bold text-lg">{nextChapter.title.split(': ')[1] || nextChapter.title}</p>
-                </div>
-                <ChevronRight size={24} className="text-stone-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </button>
-            )}
+        <div className="mt-16 border-t border-border pt-10">
+          <div className="flex flex-wrap items-center gap-6">
+            <button
+              onClick={() => toggleBookmark(chapter.id)}
+              className={`text-sm ${bookmarked ? 'text-accent' : 'text-muted hover:text-accent'}`}
+            >
+              <Bookmark size={14} className={`mr-1.5 inline ${bookmarked ? 'fill-accent' : ''}`} />
+              {bookmarked ? 'Saved' : 'Save for later'}
+            </button>
+            <button
+              onClick={() => toggleComplete(chapter.id)}
+              className={`text-sm ${complete ? 'text-accent' : 'text-muted hover:text-accent'}`}
+            >
+              <Check size={14} className="mr-1.5 inline" />
+              {complete ? 'Completed' : 'Mark complete'}
+            </button>
           </div>
+
+          {nextChapter && onNextChapter && (
+            <button
+              onClick={() => {
+                if (!complete) toggleComplete(chapter.id);
+                onNextChapter();
+              }}
+              className="mt-8 block text-left text-sm text-muted hover:text-accent"
+            >
+              Next · {chapterOrderLabel(nextChapter.id)} {chapterShortTitle(nextChapter.title)} →
+            </button>
+          )}
         </div>
-      </div>
+      </ArticleShell>
     </div>
   );
 };

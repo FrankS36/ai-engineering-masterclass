@@ -1,0 +1,106 @@
+{
+  "quizzes": [
+    {
+      "id": "q15-1",
+      "question": "What is a harness, in the sense of using coding agents?",
+      "options": [
+        "The model vendor’s latest flagship SKU",
+        "The loop around the model: constitution, source of truth, injector, machine, verifier, and bounds",
+        "A multi-agent swarm that writes the spec for you",
+        "The Cloud Agent VM, and nothing else"
+      ],
+      "correctIndex": 1,
+      "explanation": "The model is not the product. The harness is how the agent works without rediscovering your system every session."
+    },
+    {
+      "id": "q15-2",
+      "question": "In this workbook, an agent needs to fix a sentence in Chapter 1. What should it do?",
+      "options": [
+        "Open constants.ts and edit the string in place",
+        "Edit chapters/ch1-landscape.md, then run node scripts/inject-chapter.mjs ch1",
+        "Paste the whole constants.ts into chat so it has full context",
+        "Migrate the bundler first so the sentence renders correctly"
+      ],
+      "correctIndex": 1,
+      "explanation": "Source is the markdown. The injector is the only path into the live artifact. Dumping the blob is context rot."
+    },
+    {
+      "id": "q15-3",
+      "question": "When should you grant an agent real autonomy?",
+      "options": [
+        "Always — autonomy is the point",
+        "Never — review every token",
+        "When you can name a verifier that defines done; otherwise stay in the loop",
+        "Whenever the task is important"
+      ],
+      "correctIndex": 2,
+      "explanation": "Without a verifier, done means the model said it was done. Autonomy is a per-task privilege."
+    },
+    {
+      "id": "q15-4",
+      "question": "A teammate wants High Fast Cloud Agent for a title tweak. What do you do?",
+      "options": [
+        "Use the expensive loop — more thinking is always better",
+        "Use a tight bot or in-editor agent; reserve Cloud Agent + High Fast for a hard rewrite",
+        "Start five agents in the same working tree so one of them is cheap",
+        "Skip the constitution so the agent can move faster"
+      ],
+      "correctIndex": 1,
+      "explanation": "Match the loop to the job. High Fast on a title change is how you empty a usage pool."
+    },
+    {
+      "id": "q15-5",
+      "question": "What is the production minimum when an agent has tools?",
+      "options": [
+        "Trust the system prompt",
+        "Read-only prod by default, no secrets in the thread, human-gated migrations, and a blast radius you can explain",
+        "Give it admin so it can finish the job",
+        "Only allow agents in greenfield repos"
+      ],
+      "correctIndex": 1,
+      "explanation": "If you cannot explain the blast radius of the tools you attached, the design is unfinished."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "f15-1",
+      "front": "Harness",
+      "back": "The loop around the model: constitution, source, injector, machine, verifier, bounds. The model is not the product."
+    },
+    {
+      "id": "f15-2",
+      "front": "Constitution",
+      "back": "A one-page AGENTS.md / CLAUDE.md / rules file: purpose, stack, landmines, how to change a file."
+    },
+    {
+      "id": "f15-3",
+      "front": "Injector",
+      "back": "The only path from editable source into the live artifact. In this repo: node scripts/inject-chapter.mjs chN."
+    },
+    {
+      "id": "f15-4",
+      "front": "False done",
+      "back": "The agent optimized for looking finished — weakened tests, hardcoded fixtures — instead of meeting the verifier."
+    },
+    {
+      "id": "f15-5",
+      "front": "Verifier",
+      "back": "The definition of done the agent can run: tests, types, build, evals. Without one, do not grant autonomy."
+    },
+    {
+      "id": "f15-6",
+      "front": "Context rot",
+      "back": "A dirty thread where contradictory instructions accumulate and the agent ‘simplifies’ away an early constraint."
+    },
+    {
+      "id": "f15-7",
+      "front": "Tight bot vs Cloud Agent",
+      "back": "Bot/Composer for copy and chrome. Cloud Agent for one rewrite + branch + PR. High Fast is not for title tweaks."
+    },
+    {
+      "id": "f15-8",
+      "front": "Closer",
+      "back": "The human or gate that decides the work is actually done. An agent without a closer is faster drift."
+    }
+  ]
+}

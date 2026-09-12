@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Briefcase, ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
+import { LookUpPrompt } from './LookUpPrompt';
 
 interface Question {
     question: string;
@@ -14,7 +15,7 @@ const questions: Question[] = [
         category: 'Fundamentals',
         question: 'What is the difference between a language model and a large language model?',
         answer: 'A language model predicts the probability of a sequence of words. Traditional LMs were smaller and task-specific (e.g., n-gram models, small RNNs). Large Language Models (LLMs) are transformer-based models with billions of parameters, trained on massive datasets. The scale enables emergent capabilities like in-context learning, reasoning, and following complex instructions that smaller models lack.',
-        tips: ['Mention the transformer architecture as the key enabler', 'Discuss emergent capabilities that come with scale', 'Give examples: GPT-4 (1.7T params) vs BERT (340M)']
+        tips: ['Mention the transformer architecture as the key enabler', 'Discuss emergent capabilities that come with scale', 'Compare a small encoder (BERT-class) to a modern decoder-only LLM — skip rumored parameter counts']
     },
     {
         category: 'Fundamentals',
@@ -45,7 +46,7 @@ const questions: Question[] = [
     {
         category: 'Prompting',
         question: 'Explain Chain of Thought prompting and when to use it.',
-        answer: 'Chain of Thought (CoT) prompting encourages the model to show its reasoning steps before giving a final answer. Techniques: (1) Zero-shot CoT: Add "Let\'s think step by step". (2) Few-shot CoT: Provide examples with reasoning. (3) Self-consistency: Generate multiple reasoning paths, take majority vote. Use for: math, logic, multi-step problems. Avoid for: simple factual queries (adds latency/cost). CoT improves accuracy on complex tasks by 10-40%.',
+        answer: 'Chain of Thought (CoT) prompting encourages the model to show its reasoning steps before giving a final answer. Techniques: (1) Zero-shot CoT: Add "Let\'s think step by step". (2) Few-shot CoT: Provide examples with reasoning. (3) Self-consistency: Generate multiple reasoning paths, take majority vote. Use for: math, logic, multi-step problems. Avoid for: simple factual queries (adds latency/cost). Measure the gain on YOUR eval set — published deltas vary and rot quickly.',
         tips: ['Demonstrate with a math problem example', 'Mention that CoT works better on larger models', 'Discuss the latency/cost trade-off']
     },
     {
@@ -100,7 +101,7 @@ const questions: Question[] = [
         category: 'Production',
         question: 'How do you optimize LLM costs in production?',
         answer: 'Cost optimization strategies: (1) Model tiering: Route simple queries to cheaper models. (2) Prompt caching: Reuse system prompts (Anthropic/OpenAI offer this). (3) Semantic caching: Cache responses for similar queries. (4) Prompt compression: Shorter prompts = fewer tokens. (5) Batch processing: Use batch APIs for non-real-time (50% discount). (6) Output limits: Set appropriate max_tokens. (7) Fine-tuning: Smaller fine-tuned model can match larger base model. Monitoring: Track cost per request, per user, per feature.',
-        tips: ['Give concrete cost examples', 'Discuss the model tiering decision logic', 'Mention that 10x cost difference between models is common']
+        tips: ['Walk through the cost formula with live $/M you looked up', 'Discuss the model tiering decision logic', 'Mention that cheap vs flagship is often an order of magnitude, not a fixed SKU']
     },
     {
         category: 'Production',
@@ -166,11 +167,15 @@ export const InterviewPrepView = () => {
                         <Briefcase className="w-8 h-8 text-brand-400" />
                         <h1 className="text-3xl font-bold">Interview Prep</h1>
                     </div>
-                    <p className="text-stone-400">Common AI engineering interview questions with detailed answers</p>
+                    <p className="text-stone-400">Principles and how to talk about them. Look up current model IDs and prices — do not memorize last year&apos;s catalog.</p>
                 </div>
             </div>
 
             <div className="max-w-4xl mx-auto px-6 py-8">
+                <LookUpPrompt
+                    why="Interviewers will ask about current models. Principles stay; names do not."
+                    prompt="What are the current cheap/fast, mid-tier, flagship, and reasoning model IDs from OpenAI, Anthropic, and Google, and their list prices per 1M tokens? Cite official docs."
+                />
                 {/* Category filters */}
                 <div className="flex flex-wrap gap-2 mb-8">
                     <button

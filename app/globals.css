@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+
+  --color-stone-50: #f4f3ef;
+  --color-stone-100: #eeece7;
+  --color-stone-200: #d2cfc8;
+  --color-stone-300: #b4b2ae;
+  --color-stone-400: #7a7874;
+  --color-stone-500: #6b6a65;
+  --color-stone-600: #4a4844;
+  --color-stone-700: #2e2e2a;
+  --color-stone-800: #181815;
+  --color-stone-900: #0e0e0c;
+  --color-stone-950: #0e0e0c;
+
+  --color-brand-50: #f7f1e4;
+  --color-brand-100: #efe4cc;
+  --color-brand-200: #e2d0a8;
+  --color-brand-300: #d4bc86;
+  --color-brand-400: #c8a96e;
+  --color-brand-500: #c8a96e;
+  --color-brand-600: #b8963e;
+  --color-brand-700: #8f7330;
+  --color-brand-800: #5e4c20;
+  --color-brand-900: #3a3014;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-card-bg: var(--card-bg);
+  --color-border: var(--border);
+  --color-surface-dark: var(--surface-dark);
+  --color-surface-dark-muted: var(--surface-dark-muted);
+  --color-secondary: var(--secondary);
+}
+
+:root,
+[data-theme="light"] {
+  --background: #f4f3ef;
+  --surface: #f7f6f2;
+  --card-bg: #fafaf8;
+  --border: #d2cfc8;
+  --foreground: #1a1814;
+  --muted: #6b6a65;
+  --accent: #c8a96e;
+  --accent-hover: #b8963e;
+  --text-inverse: #f7f6f2;
+  --surface-dark: #0e0e0c;
+  --surface-dark-muted: #7a7874;
+  --secondary: #c8a96e;
+}
+
+[data-theme="dark"],
+html.dark {
+  --background: #0e0e0c;
+  --surface: #131310;
+  --card-bg: #131310;
+  --border: #2e2e2a;
+  --foreground: #e8e6e1;
+  --muted: #7a7874;
+  --accent: #c8a96e;
+  --accent-hover: #d9be8a;
+  --text-inverse: #0e0e0c;
+  --surface-dark: #0e0e0c;
+  --surface-dark-muted: #7a7874;
+  --secondary: #c8a96e;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark,
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: color-mix(in oklch, var(--accent) 25%, transparent);
+  color: var(--foreground);
+}
+
+/* Dark remaps so existing stone/white utilities match the parent site */
+html.dark .bg-white,
+html[data-theme="dark"] .bg-white {
+  background-color: #131310;
+}
+
+html.dark .bg-white\/90,
+html[data-theme="dark"] .bg-white\/90 {
+  background-color: rgb(19 19 16 / 0.9);
+}
+
+html.dark .bg-stone-50,
+html[data-theme="dark"] .bg-stone-50 {
+  background-color: #0e0e0c;
+}
+
+html.dark .bg-stone-50\/50,
+html[data-theme="dark"] .bg-stone-50\/50 {
+  background-color: rgb(14 14 12 / 0.5);
+}
+
+html.dark .bg-stone-100,
+html[data-theme="dark"] .bg-stone-100 {
+  background-color: #131310;
+}
+
+html.dark .from-stone-50,
+html[data-theme="dark"] .from-stone-50 {
+  --tw-gradient-from: #0e0e0c;
+}
+
+html.dark .to-white,
+html[data-theme="dark"] .to-white {
+  --tw-gradient-to: #131310;
+}
+
+html.dark .from-white,
+html[data-theme="dark"] .from-white {
+  --tw-gradient-from: #131310;
+}
+
+html.dark .to-stone-50\/50,
+html[data-theme="dark"] .to-stone-50\/50 {
+  --tw-gradient-to: rgb(14 14 12 / 0.5);
+}
+
+html.dark .text-stone-900,
+html[data-theme="dark"] .text-stone-900 {
+  color: #e8e6e1;
+}
+
+html.dark .text-stone-800,
+html[data-theme="dark"] .text-stone-800 {
+  color: #e2e0db;
+}
+
+html.dark .text-stone-700,
+html[data-theme="dark"] .text-stone-700 {
+  color: #cfcbc3;
+}
+
+html.dark .text-stone-600,
+html[data-theme="dark"] .text-stone-600 {
+  color: #a8a59e;
+}
+
+html.dark .border-stone-200,
+html.dark .border-stone-200\/80,
+html[data-theme="dark"] .border-stone-200,
+html[data-theme="dark"] .border-stone-200\/80 {
+  border-color: #2e2e2a;
+}
+
+html.dark .border-stone-100,
+html[data-theme="dark"] .border-stone-100 {
+  border-color: #242420;
+}
+
+html.dark .border-stone-300,
+html[data-theme="dark"] .border-stone-300 {
+  border-color: #3a3a35;
+}
+
+html.dark .divide-stone-100 > :not([hidden]) ~ :not([hidden]),
+html[data-theme="dark"] .divide-stone-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #242420;
+}
+
+html.dark .hover\:bg-stone-50:hover,
+html[data-theme="dark"] .hover\:bg-stone-50:hover {
+  background-color: #181815;
+}
+
+html.dark .hover\:bg-stone-100:hover,
+html[data-theme="dark"] .hover\:bg-stone-100:hover {
+  background-color: #1d1d1a;
+}
+
+html.dark .hover\:text-stone-900:hover,
+html.dark .hover\:text-stone-800:hover,
+html[data-theme="dark"] .hover\:text-stone-900:hover,
+html[data-theme="dark"] .hover\:text-stone-800:hover {
+  color: #e8e6e1;
+}
+
+html.dark .bg-brand-50,
+html[data-theme="dark"] .bg-brand-50 {
+  background-color: #2a2418;
+}
+
+html.dark .bg-brand-100,
+html[data-theme="dark"] .bg-brand-100 {
+  background-color: #3a3120;
+}
+
+html.dark .text-brand-900,
+html[data-theme="dark"] .text-brand-900 {
+  color: #efe4cc;
+}
+
+html.dark .text-brand-800,
+html[data-theme="dark"] .text-brand-800 {
+  color: #e2d0a8;
+}
+
+html.dark .text-brand-700,
+html[data-theme="dark"] .text-brand-700 {
+  color: #d4bc86;
+}
+
+html.dark .border-brand-100,
+html[data-theme="dark"] .border-brand-100 {
+  border-color: #3a3120;
+}
+
+html.dark .bg-green-50,
+html[data-theme="dark"] .bg-green-50 {
+  background-color: #13291c;
+}
+
+html.dark .bg-red-50,
+html[data-theme="dark"] .bg-red-50 {
+  background-color: #2a1515;
+}
+
+html.dark .bg-amber-50,
+html[data-theme="dark"] .bg-amber-50 {
+  background-color: #2a2210;
+}
+
+html.dark .text-green-800,
+html[data-theme="dark"] .text-green-800 {
+  color: #bbf7d0;
+}
+
+html.dark .text-red-800,
+html[data-theme="dark"] .text-red-800 {
+  color: #fecaca;
+}
+
+html.dark .text-amber-800,
+html.dark .text-amber-900,
+html[data-theme="dark"] .text-amber-800,
+html[data-theme="dark"] .text-amber-900 {
+  color: #fde68a;
+}
+
+html.dark .border-amber-200,
+html[data-theme="dark"] .border-amber-200 {
+  border-color: #5e4a1c;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+.gold-grid {
+  background-image: linear-gradient(to right, #c4a574 1px, transparent 1px),
+    linear-gradient(to bottom, #c4a574 1px, transparent 1px);
+  background-size: 48px 48px;
+}

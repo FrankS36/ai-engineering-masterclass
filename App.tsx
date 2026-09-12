@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChapterView } from './components/ChapterView';
@@ -13,18 +15,24 @@ import { SystemDesignView } from './components/SystemDesignView';
 import { ToolkitView } from './components/ToolkitView';
 import { GlobalSearch } from './components/GlobalSearch';
 import { chapters } from './constants';
+import { COURSE_ORDER } from './lib/courseOrder';
 import { ViewMode } from './types';
-import { BookOpen, Copy, GraduationCap, Sparkles, Menu, X, PanelLeftClose, PanelLeftOpen, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code } from 'lucide-react';
+import { useLearner } from './context/LearnerContext';
+import { Menu, X, Wrench, BookA, FileText, Briefcase, Rocket, ChevronDown, Layout, Code, Moon, Sun } from 'lucide-react';
 
 export default function App() {
-  const [activeChapterId, setActiveChapterId] = useState<string>(chapters[0].id);
-  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.NOTES);
+  const { state, theme, toggleTheme, setLastLocation } = useLearner();
+  const [activeChapterId, setActiveChapterId] = useState<string>(state.lastChapterId);
+  const [viewMode, setViewMode] = useState<ViewMode>(state.lastViewMode);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+  useEffect(() => {
+    setLastLocation(activeChapterId, viewMode);
+  }, [activeChapterId, viewMode, setLastLocation]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -37,17 +45,15 @@ export default function App() {
 
   const activeChapter = chapters.find(c => c.id === activeChapterId) || chapters[0];
 
-  const currentChapterIndex = chapters.findIndex(c => c.id === activeChapterId);
-  const nextChapter = chapters[currentChapterIndex + 1];
+  const currentChapterIndex = COURSE_ORDER.indexOf(activeChapterId as typeof COURSE_ORDER[number]);
+  const nextChapterId = currentChapterIndex >= 0 ? COURSE_ORDER[currentChapterIndex + 1] : undefined;
+  const nextChapter = nextChapterId ? chapters.find(c => c.id === nextChapterId) : undefined;
 
   const goToNextChapter = () => {
     if (nextChapter) {
       setActiveChapterId(nextChapter.id);
-      // Scroll the main content area to top
-      const mainContent = document.querySelector('main');
-      if (mainContent) {
-        mainContent.scrollTo(0, 0);
-      }
+      const mainContent = document.querySelector('main[data-course-scroll]');
+      if (mainContent) mainContent.scrollTo(0, 0);
     }
   };
 
@@ -80,237 +86,177 @@ export default function App() {
     }
   };
 
-  const sidebarWidth = isDesktopSidebarCollapsed ? 'w-20' : 'w-72';
+  const practiceActive = (mode: ViewMode) => viewMode === mode;
+  const resourcesActive = [
+    ViewMode.RESOURCES, ViewMode.GLOSSARY, ViewMode.CHEATSHEETS, ViewMode.INTERVIEW,
+    ViewMode.PROJECTS, ViewMode.SYSTEM_DESIGN, ViewMode.TOOLKIT,
+  ].includes(viewMode);
 
   return (
-    <div className="flex h-screen bg-stone-50 overflow-hidden font-sans selection:bg-brand-200 selection:text-brand-900">
-      
-      {/* Mobile Overlay */}
-      <div 
-        className={`
-          fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-40 lg:hidden
-          transition-opacity duration-300
-          ${isMobileSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-        `}
-        onClick={() => setIsMobileSidebarOpen(false)}
-      />
-
-      {/* Sidebar - Fixed on desktop, slide-over on mobile */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 flex flex-col bg-stone-900 text-white
-        transition-all duration-300 ease-in-out
-        lg:relative lg:translate-x-0
-        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${sidebarWidth}
-      `}>
-        {/* Sidebar Header */}
-        <div className={`
-          h-16 flex items-center border-b border-stone-800 bg-stone-900
-          ${isDesktopSidebarCollapsed ? 'justify-center px-2' : 'px-5'}
-        `}>
-          <a href="https://sellhausen.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-400/25 shrink-0">
-              <Sparkles size={18} className="text-white" />
+    <div className="flex h-screen flex-col overflow-hidden bg-background font-sans">
+      <header className="sticky top-0 z-50 shrink-0 border-b border-white/10 bg-surface-dark">
+        <nav className="px-4 sm:px-6 lg:px-8">
+          <div className="flex h-14 items-center justify-between lg:h-16">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="border border-white/20 p-2 text-white lg:hidden"
+                aria-label="Open chapters"
+              >
+                <Menu size={20} />
+              </button>
+              <a href="https://sellhausen.com" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-90">
+                <span className="inline-flex items-center gap-3">
+                  <img src="/logo-mark.png" alt="" width={36} height={36} className="shrink-0" />
+                  <span className="hidden sm:flex flex-col justify-center">
+                    <span className="flex items-baseline gap-[0.4em] text-[15px] font-light uppercase leading-none tracking-[0.2em]">
+                      <span className="text-white">Sellhausen</span>
+                      <span className="text-accent">Masterclass</span>
+                    </span>
+                    <span className="mt-1 block h-px w-full bg-accent/60" />
+                  </span>
+                </span>
+              </a>
             </div>
-            {!isDesktopSidebarCollapsed && (
-              <div className="min-w-0">
-                <h1 className="text-sm font-bold text-white tracking-tight truncate font-serif">
-                  AI Engineering
-                </h1>
-                <p className="text-[10px] text-brand-400 font-mono tracking-wider uppercase">Sellhausen AI Systems</p>
+
+            <div className="flex items-center gap-5 sm:gap-6">
+              <GlobalSearch
+                onNavigate={(chapterId, nextView) => {
+                  setActiveChapterId(chapterId);
+                  setViewMode(nextView);
+                  const mainContent = document.querySelector('main[data-course-scroll]');
+                  if (mainContent) mainContent.scrollTo(0, 0);
+                }}
+              />
+
+              <ul className="flex items-center gap-4 sm:gap-6">
+                <li>
+                  <NavLink active={practiceActive(ViewMode.NOTES)} onClick={() => setViewMode(ViewMode.NOTES)}>
+                    Learn
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink active={practiceActive(ViewMode.FLASHCARDS)} onClick={() => setViewMode(ViewMode.FLASHCARDS)}>
+                    Cards
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink active={practiceActive(ViewMode.QUIZ)} onClick={() => setViewMode(ViewMode.QUIZ)}>
+                    Quiz
+                  </NavLink>
+                </li>
+              </ul>
+
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                className="text-surface-dark-muted transition-colors hover:text-white"
+                title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsResourcesDropdownOpen(!isResourcesDropdownOpen)}
+                  className={`inline-flex items-center justify-center border px-4 py-2 text-sm font-semibold transition-colors ${
+                    resourcesActive
+                      ? 'border-white/50 bg-white/5 text-white'
+                      : 'border-white/25 text-white hover:border-white/50 hover:bg-white/5'
+                  }`}
+                >
+                  Resources
+                  <ChevronDown size={14} className={`ml-1.5 transition-transform ${isResourcesDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isResourcesDropdownOpen && (
+                  <div className="absolute right-0 top-full z-50 mt-2 w-48 border border-white/15 bg-surface-dark py-2">
+                    <DropdownItem active={viewMode === ViewMode.RESOURCES} onClick={() => { setViewMode(ViewMode.RESOURCES); setIsResourcesDropdownOpen(false); }} icon={<Wrench size={16} />} label="Tools" />
+                    <DropdownItem active={viewMode === ViewMode.GLOSSARY} onClick={() => { setViewMode(ViewMode.GLOSSARY); setIsResourcesDropdownOpen(false); }} icon={<BookA size={16} />} label="Glossary" />
+                    <DropdownItem active={viewMode === ViewMode.CHEATSHEETS} onClick={() => { setViewMode(ViewMode.CHEATSHEETS); setIsResourcesDropdownOpen(false); }} icon={<FileText size={16} />} label="Cheat Sheets" />
+                    <DropdownItem active={viewMode === ViewMode.INTERVIEW} onClick={() => { setViewMode(ViewMode.INTERVIEW); setIsResourcesDropdownOpen(false); }} icon={<Briefcase size={16} />} label="Interview Prep" />
+                    <DropdownItem active={viewMode === ViewMode.PROJECTS} onClick={() => { setViewMode(ViewMode.PROJECTS); setIsResourcesDropdownOpen(false); }} icon={<Rocket size={16} />} label="Project Ideas" />
+                    <DropdownItem active={viewMode === ViewMode.SYSTEM_DESIGN} onClick={() => { setViewMode(ViewMode.SYSTEM_DESIGN); setIsResourcesDropdownOpen(false); }} icon={<Layout size={16} />} label="System Design" />
+                    <DropdownItem active={viewMode === ViewMode.TOOLKIT} onClick={() => { setViewMode(ViewMode.TOOLKIT); setIsResourcesDropdownOpen(false); }} icon={<Code size={16} />} label="Dev Toolkit" />
+                  </div>
+                )}
               </div>
-            )}
-          </a>
-          
-          {/* Mobile close button */}
-          <button 
-            className="ml-auto lg:hidden p-2 text-stone-400 hover:text-white hover:bg-stone-800 rounded-lg transition-colors"
-            onClick={() => setIsMobileSidebarOpen(false)}
-          >
-            <X size={20} />
-          </button>
-        </div>
-        
-        {/* Sidebar Content */}
-        <Sidebar 
-          activeChapterId={activeChapterId} 
-          onSelectChapter={(id) => {
-            setActiveChapterId(id);
-            setViewMode(ViewMode.NOTES);
-            setIsMobileSidebarOpen(false);
-            // Scroll to top of content
-            const mainContent = document.querySelector('main');
-            if (mainContent) mainContent.scrollTo(0, 0);
-          }}
-          isCollapsed={isDesktopSidebarCollapsed}
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <div className={`flex min-h-0 flex-1 ${isDesktopSidebarCollapsed ? 'lg:grid lg:grid-cols-[72px_1fr]' : 'lg:grid lg:grid-cols-[280px_1fr]'}`}>
+        <div
+          className={`
+            fixed inset-0 z-40 bg-stone-900/60 lg:hidden
+            ${isMobileSidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}
+          `}
+          onClick={() => setIsMobileSidebarOpen(false)}
         />
 
-        {/* Collapse toggle - desktop only */}
-        <div className="hidden lg:block border-t border-stone-800 p-3">
-          <button
-            onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
-            className="w-full flex items-center justify-center gap-2 p-2.5 text-stone-500 hover:text-white hover:bg-stone-800 rounded-lg transition-colors"
-          >
-            {isDesktopSidebarCollapsed ? (
-              <PanelLeftOpen size={18} />
-            ) : (
-              <>
-                <PanelLeftClose size={18} />
-                <span className="text-sm">Collapse</span>
-              </>
-            )}
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full">
-        {/* Top Header */}
-        <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-4 lg:px-6 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
-            {/* Mobile menu button */}
-            <button 
-              onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden p-2 -ml-2 text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
-            >
-              <Menu size={22} />
+        <aside
+          className={`
+            z-[60] flex h-full flex-col border-r border-border bg-background
+            fixed inset-y-0 left-0 w-[280px] transition-transform lg:static lg:z-auto lg:translate-x-0
+            ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          `}
+        >
+          <div className="flex items-center justify-between border-b border-border px-6 py-4 lg:hidden">
+            <p className="font-mono text-xs uppercase tracking-[0.15em] text-muted">Chapters</p>
+            <button className="p-2 text-muted hover:text-foreground" onClick={() => setIsMobileSidebarOpen(false)} aria-label="Close chapters">
+              <X size={18} />
             </button>
-            
-            <h2 className="text-lg font-bold text-stone-900 tracking-tight truncate">
-              {activeChapter.title.split(': ')[1] || activeChapter.title}
-            </h2>
           </div>
 
-          {/* Global Search */}
-          <GlobalSearch 
-            onNavigate={(chapterId, viewMode) => {
-              setActiveChapterId(chapterId);
-              setViewMode(viewMode);
-              const mainContent = document.querySelector('main');
+          <Sidebar
+            activeChapterId={activeChapterId}
+            onSelectChapter={(id) => {
+              setActiveChapterId(id);
+              setViewMode(ViewMode.NOTES);
+              setIsMobileSidebarOpen(false);
+              const mainContent = document.querySelector('main[data-course-scroll]');
               if (mainContent) mainContent.scrollTo(0, 0);
             }}
+            isCollapsed={isDesktopSidebarCollapsed}
           />
-          
-          {/* View mode tabs */}
-          <div className="flex bg-stone-100 p-1 rounded-xl">
-            <NavButton 
-              active={viewMode === ViewMode.NOTES} 
-              onClick={() => setViewMode(ViewMode.NOTES)}
-              icon={<BookOpen size={16} />}
-              label="Learn"
-            />
-            <NavButton 
-              active={viewMode === ViewMode.FLASHCARDS} 
-              onClick={() => setViewMode(ViewMode.FLASHCARDS)}
-              icon={<Copy size={16} />}
-              label="Cards"
-            />
-            <NavButton 
-              active={viewMode === ViewMode.QUIZ} 
-              onClick={() => setViewMode(ViewMode.QUIZ)}
-              icon={<GraduationCap size={16} />}
-              label="Quiz"
-            />
-            
-            {/* Resources Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setIsResourcesDropdownOpen(!isResourcesDropdownOpen)}
-                className={`
-                  flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                  ${[ViewMode.RESOURCES, ViewMode.GLOSSARY, ViewMode.CHEATSHEETS, ViewMode.INTERVIEW, ViewMode.PROJECTS, ViewMode.SYSTEM_DESIGN, ViewMode.TOOLKIT].includes(viewMode)
-                    ? 'bg-white text-brand-600 shadow-sm' 
-                    : 'text-stone-500 hover:text-stone-800'}
-                `}
-              >
-                <Wrench size={16} />
-                <span className="hidden sm:inline">Resources</span>
-                <ChevronDown size={14} className={`transition-transform ${isResourcesDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isResourcesDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
-                  <DropdownItem 
-                    active={viewMode === ViewMode.RESOURCES}
-                    onClick={() => { setViewMode(ViewMode.RESOURCES); setIsResourcesDropdownOpen(false); }}
-                    icon={<Wrench size={16} />}
-                    label="Tools"
-                  />
-                  <DropdownItem 
-                    active={viewMode === ViewMode.GLOSSARY}
-                    onClick={() => { setViewMode(ViewMode.GLOSSARY); setIsResourcesDropdownOpen(false); }}
-                    icon={<BookA size={16} />}
-                    label="Glossary"
-                  />
-                  <DropdownItem 
-                    active={viewMode === ViewMode.CHEATSHEETS}
-                    onClick={() => { setViewMode(ViewMode.CHEATSHEETS); setIsResourcesDropdownOpen(false); }}
-                    icon={<FileText size={16} />}
-                    label="Cheat Sheets"
-                  />
-                  <DropdownItem 
-                    active={viewMode === ViewMode.INTERVIEW}
-                    onClick={() => { setViewMode(ViewMode.INTERVIEW); setIsResourcesDropdownOpen(false); }}
-                    icon={<Briefcase size={16} />}
-                    label="Interview Prep"
-                  />
-                  <DropdownItem 
-                    active={viewMode === ViewMode.PROJECTS}
-                    onClick={() => { setViewMode(ViewMode.PROJECTS); setIsResourcesDropdownOpen(false); }}
-                    icon={<Rocket size={16} />}
-                    label="Project Ideas"
-                  />
-<DropdownItem 
-                                    active={viewMode === ViewMode.SYSTEM_DESIGN}
-                                    onClick={() => { setViewMode(ViewMode.SYSTEM_DESIGN); setIsResourcesDropdownOpen(false); }}
-                                    icon={<Layout size={16} />}
-                                    label="System Design"
-                                  />
-                                  <DropdownItem 
-                                    active={viewMode === ViewMode.TOOLKIT}
-                                    onClick={() => { setViewMode(ViewMode.TOOLKIT); setIsResourcesDropdownOpen(false); }}
-                                    icon={<Code size={16} />}
-                                    label="Dev Toolkit"
-                                  />
-                                </div>
-              )}
-            </div>
-          </div>
-        </header>
 
-        {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto bg-stone-50">
-          {renderContent()}
+          <div className="hidden border-t border-border px-6 py-6 lg:block">
+            <button
+              onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
+              className="block text-sm text-muted hover:text-accent"
+            >
+              {isDesktopSidebarCollapsed ? '→' : 'Collapse →'}
+            </button>
+          </div>
+        </aside>
+
+        <main data-course-scroll className="relative min-w-0 flex-1 overflow-y-auto bg-background">
+          <div className="gold-grid pointer-events-none absolute inset-0 min-h-full opacity-[0.16]" />
+          <div className="relative z-10">{renderContent()}</div>
         </main>
       </div>
     </div>
   );
 }
 
-const NavButton = ({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) => (
+const NavLink = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
   <button
     onClick={onClick}
-    className={`
-      flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-      ${active 
-        ? 'bg-white text-brand-600 shadow-sm' 
-        : 'text-stone-500 hover:text-stone-800'}
-    `}
+    className={`text-sm transition-colors ${
+      active ? 'text-white' : 'text-surface-dark-muted hover:text-white'
+    }`}
   >
-    {icon}
-    <span className="hidden sm:inline">{label}</span>
+    {children}
   </button>
 );
 
 const DropdownItem = ({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) => (
   <button
     onClick={onClick}
-    className={`
-      w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors
-      ${active 
-        ? 'bg-brand-50 text-brand-600' 
-        : 'text-stone-700 hover:bg-stone-50'}
-    `}
+    className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+      active ? 'bg-white/10 text-accent' : 'text-white/70 hover:bg-white/5'
+    }`}
   >
     {icon}
     {label}

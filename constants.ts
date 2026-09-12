@@ -3,756 +3,463 @@ import { Chapter } from './types';
 export const chapters: Chapter[] = [
   {
     id: 'ch1',
-    title: "The AI Engineering Landscape",
-    content: `# The AI Engineering Landscape
+    title: "The Four Skills",
+    content: `# The Four Skills
 
-> **From the field — Frank Sellhausen, Sellhausen AI Systems.** AI doesn't introduce new failures — it speeds up and surfaces organizational failures that already exist. The failure patterns are inventory gaps, controls you can't demonstrate, and documentation that doesn't trace from business intent to monitoring. Tools don't fix culture. They reproduce it faster.
+> **From the field — Frank Sellhausen, Sellhausen AI Systems.** AI does not introduce new failures. It speeds up the ones you already have: inventory gaps, controls you cannot demonstrate, and documentation that does not trace from intent to monitoring. Tools do not fix culture. They reproduce it faster.
 
-## The Paradigm Shift
+## What you will be able to do
 
-AI engineering exists because of a simple change: we stopped training models and started using them. Before 2020, building an AI feature meant collecting a dataset, training a model from scratch, and deploying it — a process that required ML PhDs, GPU clusters, and months of work. Now you make an API call.
+Leave this chapter able to:
 
-This isn't a small change. It created an entirely new engineering discipline.
+1. **Name the four skills** Andrew Ng put on the [AI Engineering Skills Map](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map) — skills, not a job title.
+2. **Point at a chapter** for each capability under those skills.
+3. **Pick a starting move** — read in order, or jump to the failure you have today.
+4. **Choose a model tier** without memorizing this quarter’s SKUs.
 
-**Traditional ML Engineering** was about data pipelines, feature engineering, model training, and hyperparameter tuning. You built the intelligence. **AI Engineering** is about prompting, retrieval, orchestration, and evaluation. The intelligence is pre-built — your job is to make it useful for a specific problem.
+The rest of the course is the map, taught as practice. This chapter is the legend.
 
-| | ML Engineering | AI Engineering |
+## Skills, not a job title
+
+AI engineering is a set of skills. Some people hold several. Teams split them. The title on the badge matters less than whether someone can do the work.
+
+The work exists because models are good enough to *use*. You no longer have to train the intelligence to ship a feature. You compose it — and then you have to measure it, because the output is not deterministic.
+
+That last clause is the whole job. Traditional software fails closed or it fails loud. Language models fail politely, confidently, and differently every run. Ng’s first skill exists because of that: you need building blocks *and* statistical techniques to measure, steer, and govern the system.
+
+## The four skills
+
+1. **Building and deploying AI applications** — ship systems whose outputs you cannot fully predict. Use evals and error analysis as the loop, not a report you write after launch.
+2. **Software engineering fundamentals** — know the tradeoffs well enough to brief an agent in engineering language. Vibe-coding without this is how demos become incidents.
+3. **Using coding agents** — a mental model, a plan, verifiers, and the judgment to stop. The agent types. You decide what “done” means.
+4. **Shaping the build** — decide what belongs in the spec. Product sense, business context, ownership. When to ship an MVP, and when to slow down.
+
+Read them as one practice. Skill 1 is the product. Skill 2 is the language you use to steer. Skill 3 is how the work gets typed. Skill 4 is whether you are building the right thing.
+
+## Skill 1 — Building and deploying AI applications
+
+Ng’s detail letter breaks this into six capabilities. That is the body of this course.
+
+| Capability | What it is | Chapter |
 |---|---|---|
-| **Core work** | Train models from data | Compose applications from pre-trained models |
-| **Key skills** | Statistics, PyTorch, feature engineering | Prompt design, API integration, RAG, evaluation |
-| **Time to prototype** | Weeks to months | Hours to days |
-| **Background** | PhD/MS in ML, $150-300K+ | Software engineering, $130-250K+ |
-| **Primary challenge** | Getting the model to work | Getting the model to work *reliably, at scale, for real users* |
+| **LLM foundations** | Tokenize and generate. Context, cache, cutoff, sampling, tools. When to fine-tune or self-host. | 2, 3, 4, 11, 12 |
+| **Grounding with data** | Not “buy a vector database.” Prompt vs retrieve-via-tools. Keep the data fresh. | 5 |
+| **Agentic systems** | Workflow vs harness. Tools, memory, when *not* to multi-agent. | 6 |
+| **Evaluation-driven development** | *The* distinguisher. Traces, error analysis, judges you can defend. | 7 |
+| **Operating in production** | Observability, drift, cost, latency, statistical confidence. | 8 |
+| **Machine learning foundations** | Bias/variance, error analysis, data work. Still required. | 10 |
 
-The barrier to entry dropped. The challenge shifted from "can we build this?" to "can we deploy this responsibly and make it actually useful?"
+If you only take one sentence from Skill 1: **evals and error analysis are the loop.** Guessing which component to improve is how agent projects stall.
 
-## Why Now: Six Forces That Converged
+## Skill 2 — Software engineering fundamentals
 
-This field didn't emerge gradually. Several forces hit at the same time:
+The AI core almost always lives inside a broader application. Ng’s five literacies are what you must already understand so a coding agent has something to steer toward.
 
-**1. Model capability crossed the usefulness threshold.** GPT-3 (2020) proved that scale creates emergent abilities — models suddenly became good enough for real applications without task-specific training. By 2023, models could reason through multi-step problems, write production code, and follow complex instructions.
+1. **Full-stack applications** — where the request goes, and what the user actually sees. Chapter 13, Chapter 16.
+2. **Managing data** — what is stored, who can read it, how it stays true. Chapter 16.
+3. **Designing system architectures** — you provide the architecture; the agent cannot invent your constraints. Chapter 16.
+4. **Secure and reliable** — fail closed, authorize tool calls, evidence a control. Chapter 9.
+5. **Scaling and operating** — the path from laptop to something someone else can run. Chapter 8, Chapter 16.
 
-**2. APIs democratized access.** OpenAI, Google, and Anthropic made frontier models available through simple REST APIs. You no longer need infrastructure expertise — just an API key and a credit card.
+You do not need to memorize syntax. You need to name the tradeoffs: latency, availability, consistency, reliability, maintainability, simplicity, cost. If you cannot name them, the agent will pick the ones that make the demo look finished.
 
-**3. Costs dropped dramatically.** Inference pricing has fallen roughly 10-30x since 2022 and continues to decline. Tasks that were economically impossible at early pricing tiers became viable as costs dropped by an order of magnitude. The exact savings depend on which models and tasks you compare — check [current provider pricing](https://openai.com/pricing) for the latest numbers.
+## Skill 3 — Using coding agents
 
-**4. Context windows expanded.** From 4K tokens (GPT-3) to 200K+ (Claude) and 1M+ (Gemini). This means models can now process entire codebases, books, or long conversation histories in a single call — fundamentally changing what's possible with retrieval and document analysis.
+A coding agent is an LLM in a loop with tools: read, edit, run, search. Chapter 6 is *building* agents as product. This skill is *using* them to write software.
 
-**5. The tooling ecosystem matured.** LangChain, LlamaIndex, vector databases (Pinecone, Weaviate, Chroma), observability platforms (LangSmith, Helicone), and structured output libraries (Instructor, Outlines) created an infrastructure layer that abstracts real complexity.
+Ng’s workflow is three phases:
 
-**6. Enterprise demand exploded.** Every company wants AI features. The talent gap between "ML researchers who can train models" and "developers who can use APIs" created massive demand for AI engineers who can bridge that gap.
+1. **Planning** — brainstorm, write a spec, make a plan.
+2. **Execution** — build, test, verify. Choose autonomy vs oversight on purpose.
+3. **Deployment and monitoring** — the same loop, in production.
 
-## The Evolution: Language Models to Foundation Models
+The skills underneath: direct the workflow, enable autonomy without abandoning review, review the work, customize the agent and the environment (\`AGENTS.md\` / Cursor rules / \`CLAUDE.md\`), and understand the harness well enough to see its failure modes.
 
-**Language Models (2018-2020)** — BERT, RoBERTa, DistilBERT. Task-specific: you needed a different fine-tuned model for sentiment analysis, NER, and classification. Good at understanding text, couldn't generate it well.
+Chapter 15 is the practice. Chapter 17 is the artifact the agent executes against — constitution, feature spec, plan–implement–verify.
 
-**Large Language Models (2020-2023)** — GPT-3, PaLM, LLaMA. Multi-task via prompting: one model could write, summarize, translate, and code. The breakthrough was that scale created abilities nobody explicitly programmed.
+Long-horizon “hours of tokens” is overhyped. Iterative, high-skill intervention wins.
 
-**Foundation Models (2023+)** — GPT-4, Claude, Gemini. Native multimodality (text, images, audio, video in one model), million-token context windows, sophisticated reasoning through chain-of-thought, and tool use. The term "foundation model" (coined by Stanford's CRFM in 2021) captures the idea: these are base layers everything else builds on.
+## Skill 4 — Shaping the build
 
-> The shift: we stopped building task-specific models and started steering general-purpose intelligence through prompts, retrieval, and tools.
+Decide what belongs in the spec. That is product sense plus ownership: who is this for, what does “better” mean, what must not change, and whether this is an MVP or a system that has to survive an audit.
 
-## The AI Engineering Stack
+Chapter 14 is that skill. Chapter 17 is how the decision gets written down so an agent can execute it. Ng’s fifth letter (the detail on shaping) was not published when this chapter was written — the definition in Part 1 is enough to practice.
 
-Modern AI applications have three layers:
+> The unit of a good AI feature is not a clever prompt. It is a specified outcome you can evaluate.
 
-### Layer 1: Application
-Your user-facing code — the UI, API gateway, authentication, session management, and orchestration logic. This is standard software engineering. The AI-specific part is how you route requests, manage conversation state, and handle the inherent unreliability of model outputs.
+## How the other sources fold in
 
-### Layer 2: AI
-The intelligence layer — prompt templates, RAG pipelines, agent loops, fine-tuned models, guardrails, and output parsing. This is where AI engineering lives. Your decisions here determine quality, cost, latency, and safety.
+The map is Ng’s. Three other sources teach *how the work is done*. They are not a second curriculum.
 
-### Layer 3: Infrastructure
-Model provider APIs (OpenAI, Anthropic, Google), vector databases for embeddings, caching layers (semantic and response), observability and logging, and evaluation pipelines. You're stitching together managed services more than managing servers.
+- **Agentic AI** (Andrew Ng) — reflection, tool use, planning, multi-agent, evals-first. Chapters 6 and 7.
+- **Generative AI for Software Development** (Laurence Moroney) — pair-program the SDLC; you keep the decisions. Chapters 16 and 15.
+- **Spec-Driven Development with Coding Agents** (Paul Everitt) — vibe vs spec, constitution, plan–implement–verify, including on a legacy repo. Chapter 17.
+- **Claude Certified Architect** (Anthropic) — orchestration, MCP, Claude Code workflows, structured output, production evals. Folded into chapters, labeled when it is Claude-specific. Not a cert track.
 
-## Use Cases and Their Constraints
+## How to use this course
 
-AI features aren't magic. Each category has specific limitations that matter in production:
+Read in order when you can. The order is the map: Skill 1 core, then the SWE literacy that lets you steer, then coding agents, then production, then shaping.
 
-**Code generation** — Models write functional code, but it needs expert review and security scanning. Compilation rate should exceed 95% for production use. The real risk isn't wrong syntax; it's subtle logic bugs and security vulnerabilities.
+Jump when you have a failure in hand:
 
-**Content and writing** — Drafts, summaries, translations. Hallucination risk means fact-checking is non-negotiable. Quality ratings above 4.5/5 from human evaluators is a reasonable target. The harder problem is maintaining consistent voice and accuracy across thousands of outputs.
+- The demo works and production lies → Chapter 7, then Chapter 8.
+- The agent writes a lot and nothing is done → Chapter 15, then Chapter 17.
+- The model is “wrong” and you cannot say why → Chapter 5 or Chapter 7.
+- You cannot brief the agent without waving → Chapter 16.
 
-**Data extraction and analysis** — Parsing documents, extracting structured data, classification. Field accuracy above 95% is achievable but requires careful prompt engineering and validation. Edge cases will surprise you.
+Facts that move — prices, context windows, current model IDs, current MCP docs — are **look-ups**, not memorization. Copy the prompt, run it against official docs, paste the answer into your notes. The principle stays. The SKU does not.
 
-**Customer-facing assistants** — Chatbots, support agents, search. Response accuracy above 85% is a starting target, but the 15% failure rate means you need graceful degradation, escalation paths, and monitoring. A wrong answer confidently stated is worse than saying "I don't know."
+## How to pick a model tier
 
-**Education and research** — Tutoring, summarization, synthesis. Academic integrity concerns and the tendency to fabricate citations make this domain high-stakes despite seeming low-risk.
+Do not pick “the best model.” Pick the cheapest tier that clears your eval. Escalate only when the eval says you must.
 
-> **Practitioner's note:** The mistake teams make most often is picking the use case based on what's impressive to demo rather than what solves a real workflow problem. The impressive demo and the useful product are rarely the same thing.
+| Tier | Use when |
+|---|---|
+| **Cheap / fast** | Classification, routing, extraction, high volume. |
+| **Mid** | Everyday chat, tools, most production traffic. |
+| **Flagship** | Hard reasoning, messy documents, when mid-tier fails the eval. |
+| **Reasoning** | Multi-step problems where extra test-time compute is worth the latency. |
+| **Local** | Data cannot leave; cost at high volume; air-gapped. |
 
-## Planning an AI Project: The Five Phases
+Capability, cost, latency, context. Run *your* eval on two or three candidates. Names and prices change. The tiering pattern does not.
 
-Shipping an AI feature follows a predictable arc. Teams that skip phases pay for it later.
+> **Look up now.** Prompt: "What are the current list prices, context windows, and recommended IDs for the cheapest and most capable models from OpenAI, Anthropic, and Google? Cite official docs."
 
-**Phase 1: Proof of Concept (2-4 weeks)**
-Demonstrate basic feasibility. Prompt engineering, rough accuracy assessment, initial cost estimates. Target: >70% accuracy on core task. Common mistake: spending too long here polishing instead of validating the core assumption.
+[INTERACTIVE: MODEL_COMPARISON]
 
-**Phase 2: Prototype (4-8 weeks)**
-Build evaluation infrastructure. This is the phase most teams skip, and it's the one that kills projects later. Create eval sets, establish baseline metrics, test edge cases. Deliverable: a system you can measure, not just one that works on demo inputs.
+At volume, the bill is a product decision. Tier the traffic. Cache repeated prefixes. Shorten prompts that do not move the eval. Batch work that is not live.
 
-**Phase 3: Alpha (8-12 weeks)**
-Production-ready code. Error handling, rate limiting, cost controls, monitoring, security review. This is where the engineering happens. The model was the easy part.
+[INTERACTIVE: COST_OPTIMIZATION]
 
-**Phase 4: Beta (4-8 weeks)**
-Real user validation with limited rollout. A/B testing, user feedback loops, performance monitoring under real load. Common mistake: declaring victory based on internal testing without exposing the system to real-world messiness.
+## The evaluation gap
 
-**Phase 5: Production (Ongoing)**
-Monitoring, cost optimization, model updates, drift detection, incident response. This phase never ends. Most AI features degrade silently without active maintenance.
+You cannot write \`assertEqual\` on a paragraph. The same prompt can be right twice in different words and wrong once in confident ones. That is why Skill 1 leads with evals.
 
-## Model Selection
+Teams that invest in evaluation infrastructure early ship products. Teams that skip it ship demos. Chapter 7 is the gate before any model or architecture change — including “let’s just switch providers.”
 
-Choosing a model is one of the highest-leverage decisions you'll make. It's not about picking "the best" — it's about the right tradeoff between capability, cost, latency, and context for your specific use case.
+## Start here
 
-### How to Evaluate Models
+You now have the map. Chapter 2 is LLM foundations: a mental model of tokenize, generate, and the knobs that actually change behavior. If you already have that, skip to the failure you have.
 
-The model landscape changes quarterly. Rather than memorizing today's options, learn to evaluate on four axes:
-
-| Axis | What to measure | How |
-|------|----------------|-----|
-| **Capability** | Does it handle your task well enough? | Run your eval suite against 2-3 candidates |
-| **Cost** | What's the per-request cost at your volume? | Check provider pricing pages (linked below) |
-| **Latency** | Does time-to-first-token meet your UX needs? | Benchmark with realistic prompts |
-| **Context** | Can it fit your inputs? | Compare context windows against your longest real inputs |
-
-**Current pricing and models — check the source:**
-- [OpenAI models and pricing](https://openai.com/pricing)
-- [Anthropic models and pricing](https://docs.anthropic.com/en/docs/about-claude/models)
-- [Google AI models](https://ai.google.dev/pricing)
-
-Every major provider offers a range from cheap/fast (for simple tasks) to expensive/capable (for complex reasoning). The names and prices will change. The tiering pattern won't.
-
-### How to Choose
-
-**Start with the cheapest model that might work**, then move up only when evaluation proves you need to. Most teams over-provision — they reach for a frontier model when a mid-tier model would handle 80% of their traffic.
-
-**Model tiering** is the production pattern: route simple queries to a cheap/fast model, complex queries to an expensive/capable one. This alone can cut costs 40-70%.
-
-## Cost Optimization
-
-At scale, per-token costs add up fast. Smart optimization cuts bills dramatically.
-
-**1. Model tiering (40-70% savings):** Classify incoming requests by complexity. Send simple queries to a fast/cheap model. Send complex analysis to a frontier model.
-
-**2. Prompt caching (30-60% savings):** Anthropic offers 90% discounts on cached prompt prefixes. OpenAI offers 50% on repeated prefixes >1024 tokens. Structure your prompts with static content first.
-
-**3. Prompt compression (20-40% savings):** Shorter prompts cost less. Remove examples that don't improve quality. Use concise system prompts. Every token you cut is money saved at scale.
-
-**4. Response caching (varies):** Cache responses to identical or semantically similar queries. A customer support bot answering the same FAQ 1,000 times should hit cache 999 times.
-
-**5. Batching (15-30% savings):** Some providers offer batch APIs at discounted rates for non-time-sensitive work. Classification, extraction, and analysis tasks often don't need real-time responses.
-
-## The Evaluation Gap
-
-Here's the thing that makes AI engineering fundamentally different from traditional software: **you can't write a unit test for it.**
-
-In traditional software, \`assertEqual(add(2, 2), 4)\` either passes or fails. In AI engineering, the same prompt can produce different outputs every time. "Correct" is often subjective. Edge cases are infinite. And the model's behavior changes when the provider updates it.
-
-**The gap between "it works in my demo" and "it works reliably in production" is almost entirely an evaluation problem.** Teams that invest in evaluation infrastructure early ship better products. Teams that skip it ship demos that break in production.
-
-How to evaluate AI systems is covered in depth in Chapter 7.
-
-## Summary
-
-AI engineering is a new discipline born from a simple shift: pre-trained models became good enough to use as building blocks. The work moved from training intelligence to deploying it — and that turns out to be a different set of skills entirely.
-
-The field is young, the tools are changing fast, and the gap between what's possible and what's reliable is where the real engineering happens. The rest of this course is about closing that gap.
+The field is young. The tools will change before you finish the course. The four skills will not.
 `,
     quizzes: [
-      {
-            "id": "q2-1",
-            "question": "What is the \"Critical Distinction\" between AI Engineering and Traditional ML Engineering?",
-            "options": [
-                  "AI Engineering requires more PhD researchers",
-                  "Traditional ML focuses on Application UX",
-                  "AI Engineers treat models as configurable building blocks, not systems to train from scratch",
-                  "AI Engineering is only for Python developers"
-            ],
-            "correctIndex": 2,
-            "explanation": "The core shift is moving from training/tuning weights (ML Engineering) to composing applications using pre-trained, capable Foundation Models (AI Engineering)."
-      },
-      {
-            "id": "q2-2",
-            "question": "Which of the following is NOT a typical \"Phase 1: Proof of Concept\" activity?",
-            "options": [
-                  "Basic functionality demonstration",
-                  "Initial prompt engineering",
-                  "Full production deployment with incident response",
-                  "Rough accuracy assessment"
-            ],
-            "correctIndex": 2,
-            "explanation": "Full production deployment and incident response belong to Phase 5. Phase 1 is about proving feasibility and value quickly."
-      },
-      {
-            "id": "q2-3",
-            "question": "Why is \"Evaluation\" considered more difficult in AI Engineering than traditional software?",
-            "options": [
-                  "Computers are slower now",
-                  "Foundation models are probabilistic and open-ended, lacking a single \"correct\" answer",
-                  "There are no tools for evaluation",
-                  "APIs are hard to test"
-            ],
-            "correctIndex": 1,
-            "explanation": "Because models generate non-deterministic, open-ended text, you cannot simply write a unit test that asserts \"Output == X\". You need probabilistic evaluation frameworks."
-      },
-      {
-            "id": "q2-4",
-            "question": "In the \"Use Case Evaluation Framework\", what is a key question for Technical Feasibility?",
-            "options": [
-                  "How much money will we make?",
-                  "Is the logo blue or red?",
-                  "Can existing models handle the task given context and latency constraints?",
-                  "Who is the CEO of the AI company?"
-            ],
-            "correctIndex": 2,
-            "explanation": "Technical feasibility focuses on whether the model capabilities (context window, reasoning ability, speed) align with the requirements of the task."
-      }
-],
+            {
+                  "id": "q1-1",
+                  "question": "Andrew Ng’s AI Engineering Skills Map treats “AI engineer” as:",
+                  "options": [
+                        "A job title you hire for, with a fixed reporting line",
+                        "A set of skills people and teams can hold in combination",
+                        "A synonym for ML researcher who trains foundation models",
+                        "A certification track equivalent to Claude Certified Architect"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Ng is explicit: these are skills, not a job title. People hold several; teams split them."
+            },
+            {
+                  "id": "q1-2",
+                  "question": "What does Ng call the distinguisher of Skill 1 (building and deploying AI applications)?",
+                  "options": [
+                        "Knowing this quarter’s flagship model IDs",
+                        "Standing up a multi-agent swarm before you have a workflow",
+                        "Evaluation-driven development — traces, error analysis, a loop you can defend",
+                        "Fine-tuning a base model as the first move"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Evals and error analysis are the loop. Guessing which component to improve is how projects stall."
+            },
+            {
+                  "id": "q1-3",
+                  "question": "Why does the skills map put software engineering fundamentals next to building AI apps?",
+                  "options": [
+                        "So you can write every line by hand instead of using an agent",
+                        "So you can brief an agent in engineering language and name the tradeoffs",
+                        "Because Ng wants everyone to become a full-time SRE",
+                        "Because coding agents removed the need to understand architecture"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Agents pick tradeoffs if you cannot name them — usually the ones that make the demo look finished."
+            },
+            {
+                  "id": "q1-4",
+                  "question": "You have a coding agent and a vague wish. What does Skill 3 say to do first?",
+                  "options": [
+                        "Let it run overnight and review the diff in the morning",
+                        "Plan: brainstorm, write a spec, then execute with a verifier",
+                        "Switch to the most expensive model and try again",
+                        "Add more MCP servers until the agent looks busy"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Ng’s workflow is Planning → Execution → Deployment. Long-horizon unattended runs are overhyped."
+            },
+            {
+                  "id": "q1-5",
+                  "question": "A teammate wants you to memorize current list prices and context windows. What do you do?",
+                  "options": [
+                        "Memorize them; the exam will ask",
+                        "Look them up against official docs when the fact moves; keep the tiering principle",
+                        "Copy last quarter’s table from a blog post",
+                        "Always pick the flagship so price does not matter"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Prices, windows, and IDs are look-ups. Start cheap, escalate when the eval says you must."
+            }
+    ],
     flashcards: [
-      {
-            "id": "f2-1",
-            "front": "Foundation Model",
-            "back": "A model trained on broad data (text, image, audio) that can be adapted to a wide range of downstream tasks."
-      },
-      {
-            "id": "f2-2",
-            "front": "AI Engineering",
-            "back": "The discipline of building applications using pretrained foundation models as configurable components."
-      },
-      {
-            "id": "f2-3",
-            "front": "Transfer Learning",
-            "back": "Taking a model pretrained on one task/dataset and fine-tuning or prompting it for a different specific task."
-      },
-      {
-            "id": "f2-4",
-            "front": "Context Window",
-            "back": "The limit on the amount of text (tokens) a model can consider at one time (e.g., 128k, 1M+)."
-      },
-      {
-            "id": "f2-5",
-            "front": "Probabilistic System",
-            "back": "A system where the same input may result in different outputs; requires different testing strategies than deterministic code."
-      },
-      {
-            "id": "f2-6",
-            "front": "RAG",
-            "back": "Retrieval-Augmented Generation. Connecting a model to external data sources to ground its answers."
-      },
-      {
-            "id": "f2-7",
-            "front": "Token",
-            "back": "The basic unit of text processing in LLMs. Can be a word, subword, or character. Roughly 4 characters = 1 token in English."
-      },
-      {
-            "id": "f2-8",
-            "front": "Prompt Engineering",
-            "back": "The practice of designing and optimizing inputs to get desired outputs from foundation models."
-      },
-      {
-            "id": "f2-9",
-            "front": "Inference",
-            "back": "Running a trained model to generate predictions or outputs. What happens when you call an LLM API."
-      },
-      {
-            "id": "f2-10",
-            "front": "Latency",
-            "back": "The time between sending a request and receiving a response. Critical metric for real-time AI applications."
-      },
-      {
-            "id": "f2-11",
-            "front": "Hallucination",
-            "back": "When an LLM generates plausible-sounding but factually incorrect or fabricated information."
-      },
-      {
-            "id": "f2-12",
-            "front": "Fine-Tuning",
-            "back": "Further training a pre-trained model on task-specific data to improve performance on that task."
-      },
-      {
-            "id": "f2-13",
-            "front": "Embedding",
-            "back": "A dense vector representation of text that captures semantic meaning. Similar texts have similar embeddings."
-      },
-      {
-            "id": "f2-14",
-            "front": "LLM (Large Language Model)",
-            "back": "Neural networks with billions of parameters trained on massive text datasets to understand and generate language."
-      },
-      {
-            "id": "f2-15",
-            "front": "API (in AI context)",
-            "back": "Interface to access AI models over the internet. Most foundation models are accessed via REST APIs."
-      },
-      {
-            "id": "f2-16",
-            "front": "Temperature",
-            "back": "Parameter controlling randomness in model outputs. 0 = deterministic, higher = more creative/random."
-      },
-      {
-            "id": "f2-17",
-            "front": "Multimodal",
-            "back": "AI systems that can process and generate multiple types of data: text, images, audio, video."
-      },
-      {
-            "id": "f2-18",
-            "front": "Grounding",
-            "back": "Anchoring LLM outputs to factual sources (via RAG or citations) to reduce hallucinations."
-      },
-      {
-            "id": "f2-19",
-            "front": "Throughput",
-            "back": "Number of requests or tokens a system can process per unit time. Important for high-volume applications."
-      },
-      {
-            "id": "f2-20",
-            "front": "Model Provider",
-            "back": "Companies that train and serve foundation models via API (OpenAI, Anthropic, Google, etc.)."
-      }
-]
+            {
+                  "id": "f1-1",
+                  "front": "The four skills (Ng)",
+                  "back": "Building and deploying AI applications · Software engineering fundamentals · Using coding agents · Shaping the build. Skills, not a job title."
+            },
+            {
+                  "id": "f1-2",
+                  "front": "Skill 1 distinguisher",
+                  "back": "Evaluation-driven development: traces, error analysis, a loop before any model or architecture change."
+            },
+            {
+                  "id": "f1-3",
+                  "front": "Skill 1 — six capabilities",
+                  "back": "LLM foundations · Grounding with data · Agentic systems · Evaluation-driven development · Operating in production · Machine learning foundations."
+            },
+            {
+                  "id": "f1-4",
+                  "front": "Skill 2 — five literacies",
+                  "back": "Full-stack · Managing data · System architecture · Secure and reliable · Scaling and operating. Purpose: steer the agent in engineering language."
+            },
+            {
+                  "id": "f1-5",
+                  "front": "Skill 3 workflow",
+                  "back": "Planning (brainstorm + spec + plan) → Execution (build / test / verify) → Deployment and monitoring."
+            },
+            {
+                  "id": "f1-6",
+                  "front": "Skill 4 — shaping the build",
+                  "back": "Decide what belongs in the spec: product sense, ownership, MVP vs slow down. Chapter 14; written down in Chapter 17."
+            },
+            {
+                  "id": "f1-7",
+                  "front": "Model tiering",
+                  "back": "Start with the cheapest tier that clears your eval. Escalate only when measurement says you must. Names change; the pattern does not."
+            },
+            {
+                  "id": "f1-8",
+                  "front": "Look-up vs remember",
+                  "back": "Remember principles, failure modes, and the four skills. Look up prices, windows, current model IDs, and current tool docs."
+            }
+    ]
   },
   {
     id: 'ch2',
-    title: "How Foundation Models Work",
-    content: `# Chapter 2: How Foundation Models Work
+    title: "LLM Foundations",
+    content: `# LLM Foundations
 
-You do not need to understand every detail of backpropagation to build production systems with foundation models. But you do need a working mental model of what is happening inside these systems — what they are good at, where they break, and why the API parameters you set actually matter. This chapter gives you that mental model.
+> **From the field — Frank Sellhausen, Sellhausen AI Systems.** You do not need the training run. You need to know why the same prompt can be right twice and wrong once — and which knobs actually change that.
 
----
+## What you will be able to do
 
-## What Makes a Foundation Model
+Leave this chapter able to:
 
-The term "foundation model" was coined by Stanford's Center for Research on Foundation Models in 2021 to describe a specific pattern: a single model, trained on broad data at scale, that can be adapted to a wide range of downstream tasks.
+1. **Explain tokenize → generate** in one breath — what the model sees, what it does next, and why it can fail politely.
+2. **Name the knobs that change behavior** — context, cache, cutoff, sampling, reasoning effort, tools — without memorizing this quarter’s IDs.
+3. **Decide what belongs in the window** versus what the model should fetch.
+4. **Know when to escalate** — a better prompt, a tool, a different tier, fine-tune, or self-host.
 
-Three properties define them:
+This is Skill 1 / LLM foundations on [Ng’s map](https://www.deeplearning.ai/the-batch/he-ai-engineering-skills-map-in-detail-building-and-deploying-ai-applications). Prompting is Chapter 3. APIs are Chapter 4. This chapter is the mental model underneath both.
 
-**Scale.** Foundation models are trained on hundreds of billions to trillions of tokens of text (and increasingly, images, audio, and video). Training runs cost tens to hundreds of millions of dollars in compute. GPT-4's training cost is estimated at over $100M. Meta's Llama 3 405B used 15.6 trillion tokens across 30.8 million GPU-hours.
+## Tokenize, then generate
 
-**Generality.** Unlike task-specific models (a spam classifier, a named-entity recognizer), foundation models develop broad capabilities during pre-training. A single model can summarize, translate, write code, reason about math, and answer questions — without being explicitly trained on labeled examples for each task.
+The model does not see words. It sees **tokens** — chunks of text (sometimes a word, sometimes a piece of one, sometimes a space plus a syllable). Your string is mapped to a list of IDs. Those IDs are the only input.
 
-**Adaptability.** Through prompting, fine-tuning, or retrieval-augmented generation, you can steer a foundation model toward your specific use case without retraining from scratch. This is the property that makes them useful to engineers: you get a capable base and specialize from there.
+Then it **generates**: one token at a time, each conditioned on everything before it. That is the whole trick. There is no separate “understanding” pass and “answering” pass. The answer *is* the continuation.
 
----
+Three consequences you can use on Monday:
 
-## Scaling Laws and Emergent Capabilities
+- **Cost and limits are in tokens, not characters.** Code, JSON keys, and non-English text often spend more tokens for the same meaning. A “128k window” is smaller than it looks once you put a repo and a ticket in it.
+- **Order is a feature.** The model attends across the window, but the start and the end of the prompt are the seats that get heard. Do not bury the instruction in the middle of a dump.
+- **A wrong first token steers the rest.** Autoregression doubles down. If the model starts “Yes, we can refund that,” it will write a confident refund that does not exist.
 
-In 2020, Kaplan et al. at OpenAI showed that model performance (measured as loss on next-token prediction) follows predictable power laws with respect to three variables: the number of parameters, the amount of training data, and the compute budget. Bigger models trained on more data with more compute get predictably better.
+[INTERACTIVE: TOKENIZER_DEMO]
 
-DeepMind's Chinchilla paper (2022) refined this, finding that for compute-optimal training, models should be trained on roughly **20 tokens per parameter**. A 70B parameter model should see ~1.4 trillion tokens.
+> You can count on next-token prediction to continue a pattern. You cannot count on it to know when the pattern is false.
 
-> **Important caveat:** The Chinchilla ratio is compute-optimal for a *fixed training budget*. In practice, modern models are often trained on far more data per parameter than Chinchilla suggests — Llama 3 8B was trained on 15 trillion tokens, nearly 1,900 tokens per parameter. Why? Because inference cost dominates in production. A smaller model trained longer is cheaper to serve than a larger model trained to Chinchilla-optimal. The "right" ratio depends on your deployment economics, not just training efficiency.
+## When they fail
 
-**Emergent capabilities** — abilities that appear suddenly as models scale — have been a subject of both excitement and debate. Chain-of-thought reasoning, for instance, works poorly in small models but becomes effective around the 60B+ parameter range. However, Schaeffer et al. (2023) argued that many "emergent" abilities are artifacts of the metrics used: switch from nonlinear metrics (exact match) to linear ones (token-level accuracy), and the improvement looks smooth, not sudden.
+Language models fail **politely**. Traditional software throws, times out, or returns empty. An LLM completes the sentence.
 
-For engineers, the practical takeaway: do not assume a smaller model simply cannot do something because a paper showed emergence at scale. Test it. But also do not assume capabilities transfer uniformly — some tasks genuinely require larger models.
+The failure modes that matter for shipping:
 
-**Cost trends.** The cost of equivalent intelligence has dropped dramatically. What cost $100 in API fees for a given task in 2021 might cost $3-10 today — roughly a 10-30x reduction, depending on the task and provider. This is driven by smaller and more efficient models, quantization, better inference infrastructure, and competition. The trend is real and continuing, but claims of 100x cost collapse overstate the case for most workloads.
-
----
-
-## The Transformer Architecture: Why It Matters for Engineers
-
-Nearly every foundation model today is built on the Transformer architecture (Vaswani et al., 2017). You need to understand two things about it: **self-attention** and **parallelizability**.
-
-### Self-Attention as Relevance Scoring
-
-At each layer, every token in the sequence computes attention scores against every other token. Think of it as: for each word, the model asks "how relevant is every other word to predicting what comes next here?" These scores are computed from learned Query, Key, and Value projections:
-
-\`\`\`
-Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
-\`\`\`
-
-This is why transformers handle long-range dependencies well. A pronoun at position 500 can attend directly to the noun it refers to at position 12 — no information needs to pass through a chain of recurrent steps.
-
-For engineers, the consequence is: **token order matters, but so does token distance within the context window.** Models can in principle attend to anything in context, but in practice, attention to very distant tokens can degrade, which is why placement of key information in your prompts matters.
-
-### Parallelization
-
-Unlike RNNs, which process tokens sequentially, transformers process all tokens in a sequence simultaneously during training. This is what made modern scale possible — training can be distributed across thousands of GPUs efficiently. Without this property, training a trillion-token dataset would be computationally infeasible.
-
-### Decoder-Only vs. Encoder-Decoder
-
-Most current LLMs (GPT-4, Claude, Llama, Gemini) use a **decoder-only** architecture: they process tokens left-to-right and generate one token at a time. Encoder-decoder models (like T5 or the original BART) use a bidirectional encoder to process the input and a decoder to generate output. Decoder-only models won out in practice because they are simpler to scale and the single architecture handles both understanding and generation.
-
----
-
-## The Training Pipeline
-
-Building a foundation model is a multi-stage process. Each stage has different goals, costs, and data requirements.
-
-### Stage 1: Pre-training
-
-The model learns to predict the next token on a massive corpus. This is where the bulk of compute goes.
-
-| Aspect | Typical Range |
-|---|---|
-| Data | 1-15+ trillion tokens |
-| Cost | $2M (7B model) to $100M+ (frontier models) |
-| Duration | Weeks to months on thousands of GPUs |
-| Objective | Next-token prediction (causal language modeling) |
-
-Pre-training produces a base model that is good at text completion but not at following instructions.
-
-### Stage 2: Supervised Fine-Tuning (SFT)
-
-Human annotators write high-quality (prompt, response) pairs. The model is trained on these to learn the format and style of helpful responses. Typical SFT datasets range from tens of thousands to low millions of examples. This stage is comparatively cheap — often under $1M.
-
-### Stage 3: Preference Tuning (RLHF / DPO / Constitutional AI)
-
-The model is further refined using human preferences. In RLHF (Reinforcement Learning from Human Feedback), annotators rank model outputs, a reward model is trained on these rankings, and the LLM is optimized against the reward model using PPO or similar algorithms.
-
-DPO (Direct Preference Optimization) simplifies this by skipping the reward model and optimizing preferences directly.
-
-> **On Constitutional AI:** Constitutional AI (Anthropic, 2022) is sometimes described as a replacement for RLHF. It is not. Constitutional AI provides a framework where the model critiques its own outputs against a set of principles (a "constitution"), generating preference data that supplements human annotations. Current Claude models use a combination of SFT, Constitutional AI, and RLHF — these techniques are complementary, not competing.
-
-### Stage 4: Reasoning Training
-
-A more recent addition to the pipeline, models like OpenAI's o1/o3 and Anthropic's Claude undergo additional training specifically to improve step-by-step reasoning. This typically involves reinforcement learning on reasoning tasks (math, code, logic), where the model is rewarded for producing correct chains of thought. This is an active and rapidly evolving area.
-
----
-
-## Training Data: Sources, Biases, and Contamination
-
-Foundation models are shaped by their training data. Understanding what goes in helps you predict what comes out.
-
-**Common sources:** Common Crawl (web text), Wikipedia, books, academic papers (Semantic Scholar, arXiv), code repositories (GitHub, Stack Overflow), and curated datasets. Increasingly, providers also use synthetic data — model-generated text that is filtered for quality.
-
-**Language bias:** The web is dominated by English. Common Crawl is roughly 45-50% English. Models trained on web-scale data inevitably perform better on English than on low-resource languages. If you are building for non-English users, test carefully — and consider that some providers train with more balanced multilingual corpora than others.
-
-**Domain models:** Models like Bloomberg's BloombergGPT (trained on financial data), Google's Med-PaLM (medical), and Code Llama (code) demonstrate that mixing domain-specific data into pre-training or fine-tuning can significantly improve performance in specialized areas.
-
-**Data contamination:** If your benchmark or evaluation dataset appeared in the training corpus, your metrics are inflated. This is a real and widespread problem. Always assume some contamination exists and supplement benchmarks with held-out, custom evaluations for your specific use case.
-
----
-
-## Tokenization: Why It Matters More Than You Think
-
-Models do not see text as characters or words. They see **tokens** — subword units produced by algorithms like Byte-Pair Encoding (BPE). Understanding tokenization matters for three practical reasons:
-
-**Cost.** API pricing is per-token. The string "unhappiness" might be 1-3 tokens depending on the tokenizer. Code and structured data are often more token-dense than prose. JSON keys like \`"customer_id"\` consume tokens that carry little semantic value — this is one reason function calling and structured output formats can be more token-efficient than asking the model to produce raw JSON.
-
-**Context limits.** Your context window is measured in tokens, not characters or words. A rough English approximation is ~0.75 words per token (or ~4 characters per token), but this varies by content type. Code often tokenizes less efficiently than natural English.
-
-**Non-English languages.** BPE tokenizers trained on English-heavy corpora produce more tokens for the same meaning in other languages. A sentence in Japanese or Arabic can easily require 2-4x as many tokens as its English equivalent. This means non-English users effectively get a smaller context window and pay more per query.
-
-\`\`\`python
-# Example: comparing token counts across languages (using tiktoken for GPT-4)
-import tiktoken
-enc = tiktoken.encoding_for_model("gpt-4")
-
-english = "The weather is nice today."      # 6 tokens
-japanese = "今日はいい天気ですね。"              # 11 tokens
-arabic = "الطقس جميل اليوم."                 # 10 tokens
-\`\`\`
-
----
-
-## Decoding and Sampling Strategies
-
-When the model generates output, it produces a probability distribution over the vocabulary for the next token. How you sample from that distribution controls the output's creativity, coherence, and determinism.
-
-| Parameter | What It Does | When to Use |
+| Failure | What it is | What you do |
 |---|---|---|
-| **Temperature** | Scales logits before softmax. Lower = more deterministic, higher = more random. | Set to 0-0.2 for factual/code tasks. 0.7-1.0 for creative writing. |
-| **Top-p (nucleus)** | Samples from the smallest set of tokens whose cumulative probability exceeds p. | Default 0.9-0.95 is a solid starting point. Reduce for more focused output. |
-| **Top-k** | Samples from the k most probable tokens only. | Less commonly used in production. k=40-100 is typical when used. |
-| **Min-p** | Filters out tokens below a minimum probability threshold relative to the top token. | Newer alternative to top-k. 0.05-0.1 works well. More adaptive than top-k. |
+| **Confident continuation** | A fluent answer to a question it cannot know | Ground it (Chapter 5) or give it a tool. Do not “ask it to be honest.” |
+| **Cutoff** | Weights freeze. Last week’s policy is not in the model | Put the current fact in context, or fetch it. Look up the cutoff when it matters. |
+| **Window overflow** | You stuffed more than fits; the middle drops out | Summarize, retrieve, or move history to memory. Do not paste the company. |
+| **Cache miss** | You changed a prefix you thought was stable | Keep the static prefix byte-identical if you want the cache hit. |
+| **Sampling noise** | Temperature made a classification wander | Lower temperature for extract / route / classify. Measure, don’t vibe. |
+| **No hands** | It invents a price, a SKU, a status | Give it a tool. Generation is not a database. |
 
-**Practical guidance:** For most production applications, set temperature between 0 and 0.3 and leave top-p at ~0.95. For deterministic outputs (structured data extraction, classification), use temperature 0. Avoid stacking too many sampling parameters — temperature + one of top-p/min-p is usually sufficient.
+Ng’s point: once you see tokenize and generate, you can predict *when* to trust the model and when the architecture has to do the work.
 
----
+## The knobs that change behavior
 
-## Context Windows: What Is Possible and What It Costs
+These survive a model generation. Names on the API change. The job of each knob does not.
 
-Context windows have grown dramatically: from GPT-3's 2K tokens (2020) to models supporting 200K-1M+ tokens today. Check provider documentation for current context limits — they increase frequently.
-
-Longer context windows enable new architectures — you can fit entire codebases, long documents, or extended conversation histories into a single prompt. But there are engineering tradeoffs:
-
-**Attention is quadratic.** Standard self-attention scales as O(n^2) with sequence length. A 1M token context requires computing attention scores between every pair of tokens. Optimizations like FlashAttention, ring attention, and sparse attention patterns mitigate this, but long contexts still cost more in latency and compute.
-
-**The "lost in the middle" problem.** Research from Liu et al. (2023) showed that models retrieve information less reliably from the middle of long contexts than from the beginning or end. This has improved with newer models, but it is still worth placing critical information at the start or end of your prompts.
-
-**KV cache memory.** During generation, the model caches Key and Value tensors for all previous tokens. For large models, this gets expensive. A 70B parameter model at bf16 precision caching 1M tokens of context requires roughly 500GB of KV cache memory. For a 7B model, the figure is closer to 50GB. The range matters — do not quote a single number without specifying the model size.
-
----
-
-## Mixture of Experts (MoE)
-
-Mixture of Experts is an architecture that allows models to have a very large total parameter count while only activating a fraction of those parameters for each token.
-
-**How it works:** Instead of one large feed-forward network (FFN) per transformer layer, you have N "expert" FFNs and a routing network that selects the top-k experts for each token. Mixtral 8x7B, for example, has 8 experts per layer but routes each token through only 2, giving it 46.7B total parameters but only ~13B active per token.
-
-**Why it matters:**
-- **Inference efficiency.** Active parameter count determines inference cost. An MoE model can match a dense model's quality at a fraction of the per-token compute.
-- **Training efficiency.** More total parameters mean more model capacity for learning, without proportional increases in training compute.
-
-GPT-4 is widely reported to be an MoE model (rumored ~1.8T total parameters, ~280B active). DeepSeek-V2 and DBRX also use MoE architectures.
-
-**The tradeoff:** MoE models require more memory (all experts must be loaded even if only a few are active per token) and can be harder to fine-tune effectively, since not all experts see all training examples.
-
----
-
-## Multimodal Models
-
-Foundation models increasingly handle more than text. Understanding the two main approaches helps you choose the right model for your use case.
-
-**Native multimodal models** are trained from the ground up on multiple modalities. Google's Gemini processes text, images, audio, and video through a single model with shared representations. This tends to produce better cross-modal understanding — the model can reason about the relationship between an image and text, not just describe each independently.
-
-**Composite / pipeline models** bolt vision encoders or audio encoders onto a language model backbone. LLaVA, for instance, connects a CLIP vision encoder to a Llama language model. These are easier to build and iterate on, but can struggle with deep cross-modal reasoning.
-
-**What works well today:**
-- Image understanding (describing, analyzing, extracting data from images and charts)
-- Code generation from screenshots or mockups
-- Document parsing (PDFs, receipts, forms) with vision models
-- Audio transcription and understanding (Gemini, GPT-4o)
-
-**What remains limited:**
-- Fine-grained spatial reasoning ("what is 3cm to the left of the red box")
-- Consistent image generation that follows complex multi-constraint prompts
-- Real-time video understanding at scale
-
----
-
-## Inference Optimization
-
-Running foundation models in production requires serious engineering to manage cost and latency. Here are the key techniques:
-
-### Quantization
-
-Reducing the precision of model weights from fp16/bf16 (16-bit) to int8 or int4. A 70B model at bf16 requires ~140GB of memory; at int4, it fits in ~35GB — runnable on a single high-end GPU.
-
-| Precision | Memory (70B model) | Quality Impact |
+| Knob | What it actually does | Default judgment |
 |---|---|---|
-| bf16 | ~140 GB | Baseline |
-| int8 (GPTQ/AWQ) | ~70 GB | Minimal for most tasks |
-| int4 (GPTQ/AWQ) | ~35 GB | Small degradation, noticeable on reasoning-heavy tasks |
+| **Context** | What tokens the model can see *this call* | Only what moves the answer. The rest is noise and bill. |
+| **Cache** | Reuse compute on a repeated prefix (system prompt, tools, policy) | Put the stable text first. Do not interpolate the date into the prefix. |
+| **Cutoff** | The last day the weights saw the world | Current facts go in context or behind a tool. Never in the prompt as folklore. |
+| **Sampling** | How wildly it picks the next token (temperature, top-p) | Near-zero for structured work. Higher only when variety is the product. |
+| **Reasoning effort** | Extra test-time compute before it answers | Spend it when the eval says mid-tier fails. Latency is a product decision. |
+| **Tools** | The model may call code, search, or your API instead of guessing | If a fact can be fetched, fetch it. Do not prompt it into existence. |
 
-### KV Caching
+[INTERACTIVE: DECODING_STRATEGIES]
 
-Stores the Key and Value tensors from previous tokens so they do not need to be recomputed during generation. This is not optional — without it, generation time would scale quadratically with sequence length. Every production system uses KV caching. Techniques like PagedAttention (used in vLLM) manage KV cache memory more efficiently using virtual memory concepts.
+A **mix of models** is normal. Cheap/fast for route and extract. Mid for the everyday path. Flagship or reasoning when the eval fails. Chapter 1’s tier table still holds.
 
-### Speculative Decoding
+> **Look up now.** Prompt: "For OpenAI, Anthropic, and Google: what is the current context-window size, knowledge-cutoff language, and the name of the reasoning-effort or thinking control on the flagship and cheap tiers? Cite official docs only."
 
-Uses a small, fast "draft" model to generate candidate tokens, then verifies them in a single pass through the large model. Because the large model can check multiple tokens in parallel (whereas generation is sequential), this can yield 2-3x speedups with no quality loss. Works best when the draft model has high acceptance rates — i.e., for tasks where the output is relatively predictable.
+## Worked example — the ticket reply
 
-### Continuous Batching
+You are shipping: *summarize this support ticket and draft a reply.*
 
-Traditional batching waits until a batch of requests is ready, processes them together, then returns all results. Continuous batching (used by vLLM, TensorRT-LLM, and others) dynamically adds and removes requests from the batch as they arrive and complete. This dramatically improves GPU utilization and throughput, reducing per-request latency under load.
+**What the model sees.** Ticket body, the three sentences of policy that apply, maybe the last two messages. Not the help-center dump. Not last quarter’s pricing PDF. Tokens are scarce; the policy is the seat that must be heard.
 
----
+**What you freeze.** System prompt + tool schemas + the policy paragraph. That prefix should be identical across thousands of tickets so the cache hits. The ticket text is the suffix that changes.
 
-## Putting It Together
+**What you do not ask it to know.** Order status, refund eligibility, the SKU that shipped. Those are tools: \`get_order\`, \`get_policy(id)\`. If the tool returns “ineligible,” the draft cannot invent a yes.
 
-As an engineer building with foundation models, here is what matters from this chapter:
+**How it should sample.** This is not a poem. Temperature near zero. You want the same ticket to get the same shape of reply.
 
-1. **Model choice is an engineering decision.** Bigger is not always better. A well-quantized 8B model with good fine-tuning can outperform a 70B model on your specific task at a fraction of the cost.
-2. **Tokenization affects your budget and your users.** Count tokens, not words. Test with your actual data, especially for non-English use cases.
-3. **Sampling parameters are not magic.** Temperature controls randomness. Top-p controls diversity. Set them deliberately based on your use case, not by copying defaults.
-4. **Context windows have real costs.** Just because you *can* send 200K tokens does not mean you *should*. Retrieve what is relevant, not everything.
-5. **The training pipeline explains model behavior.** When a model refuses a harmless request or responds in an oddly formal style, it is usually traceable to the SFT or RLHF stages. Understanding the pipeline helps you debug unexpected behavior.
+**How it fails if you skip this.** The model writes a kind, specific refund. The customer screenshots it. Your agent of record is now a paragraph you cannot defend.
 
-The models are impressive, but they are also engineering artifacts with knowable properties and predictable failure modes. The more you understand about how they work, the better systems you will build with them.
+**When you escalate.** If mid-tier mangles messy threads, try flagship on *those* tickets only. If the same error class repeats after you have traces, that is Chapter 7 — not a fine-tune. Fine-tune or self-host when the eval is stuck *and* you have a constraint (data cannot leave, style must lock, cost at volume). Chapter 10 and Chapter 12.
+
+That is the mental model applied: tokenize the right things, generate under a tight sample, fetch what you cannot know, measure before you change the model.
+
+## Multimodal, fine-tune, self-host
+
+Three escalations people reach for too early.
+
+**Multimodal** when the evidence *is* pixels, audio, or a page image — a screenshot of the error, a scanned form, a diagram. If you can get the text out first and the text is enough, you do not need the bigger multimodal call. Chapter 11.
+
+**Fine-tune** when prompting + tools + a better tier still fail a *stable* error class, and you have labeled examples of the behavior you want. It is not how you add last week’s facts. Facts go in context or a store. Chapter 10.
+
+**Self-host** when data cannot leave, when the unit economics at volume beat the API, or when you need a model you can air-gap. You also take the ops. Chapter 12.
+
+The common mistake is treating these as identity. They are responses to a measured constraint.
+
+## Start here
+
+You now have the picture Ng asked for: how the model tokenizes, how it generates, when to count on it, and the knobs that change the run.
+
+Chapter 3 is how you write what goes in the window. Chapter 4 is how you call it. If a ticket-reply already failed in production, skip to Chapter 5 (grounding) or Chapter 7 (evals) with this chapter in your pocket.
+
+The SKUs will move. Tokenize → generate will not.
 `,
     quizzes: [
-      {
-            "id": "q3-1",
-            "question": "What is \"Mixture of Experts\" (MoE)?",
-            "options": [
-                  "A team of human scientists checking the model",
-                  "A training technique using only textbooks",
-                  "An architecture where the model activates only a subset of \"expert\" parameters for each token",
-                  "A model that can only answer expert-level questions"
-            ],
-            "correctIndex": 2,
-            "explanation": "MoE models route tokens to specific \"expert\" neural networks, allowing massive total parameters but only activating a fraction per token for fast inference."
-      },
-      {
-            "id": "q3-2",
-            "question": "What did the Chinchilla paper reveal about model training?",
-            "options": [
-                  "Models should be as big as possible",
-                  "Most models were undertrained—optimal ratio is ~20 tokens per parameter",
-                  "Training data doesn't matter",
-                  "Smaller models are always better"
-            ],
-            "correctIndex": 1,
-            "explanation": "DeepMind showed that compute-optimal training requires balancing model size with data. A 70B model trained on enough data can match a 280B undertrained model."
-      },
-      {
-            "id": "q3-3",
-            "question": "What is the purpose of RLHF?",
-            "options": [
-                  "To make models generate faster",
-                  "To reduce parameter count",
-                  "To align models with human preferences for helpful and safe behavior",
-                  "To teach models new languages"
-            ],
-            "correctIndex": 2,
-            "explanation": "RLHF uses human feedback to train models to produce outputs humans prefer—making them helpful, harmless, and honest."
-      },
-      {
-            "id": "q3-4",
-            "question": "What are emergent capabilities?",
-            "options": [
-                  "Features explicitly programmed by developers",
-                  "Abilities that appear suddenly at certain scale thresholds without direct training",
-                  "Bugs that emerge during training",
-                  "Capabilities requiring fine-tuning"
-            ],
-            "correctIndex": 1,
-            "explanation": "Emergent capabilities like chain-of-thought reasoning appear at scale thresholds—they're a byproduct of the training objective, not explicit programming."
-      },
-      {
-            "id": "q3-5",
-            "question": "Why does tokenization matter for AI engineers?",
-            "options": [
-                  "It only matters for linguists",
-                  "It affects cost, context limits, and model behavior with different content",
-                  "It's only relevant for training",
-                  "Tokenization is deprecated"
-            ],
-            "correctIndex": 1,
-            "explanation": "You pay per token, context is measured in tokens, and unusual tokenization can cause unexpected behavior—especially with code, math, and non-English text."
-      },
-      {
-            "id": "q3-6",
-            "question": "What is the advantage of native multimodality over composite approaches?",
-            "options": [
-                  "It's cheaper to train",
-                  "It can learn cross-modal relationships that composite systems cannot",
-                  "It uses less memory",
-                  "It only works with text"
-            ],
-            "correctIndex": 1,
-            "explanation": "Native multimodal models trained on mixed media from the start learn relationships between modalities that bolted-together systems miss."
-      },
-      {
-            "id": "q3-7",
-            "question": "What is speculative decoding?",
-            "options": [
-                  "Having the model guess user intent",
-                  "Using a small model to draft tokens that a larger model verifies",
-                  "Training on speculative data",
-                  "A type of fine-tuning"
-            ],
-            "correctIndex": 1,
-            "explanation": "Speculative decoding uses a fast small model to draft tokens, then has the main model verify them in parallel—providing 2-3x speedups."
-      },
-      {
-            "id": "q3-8",
-            "question": "What is the key difference between Temperature and Top-P sampling?",
-            "options": [
-                  "They're the same thing",
-                  "Temperature reshapes the distribution; Top-P truncates it at a cumulative threshold",
-                  "Temperature only works with text",
-                  "Top-P is faster"
-            ],
-            "correctIndex": 1,
-            "explanation": "Temperature scales the entire probability distribution (higher = flatter). Top-P keeps only tokens whose cumulative probability reaches a threshold."
-      }
-],
+            {
+                  "id": "q2-1",
+                  "question": "A teammate says the model “understands the ticket, then writes the reply.” What is the more accurate mental model?",
+                  "options": [
+                        "A bidirectional encoder reads the ticket; a separate decoder writes the reply",
+                        "The model tokenizes the whole prompt and continues it, one token at a time",
+                        "The model retrieves a stored reply template and fills slots",
+                        "The model searches the training set for a similar ticket and copies the answer"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "There is no separate understanding pass. The reply is the continuation of the tokens you sent."
+            },
+            {
+                  "id": "q2-2",
+                  "question": "The draft refunds a customer. Your policy says no refund. What failed first?",
+                  "options": [
+                        "You used the cheap tier instead of the flagship",
+                        "Temperature was too low, so it could not be creative about policy",
+                        "You asked the model to know a fact it should have fetched or been given",
+                        "You forgot to enable multimodal so it could see the receipt photo"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Generation is not a database. Policy and order state belong in context or behind a tool."
+            },
+            {
+                  "id": "q2-3",
+                  "question": "You want prompt-cache hits on a high-volume classifier. What do you keep identical across calls?",
+                  "options": [
+                        "The user message, because that is what the model attends to",
+                        "The static prefix: system prompt, tools, and frozen policy — byte-identical",
+                        "The temperature, raised slightly each time so the cache stays warm",
+                        "The model ID, which you rotate weekly so providers cannot stale the cache"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Caches key on a repeated prefix. Interpolating today’s date or the ticket into the prefix misses on purpose."
+            },
+            {
+                  "id": "q2-4",
+                  "question": "When is fine-tuning the right next move for a support-reply feature?",
+                  "options": [
+                        "The model does not know this week’s return window",
+                        "You have not written an eval yet and want a smarter model",
+                        "Prompting, tools, and a higher tier still fail a stable error class, and you have labeled examples",
+                        "Leadership asked for “our own model” on the roadmap slide"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Facts go in context or a store. Fine-tune locks a behavior you can already measure. Chapter 10."
+            },
+            {
+                  "id": "q2-5",
+                  "question": "A classification prompt is flaky: same ticket, different label. What do you change first?",
+                  "options": [
+                        "Switch to a multimodal model so it can see the email header",
+                        "Raise temperature so it explores more labels",
+                        "Lower sampling noise and measure; this is extract-and-route, not a poem",
+                        "Fine-tune overnight on the last 20 tickets"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Sampling is a knob. Structured work wants it near zero. Then look at traces (Chapter 7) if it is still wrong."
+            }
+    ],
     flashcards: [
-      {
-            "id": "f3-1",
-            "front": "Foundation Model",
-            "back": "A large model trained at scale on broad data, designed to be adapted to many downstream tasks through prompting, fine-tuning, or retrieval."
-      },
-      {
-            "id": "f3-2",
-            "front": "Scaling Laws",
-            "back": "Mathematical relationships showing model performance improves predictably with parameters, data, and compute following power laws."
-      },
-      {
-            "id": "f3-3",
-            "front": "Emergent Capabilities",
-            "back": "Abilities like reasoning and in-context learning that appear suddenly at certain scale thresholds without explicit training."
-      },
-      {
-            "id": "f3-4",
-            "front": "Transformer",
-            "back": "The dominant neural network architecture using self-attention to process sequences in parallel and capture long-range dependencies."
-      },
-      {
-            "id": "f3-5",
-            "front": "Self-Attention",
-            "back": "Mechanism where each token computes relevance scores to all other tokens using Query, Key, and Value vectors."
-      },
-      {
-            "id": "f3-6",
-            "front": "Pre-Training",
-            "back": "Phase 1 of training: predicting next tokens on massive text corpora to learn language, knowledge, and reasoning patterns."
-      },
-      {
-            "id": "f3-7",
-            "front": "SFT (Supervised Fine-Tuning)",
-            "back": "Phase 2: Training on (instruction, response) pairs to teach the model the format of being a helpful assistant."
-      },
-      {
-            "id": "f3-8",
-            "front": "RLHF",
-            "back": "Reinforcement Learning from Human Feedback. Phase 3: Using human preference rankings to align model outputs with human values."
-      },
-      {
-            "id": "f3-9",
-            "front": "BPE (Byte-Pair Encoding)",
-            "back": "Tokenization algorithm that iteratively merges frequent character pairs to build a vocabulary of subword units."
-      },
-      {
-            "id": "f3-10",
-            "front": "Temperature",
-            "back": "Sampling parameter that controls randomness. T=0 is greedy/deterministic, T>1 increases creativity/randomness."
-      },
-      {
-            "id": "f3-11",
-            "front": "Top-P (Nucleus Sampling)",
-            "back": "Sampling that keeps only tokens whose cumulative probability exceeds threshold P, adapting to distribution shape."
-      },
-      {
-            "id": "f3-12",
-            "front": "Context Window",
-            "back": "Maximum tokens a model can process at once. Modern models range from 128K to 2M+ tokens."
-      },
-      {
-            "id": "f3-13",
-            "front": "Flash Attention",
-            "back": "Optimized attention algorithm reducing memory usage and increasing speed by fusing operations."
-      },
-      {
-            "id": "f3-14",
-            "front": "KV Cache",
-            "back": "Stored key/value vectors from previous tokens enabling efficient autoregressive generation."
-      },
-      {
-            "id": "f3-15",
-            "front": "Mixture of Experts (MoE)",
-            "back": "Architecture using multiple expert networks with a router, activating only a subset per token for efficiency."
-      },
-      {
-            "id": "f3-16",
-            "front": "Native Multimodality",
-            "back": "Models trained on mixed media (text, images, audio) from scratch rather than bolting separate encoders together."
-      },
-      {
-            "id": "f3-17",
-            "front": "Quantization",
-            "back": "Reducing model precision (FP16 → INT8/INT4) to decrease memory and increase speed with minimal quality loss."
-      },
-      {
-            "id": "f3-18",
-            "front": "Speculative Decoding",
-            "back": "Using a small fast model to draft tokens that a larger model verifies in parallel for 2-3x speedups."
-      },
-      {
-            "id": "f3-19",
-            "front": "Chinchilla Optimal",
-            "back": "The compute-optimal training ratio of ~20 tokens per parameter discovered by DeepMind."
-      },
-      {
-            "id": "f3-20",
-            "front": "Process Reward Model",
-            "back": "Reward model evaluating correctness of intermediate reasoning steps, not just final answers. Key for training reasoning models."
-      }
-]
+            {
+                  "id": "f2-1",
+                  "front": "Tokenize → generate",
+                  "back": "The model sees token IDs, not words. It continues the prompt one token at a time. There is no separate understanding pass."
+            },
+            {
+                  "id": "f2-2",
+                  "front": "Why they fail politely",
+                  "back": "Next-token prediction completes the sentence. It will not throw. A wrong first token steers the rest."
+            },
+            {
+                  "id": "f2-3",
+                  "front": "Context vs tools",
+                  "back": "Put in the window only what must be heard this call. If a fact can be fetched, fetch it. Generation is not a database."
+            },
+            {
+                  "id": "f2-4",
+                  "front": "Cache hit",
+                  "back": "Keep the static prefix (system, tools, policy) byte-identical. Changing the prefix on purpose misses the cache."
+            },
+            {
+                  "id": "f2-5",
+                  "front": "Cutoff",
+                  "back": "Weights freeze. Current facts go in context or behind a tool. Look up the cutoff when the date matters."
+            },
+            {
+                  "id": "f2-6",
+                  "front": "Sampling",
+                  "back": "Temperature / top-p change how wildly the next token is picked. Near-zero for extract, route, classify. Higher only when variety is the product."
+            },
+            {
+                  "id": "f2-7",
+                  "front": "When to fine-tune or self-host",
+                  "back": "Fine-tune: stable error class after prompt + tools + tier, with labels. Self-host: data cannot leave, volume economics, or air-gap. Not for last week’s facts."
+            },
+            {
+                  "id": "f2-8",
+                  "front": "LLM foundations (Ng)",
+                  "back": "Tokenize and generate. Context, cache, cutoff, sampling, reasoning effort, tools. When to multimodal, fine-tune, or self-host. Choose a mix of models."
+            }
+    ]
   },
   {
     id: 'ch3',
@@ -760,6 +467,8 @@ The models are impressive, but they are also engineering artifacts with knowable
     content: `# Chapter 3: Prompt Engineering and Techniques
 
 Prompt engineering is the primary interface between your intent and a language model's behavior. It is not a soft skill or an art -- it is a systematic discipline with repeatable patterns, measurable outcomes, and well-understood failure modes. This chapter covers the techniques you need to ship reliable LLM-powered features in production.
+
+> **Look up now.** Prompt: "What does the current official prompting guide from Anthropic and from OpenAI say about system vs user roles, XML/structured tags, and extended thinking? Quote the docs, not a tweet."
 
 ---
 
@@ -1430,7 +1139,9 @@ The next chapter covers embeddings and retrieval -- the foundation of RAG system
 
 Every production AI feature starts the same way: an HTTP request carrying a prompt, and a response carrying generated text. The gap between that first successful curl and a system that serves thousands of users reliably is where most engineering effort lives. This chapter covers the full surface area -- from authentication through structured outputs and streaming -- so you can build features that are correct, fast, and economical.
 
-> **Note on code examples:** Code samples throughout this course use specific model IDs (like "gpt-4o" or "claude-sonnet-4") for clarity. Model IDs change as providers release new versions. The patterns and techniques are stable -- swap in the current model ID from your provider's documentation.
+> **Note on code examples:** Samples use \`os.environ["MODEL_ID"]\` or a placeholder ID. Real SKUs change. Keep the ID in an env var. The patterns (messages, tools, structured output, retries) are what you should learn.
+
+> **Look up now.** Prompt: "What is the current recommended mid-tier model ID from OpenAI and from Anthropic for a production chat + tools app? Cite official docs."
 
 ---
 
@@ -1662,12 +1373,15 @@ LLM costs sneak up on you. A single unoptimized endpoint can burn through hundre
 cost = (input_tokens * input_price_per_token) + (output_tokens * output_price_per_token)
 \`\`\`
 
-For GPT-4o at $2.50 / 1M input and $10.00 / 1M output: a request with 2,000 input tokens and 500 output tokens costs $0.01. That is 1,000 requests for $10. Sounds cheap until your feature gets 100,000 requests a day.
+Worked example (plug in **today's** $/M, not a memorized price): 2,000 input + 500 output tokens. If input is $3/M and output is $15/M, that request is $0.0135. A thousand requests is still pocket change. A hundred thousand a day is a line item.
+
+> **Look up now.** Prompt: "Using official list prices, compute the cost of 2,000 input + 500 output tokens on the current cheap/fast and flagship models from OpenAI and Anthropic."
 
 ### Tracking Implementation
 
 \`\`\`python
 import logging
+import os
 from dataclasses import dataclass
 
 @dataclass
@@ -1679,10 +1393,12 @@ class UsageRecord:
     user_id: str
     feature: str
 
+# Load these from config or env. Hardcoded list prices rot.
 PRICING = {
-    "gpt-4o": {"input": 2.50 / 1_000_000, "output": 10.00 / 1_000_000},
-    "gpt-4o-mini": {"input": 0.15 / 1_000_000, "output": 0.60 / 1_000_000},
-    "claude-sonnet-4-20250514": {"input": 3.00 / 1_000_000, "output": 15.00 / 1_000_000},
+    os.environ["MODEL_ID"]: {
+        "input": float(os.environ["PRICE_IN_PER_M"]) / 1_000_000,
+        "output": float(os.environ["PRICE_OUT_PER_M"]) / 1_000_000,
+    },
 }
 
 def track_usage(response, model: str, user_id: str, feature: str) -> UsageRecord:
@@ -2971,7 +2687,9 @@ RAG adds overhead that does not exist in a plain LLM call. Understanding the bud
 
 **Reranking.** A cross-encoder rerank call over 25 documents adds 200-500ms and costs roughly $0.001-0.003 per query with Cohere's API. Significant latency but often worth the quality gain.
 
-**LLM generation with context.** The main cost driver. Retrieving K=10 chunks of 500 tokens each adds 5,000 input tokens to every call. At GPT-4o pricing, that is roughly $0.0125 per query just for the context tokens. Reducing K from 10 to 5 halves that cost.
+**LLM generation with context.** The main cost driver. Retrieving K=10 chunks of 500 tokens each adds 5,000 input tokens to every call. Cost = those tokens × current input $/M. Reducing K from 10 to 5 halves that part of the bill.
+
+> **Look up now.** Prompt: "Using official embedding and LLM list prices, estimate the cost of one RAG query that embeds a short question, reranks 25 docs, and sends 5,000 context tokens plus 300 output tokens to a mid-tier model."
 
 | Lever | Effect on Quality | Effect on Latency | Effect on Cost |
 |---|---|---|---|
@@ -3219,6 +2937,8 @@ RAG is not a single algorithm. It is a pipeline, and every stage of that pipelin
 
 The word "agent" has been stretched to mean everything from a chatbot with a system prompt to a fully autonomous coding assistant that spins up cloud infrastructure. That ambiguity costs teams real money -- they either over-build when a simple chain would suffice, or under-build when genuine autonomy is required. This chapter cuts through the noise. We will define what an agent actually is, walk through the core patterns for building them, cover the protocols that connect them to the outside world (including MCP), and establish the guardrails that keep them from going off the rails in production.
 
+> **Look up now.** Prompt: "What is the current MCP spec's distinction between tools, resources, and prompts, and how do Anthropic and OpenAI currently expose tool use in their APIs? Cite official docs."
+
 ---
 
 ## 6.1 What Is an Agent
@@ -3233,6 +2953,15 @@ The four components:
 - **Loop** -- the execution cycle that feeds tool results back into the model and repeats until a termination condition is met.
 
 Strip away any one of these and you have something else. An LLM with tools but no loop is function calling. An LLM with a loop but no tools is chain-of-thought with retries. An LLM with neither is just a prompt.
+
+Ng’s *Agentic AI* course teaches four design patterns that show up in almost every serious workflow. This chapter implements them in vendor-neutral terms:
+
+- **Reflection** — the model critiques its own output and iterates (code review, automated). Use it when first-pass quality is cheap to check and expensive to ship raw.
+- **Tool use** — the model chooses functions: search, databases, APIs, code execution, MCP. Section 6.3.
+- **Planning** — the model breaks a task into sub-tasks and adapts when a step fails. Section 6.4.
+- **Multi-agent** — specialized agents, like a company with roles, coordinated by an orchestrator or a sequence. Later in this chapter.
+
+The pattern that predicts whether a team actually ships: a disciplined **eval and error-analysis loop**. Guessing which component to improve is how agent projects stall. Let traces and evals point at the bottleneck (Chapter 7). Build the patterns in raw Python (or your language) before you hide them in a framework.
 
 ---
 
@@ -4062,7 +3791,9 @@ The hardest skill in agent engineering is not building agents. It is knowing whe
 
 You shipped the feature. The demo looked great. Leadership is excited. Then a user pastes in a financial document and the model hallucinates a number that makes it into a quarterly report. Nobody caught it because nobody built an eval suite, and nobody built an eval suite because everyone assumed the model "mostly works."
 
-Evaluation is the practice of systematically measuring whether your AI system does what you claim it does. It is not optional. It is not a phase you bolt on after launch. It is the engineering discipline that separates a prototype from a product.
+Evaluation is the practice of systematically measuring whether your AI system does what you claim it does. It is not optional. It is not a phase you bolt on after launch. It is the engineering discipline that separates a prototype from a product. Evals are the gate before any model or architecture change — not a report you write after.
+
+> **Look up now.** Prompt: "What are the current recommended tools and metrics for RAG and agent evals (offline + online)? Name official docs or project READMEs, not a vendor landing page."
 
 This chapter covers how to build evaluation into every stage of your AI system -- from offline test suites through production monitoring. We will look at metrics, tooling, human review, adversarial testing, and the organizational habits that keep quality from silently degrading over time.
 
@@ -4694,6 +4425,8 @@ Every AI prototype works in a demo. The model responds, the output looks good, a
 
 This chapter covers everything between "it works on my laptop" and "it runs reliably at scale": architecture, observability, reliability, deployment, scaling, cost management, security, and the caching strategies that make production economics viable.
 
+> **Look up now.** Prompt: "What are the current prompt-caching rules and discounts for OpenAI and Anthropic, and do they offer a batch API discount? Cite official docs."
+
 > **Practitioner's note:** Production-ready AI isn't a quality bar for the model — it's a quality bar for the system. It handles inputs the training data didn't include, degrades predictably, and someone who didn't build it can operate it.
 
 ## The Production Gap
@@ -4972,6 +4705,7 @@ At prototype scale, cost is invisible. At production scale, it is the line item 
 Route requests to the cheapest model that can handle them. Simple tasks do not need frontier models.
 
 \`\`\`python
+import os
 from enum import Enum
 
 class Tier(Enum):
@@ -4980,9 +4714,9 @@ class Tier(Enum):
     COMPLEX = "complex"     # Multi-step reasoning, code generation, analysis
 
 MODEL_TIERS = {
-    Tier.SIMPLE: {"model": "claude-haiku-4-20250514", "cost_per_1k_input": 0.0008},
-    Tier.STANDARD: {"model": "claude-sonnet-4-20250514", "cost_per_1k_input": 0.003},
-    Tier.COMPLEX: {"model": "claude-opus-4-20250514", "cost_per_1k_input": 0.015},
+    Tier.SIMPLE: {"model": os.environ["MODEL_ID_FAST"]},
+    Tier.STANDARD: {"model": os.environ["MODEL_ID"]},
+    Tier.COMPLEX: {"model": os.environ["MODEL_ID_FLAGSHIP"]},
 }
 
 def classify_request_tier(message: str, tool_calls: list = None) -> Tier:
@@ -5186,19 +4920,18 @@ def cached_llm_call(model, messages, tools=None, ttl=1800):
 
 ### Cost Savings: A Worked Example
 
-Consider an application making 10,000 LLM calls per day with a 3,000-token system prompt and an average 500-token user message at $3/million input tokens.
+Consider 10,000 calls/day, a 3,000-token system prompt, and a 500-token user message. Plug **current** input $/M and the provider's cache discount into the same rows.
 
-| Component | Without Caching | With Caching |
+| Component | Without caching | With caching (illustrative) |
 |---|---|---|
-| System prompt tokens | 30M tokens/day | 30M tokens cached at 90% discount |
-| System prompt cost | $90.00/day | $9.00/day + $0.30 cache writes |
-| User message tokens | 5M tokens/day | 5M tokens (no caching) |
-| User message cost | $15.00/day | $15.00/day |
-| Semantic cache hits (40%) | — | 4,000 calls avoided |
-| Avoided call savings | — | $42.00/day |
-| **Daily total** | **$105.00** | **$24.30** |
+| System prompt tokens | 30M tokens/day | Same tokens, billed at the cache-hit rate |
+| User message tokens | 5M tokens/day | Still full price unless you also cache responses |
+| Semantic cache hits (40%) | — | Those calls never hit the model |
+| Pattern | You pay for the prefix every time | Prefix + response caches usually dominate savings |
 
-Actual numbers depend on your cache hit rates and token volumes. But the pattern is consistent: combining provider-level prompt caching with semantic and exact-match response caching routinely reduces costs by 60-90%.
+The dollars move with list prices. The pattern does not: provider prefix cache + exact/semantic response cache routinely cuts spend by more than half on chatty apps.
+
+> **Look up now.** Prompt: "What is the current prompt-cache discount and minimum cacheable prefix for OpenAI and Anthropic? Compute daily cost for 10,000 calls of 3,000-token system + 500-token user at today's mid-tier input price."
 
 ### Cache Invalidation
 
@@ -5329,7 +5062,7 @@ The teams that succeed in production are the ones that treat these as engineerin
                   "It improves security"
             ],
             "correctIndex": 1,
-            "explanation": "Model tiering can dramatically reduce costs by using cheaper models (like GPT-3.5) for simple tasks that don't need GPT-4."
+            "explanation": "Model tiering can dramatically reduce costs by using cheaper/fast models for simple tasks that do not need a flagship or reasoning model."
       },
       {
             "id": "q9-4",
@@ -5625,6 +5358,8 @@ The teams that succeed in production are the ones that treat these as engineerin
 Security in AI systems is not an extension of traditional application security. It is a fundamentally different problem. Traditional software executes deterministic code paths; LLMs interpret natural language instructions and generate unbounded outputs. The attack surface is the entire space of human language, and your adversaries are creative, motivated, and increasingly automated.
 
 This chapter covers the threats that matter, the defenses that work (and the ones that don't), and the organizational discipline required to keep LLM-powered systems from becoming liabilities.
+
+> **Look up now.** Prompt: "What does the current OWASP Top 10 for LLM Applications list as the highest-risk items, and what do Anthropic and OpenAI currently recommend for prompt-injection defenses? Cite official or OWASP pages."
 
 **Practitioner's note:** I started thinking about AI security like a bank examiner. If you can't evidence a control, it doesn't exist. If you can't trace a decision to a person, nobody made it. If you can't produce documentation under scrutiny, you're not governed. Most organizations discover they have 5x the AI systems they think they do when they actually look.
 
@@ -6390,6 +6125,8 @@ You can get remarkably far with prompt engineering and retrieval-augmented gener
 
 This chapter covers the decision framework, the techniques, and the practical engineering of fine-tuning. The goal is to leave you equipped to ship a fine-tuned model to production without wasting weeks on avoidable mistakes.
 
+> **Look up now.** Prompt: "Which base models do OpenAI, Anthropic, and Google currently allow you to fine-tune via API, and what is the current training + inference surcharge? Cite official docs."
+
 ---
 
 ## When to Fine-Tune (And When Not To)
@@ -6602,6 +6339,7 @@ Prevention: create your test set first, quarantine it, and never let it touch th
 The simplest path. Upload a JSONL file, start a job, wait, get a model ID you can use in the same API.
 
 \`\`\`python
+import os
 from openai import OpenAI
 
 client = OpenAI()
@@ -6612,7 +6350,7 @@ file = client.files.create(file=open("train.jsonl", "rb"), purpose="fine-tune")
 # Start fine-tuning job
 job = client.fine_tuning.jobs.create(
     training_file=file.id,
-    model="gpt-4o-mini-2024-07-18",
+    model=os.environ["MODEL_ID_FAST"],  # look up which IDs the host currently fine-tunes
     hyperparameters={"n_epochs": 3},
 )
 
@@ -6622,12 +6360,12 @@ print(status.status)  # "running", "succeeded", etc.
 
 # Use the fine-tuned model (after training completes)
 response = client.chat.completions.create(
-    model=status.fine_tuned_model,  # e.g., "ft:gpt-4o-mini-2024-07-18:org:suffix:id"
+    model=status.fine_tuned_model,  # host returns an ft:... id
     messages=[{"role": "user", "content": "Summarize this contract..."}],
 )
 \`\`\`
 
-Advantages: no infrastructure to manage, fast iteration, models are served for you. Disadvantages: limited model selection (GPT-4o-mini, GPT-4o), no control over hyperparameters beyond epochs and learning rate multiplier, data leaves your environment, ongoing per-token cost for inference.
+Advantages: no infrastructure to manage, fast iteration, models are served for you. Disadvantages: limited base-model menu (look up which IDs the host currently fine-tunes), little hyperparameter control, data leaves your environment, ongoing per-token inference cost.
 
 ### Self-Hosted (HuggingFace + Your GPUs)
 
@@ -6637,14 +6375,14 @@ Advantages: any open model (Llama, Mistral, Qwen, Phi), full hyperparameter cont
 
 ### Cost Comparison
 
-| Dimension | OpenAI fine-tuning | Self-hosted (cloud GPU) |
+| Dimension | Hosted fine-tuning API | Self-hosted (cloud GPU) |
 |---|---|---|
-| Training cost | ~$0.008/1K tokens (4o-mini) | $2-4/hr per A100 GPU |
+| Training cost | Look up current $/1K tokens | Look up current GPU $/hr |
 | Inference cost | ~1.5-2x base model pricing | Fixed GPU cost, unlimited tokens |
 | Time to first result | Hours (mostly queue time) | Hours (mostly training time) |
 | Infra effort | None | Significant |
 | Data privacy | Data sent to OpenAI | Data stays on your machines |
-| Model selection | GPT-4o-mini, GPT-4o | Any open model |
+| Model selection | Whatever the host currently offers | Any open model |
 
 For low-volume use cases (under 1M tokens/day inference), hosted fine-tuning is almost always cheaper when you account for engineering time. For high-volume or privacy-sensitive use cases, self-hosted wins.
 
@@ -6948,7 +6686,9 @@ Fine-tuning is a precision tool, not a first resort. Exhaust prompting and RAG b
     title: "Multimodal AI",
     content: `# Chapter 11: Multimodal AI
 
-Language models that only process text are increasingly the exception. The models shipping today -- GPT-4o, Claude, Gemini -- accept images, audio, and video alongside text, and the engineering patterns for working with these inputs are maturing fast. This chapter covers the practical side: how to send images and audio to APIs, how to build pipelines that process complex documents, and where these capabilities genuinely work versus where they will quietly fail on you.
+Language models that only process text are increasingly the exception. Hosted flagships from the major providers accept images, and often audio or video, alongside text. The engineering patterns for these inputs are what last. This chapter covers the practical side: how to send images and audio to APIs, how to build pipelines that process complex documents, and where these capabilities genuinely work versus where they will quietly fail on you.
+
+> **Look up now.** Prompt: "Which current models from OpenAI, Anthropic, and Google accept images, audio, and native video? Note max images per request, max file size, and how image tokens are billed. Cite official docs."
 
 ---
 
@@ -6967,15 +6707,12 @@ Modern vision-language models handle a broad range of image understanding tasks 
 
 ### Provider Capabilities
 
-| Capability | GPT-4o | Claude | Gemini |
-|---|---|---|---|
-| Max images per request | 20+ | 20 | 16 (native), 3600 frames (video) |
-| Image input formats | PNG, JPEG, GIF, WebP | PNG, JPEG, GIF, WebP | PNG, JPEG, GIF, WebP, plus native video |
-| Max image size | 20MB | 5MB per image | 20MB |
-| Resolution handling | Auto, low, high modes | Auto-scales, max 1568px on long side | Auto-scales |
-| OCR quality | Strong | Strong | Strong |
-| Spatial reasoning | Moderate | Moderate | Moderate |
-| Counting accuracy | Unreliable above ~10 | Unreliable above ~10 | Unreliable above ~10 |
+| What to check (every provider) | Why it ages | What is usually true |
+|---|---|---|
+| Images / audio / video accepted? | Endpoints appear and vanish | Text+image is common; native video is not |
+| Max images and file size | Limits move | Enough for a document page; not a dump of a folder |
+| How pixels become tokens | Billing formulas change | Higher resolution costs more; downsample first |
+| OCR / spatial / counting | Quality claims rotate | Counting and spatial reasoning stay weak |
 
 ### Where They Fail
 
@@ -7052,13 +6789,13 @@ response = client.chat.completions.create(
 
 ### Resolution and Token Cost
 
-Image tokens are expensive. A high-resolution image in GPT-4o can consume 1,000+ tokens. The cost scales with resolution:
+Image tokens are expensive. High-resolution pages can consume hundreds to thousands of tokens. The formula changes by provider — look it up — but the shape does not: more pixels, more tokens.
 
-| Resolution | Approximate tokens (GPT-4o) | Use when |
+| Resolution | Typical use | Principle |
 |---|---|---|
-| Low (512x512) | ~85 tokens | General understanding, no fine detail needed |
-| High (up to 2048x2048) | 300-1,600 tokens | OCR, reading small text, detailed analysis |
-| Auto | Varies | Let the API decide based on content |
+| Low / downsampled | Classify, caption | Cheap enough to default here |
+| High / full page | OCR, small text, dense diagrams | Pay only when evals require it |
+| Auto | When you have not measured yet | Measure, then pin a policy |
 
 Optimization strategies that matter in production:
 
@@ -7323,20 +7060,20 @@ Never trust extraction output blindly. Validate totals (do line items sum correc
 
 Multimodal requests are significantly more expensive and slower than text-only requests. Budgeting matters.
 
-| Input type | Approximate cost per unit (GPT-4o) | Latency impact |
+| Input type | How to estimate | Latency shape |
 |---|---|---|
-| Text (1K tokens) | $0.0025 input | Baseline |
-| Image (low detail) | ~$0.0007 (85 tokens) | +200-500ms |
-| Image (high detail) | $0.003-$0.01 (300-1,600 tokens) | +500-2,000ms |
-| Audio (1 minute, Whisper) | $0.006 | 5-15 seconds |
-| Video (1 min, 30 frames low-res) | ~$0.02 | +5-15 seconds |
+| Text | tokens × current $/M | Baseline |
+| Image (low detail) | Look up the provider's image-token formula | Hundreds of ms extra |
+| Image (high detail) | Same formula, more tiles/tokens | Often 1–2s extra |
+| Audio | Look up per-minute STT price | Seconds, not ms |
+| Video | frames × image cost, or native video $/min | Seconds to tens of seconds |
 
 ### Optimization Strategies
 
 1. **Resize aggressively**: Most document processing works fine at 150-200 DPI. Sending 300 DPI images doubles cost for marginal quality gain.
 2. **Crop regions of interest**: If you only need the header of an invoice, do not send the entire page.
 3. **Cache extracted content**: Once you have extracted structured data from an image, cache it. Re-extraction is wasteful.
-4. **Use cheaper models for triage**: Route images through a fast, cheap model first (GPT-4o-mini, Gemini Flash) to classify or check if detailed extraction is needed, then use a more expensive model only when necessary.
+4. **Use cheaper models for triage**: Route images through a cheap/fast vision model first to classify or check if detailed extraction is needed, then use a more expensive model only when necessary.
 5. **Batch processing**: When processing hundreds of documents, use async requests to maximize throughput without hitting per-request latency.
 
 ---
@@ -7373,27 +7110,27 @@ These limitations are real but manageable. The key is designing systems that acc
       },
       {
             "id": "q11-2",
-            "question": "Which model currently supports the longest context for video understanding?",
+            "question": "What should you verify before sending a long video to a multimodal API?",
             "options": [
-                  "GPT-4o",
-                  "Claude 3.5 Sonnet",
-                  "Gemini 1.5 Pro",
-                  "Llama 3.2 Vision"
+                  "Whether the provider still lists a native video endpoint and its token/minute limits",
+                  "That GPT-4o is the current flagship",
+                  "That Claude 3.5 Sonnet is the current flagship",
+                  "That open-weight vision models cannot do video"
             ],
-            "correctIndex": 2,
-            "explanation": "Gemini 1.5 Pro supports over 1 million tokens, enabling native processing of long videos and many images."
+            "correctIndex": 0,
+            "explanation": "Video support, context class, and billing units change. Look up the current docs; do not memorize a model name."
       },
       {
             "id": "q11-3",
-            "question": "What is the recommended approach for analyzing a 30-minute video with current models?",
+            "question": "What is the recommended approach for analyzing a 30-minute video when native long-video support is unclear or expensive?",
             "options": [
-                  "Send the entire video file to GPT-4o",
-                  "Extract key frames and combine with audio transcript",
+                  "Send the entire video file to whatever flagship you used last year",
+                  "Extract key frames and combine with an audio transcript",
                   "Convert to GIF format first",
                   "Videos cannot be analyzed by AI"
             ],
             "correctIndex": 1,
-            "explanation": "Frame sampling combined with audio transcription is the most practical approach for most models. Only Gemini supports native long video."
+            "explanation": "Frame sampling plus transcription is the portable pattern. Native long-video APIs are a look-up, not a given."
       },
       {
             "id": "q11-4",
@@ -7479,6 +7216,8 @@ There are five reasons to move inference off the cloud and onto hardware you con
 **Offline capability.** Field workers, aircraft, submarines, remote locations. If there's no internet, there's no API. Local models work anywhere.
 
 **Control.** No rate limits, no provider outages, no surprise model deprecations, no terms-of-service changes. You own the stack.
+
+> **Look up now.** Prompt: "What are the current recommended local runtimes (Ollama, llama.cpp, vLLM, MLX, etc.) and which open-weight instruct models fit in 8GB, 24GB, and 80GB VRAM? Cite project docs or Hugging Face model cards."
 
 ## Hardware Requirements
 
@@ -7712,6 +7451,8 @@ The math depends on your volume and which API you're comparing against. Here's t
 
 **The break-even** depends entirely on your API pricing tier and volume. Run the numbers with current prices — the crossover is typically in the millions-of-tokens-per-day range for mid-tier API models.
 
+> **Look up now.** Prompt: "Using official cheap/fast hosted prices, compute monthly API cost for 5M input + 5M output tokens/day. Compare to serving a current small open-weight instruct model on one consumer GPU."
+
 **Caveats:**
 - Assumes the local model's quality is acceptable for your use case
 - Doesn't include maintenance, monitoring, or ops time
@@ -7721,7 +7462,7 @@ The math depends on your volume and which API you're comparing against. Here's t
 
 Local and edge AI is not about replacing cloud APIs — it's about having the right tool for each situation. Use local models for privacy, cost optimization at scale, and latency-sensitive applications. Use cloud APIs for frontier capability, simplicity, and low-volume use cases. The hybrid architecture gives you both.
 
-Start with Ollama and a 7-8B model. If quality is sufficient, you've saved yourself significant ongoing costs. If not, you know exactly which queries need the cloud and which don't.
+Start with a local runner and the smallest current instruct model that fits your GPU. If quality is sufficient on your evals, you've saved ongoing API cost. If not, you know which queries still need a hosted mid-tier.
 `,
     quizzes: [
       {
@@ -8383,6 +8124,259 @@ These patterns are not a checklist to implement blindly. They are a vocabulary f
 ]
   },
   {
+    id: 'ch15',
+    title: "Using Coding Agents",
+    content: `# Using Coding Agents
+
+> **From the field.** A coding agent without a closer is just a faster way to drift. The skill is not prompting the tool. The skill is deciding what the agent is allowed to touch, what evidence counts as done, and when you take the wheel.
+
+## What you will be able to do
+
+1. **Name the harness** — constitution, source of truth, injector, machine, verifier, bounds.
+2. **Keep the blob out of the window.** The live artifact is not the file you edit.
+3. **Grant autonomy only when a verifier exists.**
+4. **Pick the loop:** a tight bot for copy and chrome; a Cloud Agent for one rewrite and a PR.
+
+This chapter is Skill 3 on Ng’s map: *using* coding agents. Chapter 6 is *building* agents as product. Confusing them is how teams ship an internal Copilot and call the job done.
+
+## The harness
+
+The model is not the product. The **harness** is the loop you put around the model so it can do work without rediscovering your system every session.
+
+A harness has six parts:
+
+1. **Constitution** — a one-page file the agent reads first (\`AGENTS.md\`, \`CLAUDE.md\`, \`.cursor/rules\`). Purpose, stack, landmines, how to change a file.
+2. **Curriculum / spec** — what to do next, separate from how to work. In this course that is \`SPINE.md\`. In a product that is the feature spec (Chapter 17).
+3. **Source of truth for edits** — the files humans and agents are allowed to type in.
+4. **Injector** — the only path from source into the live artifact. A script, a codegen step, a compiler. Not a human copy-paste.
+5. **Machine** — how the environment boots (\`environment.json\`: install, start). Warm beats clever.
+6. **Verifier** — the command that means done. Build, tests, a screenshot. Without this, “done” is a paragraph.
+
+If any piece is missing, the agent fills the gap with a guess. Guesses look like competence until you read the diff.
+
+## Worked example — this workbook
+
+This masterclass *is* the example. Steal the shape. Do not steal the stack unless it is yours.
+
+| Part | In this repo | Rule the agent must obey |
+|---|---|---|
+| Constitution | \`AGENTS.md\` | One chapter per run. Next.js is locked. |
+| Curriculum | \`SPINE.md\` | What to write next. Do not invent a third plan. |
+| Source | \`chapters/chN-*.md\` and \`chapters/chN.assessments.json\` | Edit here. |
+| Live artifact | \`constants.ts\` | **Do not read or hand-edit.** |
+| Injector | \`node scripts/inject-chapter.mjs chN\` | The only way source becomes live. |
+| Machine | \`environment.json\` | \`npm install\` / \`npm run dev\`. |
+| Verifier | \`npm run build\` | If chrome changed. |
+| Bounds | Consulting repo, Field Guide hub, cert cram | Out of scope. |
+
+The failure this harness exists to prevent: an agent opens a 450KB \`constants.ts\`, “quickly fixes” a sentence, migrates the bundler, answers a billing question, and never finishes the chapter. That is context rot plus no closer.
+
+The loop that works:
+
+1. State the chapter. (\`ch15\` — this one.)
+2. Edit the markdown (and assessments if quizzes change).
+3. Run the injector.
+4. Grep a heading if you must confirm the splice. Do not dump the blob into the thread.
+5. Commit. One job.
+
+That is Ng’s Skill 3 in a repo: customize the agent and the environment. The portable names differ (\`AGENTS.md\` / Cursor rules / \`CLAUDE.md\`). The job does not.
+
+> **Look up now.** Prompt: "What does the current Cursor docs say an \`AGENTS.md\` or project rules file should contain, and what does Anthropic document for \`CLAUDE.md\`? Cite official docs."
+
+## A mental model, not a vendor tour
+
+A coding agent is an LLM in a loop with tools: read, edit, run, search. It stops when it thinks it is done, hits a limit, or you interrupt.
+
+The loop fails in predictable ways:
+
+- **It optimizes for looking finished.** Tests pass because it weakened the test.
+- **It loses the plot as context fills.** Mid-task it “simplifies” a constraint you stated at the start.
+- **It does not know your blast radius.** It will migrate a schema if the tools are wide and the prompt is vague.
+- **It is confident in prose and sloppy in edges.** Empty states, permissions, the one env var nobody documented.
+
+If you cannot name those, you are not using an agent. You are supervising a fast intern with no memory of last quarter’s incident.
+
+## Context is the scarce resource
+
+Dumping the repository into chat is not context management. It is noise.
+
+**Constitution, not a novel.** One page: what this is for, what must not change, how to verify, where the landmines are.
+
+**Point, don’t narrate.** “Failing test in \`invoice.test.ts\`; do not change the public API of \`InvoiceService\`” is a job. “Fix billing” is a wish.
+
+**Reset when the thread is dirty.** Contradictory instructions accumulate. Context rot looks like competence until you read the diff.
+
+**Separate privileged from unprivileged.** The agent that edits \`src/\` is not the agent that holds production credentials.
+
+## Plan versus execute
+
+Plan when the change crosses modules, you do not know the shape, or another human must review the spec. Skip the plan when you already have a failing test or the change is mechanical.
+
+A useful plan is gradable: files in, files out, acceptance checks, rollback. A useless plan says “ensure quality.”
+
+Chapter 17 is the full spec loop. Here, know when *not* to bother.
+
+## Close the loop with a verifier
+
+Ng: help the agent autonomously close loops by providing verifiers or evals.
+
+Without a verifier, done means the model wrote a paragraph. With one: the named tests are green, types are clean, the build passed, the eval did not regress.
+
+Write the verifier first when you can. A failing test is the best prompt you will ever write. If you cannot write a verifier, do not grant autonomy.
+
+Same muscle as Chapter 7. Your repo is the system under test.
+
+## How much to intervene
+
+1. State the outcome and the bound.
+2. Give a verifier.
+3. Watch the first loop. Interrupt if the ontology is wrong.
+4. Leave it alone through mechanical work.
+5. Review the diff as a senior engineer. You own the merge.
+
+Autonomy is a privilege per task, not a setting you leave on.
+
+Use a **tight bot** (Grok Bot, Composer, in-editor agent) for copy and chrome on a live page. Use a **Cloud Agent** when you need a fresh machine, a branch, and a PR. Do not use High Fast for a title change. The expensive loop is for the hard rewrite.
+
+## Orchestrating more than one agent
+
+Useful when the work is actually parallel: independent features, a reviewer that did not write the code. Harmful when two agents share a working tree. Use worktrees, branches, or a queue.
+
+A second agent as reviewer is often worth more than a second implementer. Different context, different incentive.
+
+## Production is not a sandbox
+
+Minimum bounds: read-only prod by default, no secrets in the thread, human-gated migrations, a blast radius you can explain. If you cannot name what the tools can destroy, the design is unfinished. That is Skill 2 leaking into Skill 3 on purpose.
+
+## Evolve the workflow on purpose
+
+Keep a short log: what you delegated, where the agent wasted you, which verifier caught it. Promote what survives. A workflow you cannot explain to a new teammate is a habit. Habits do not survive an incident.
+
+## How this sits on the map
+
+| Skill Ng named | What you practice here | Where else |
+|---|---|---|
+| Harness / customize the environment | Constitution, injector, machine, verifier | This chapter’s worked example |
+| Mental model of agents | Loops, false done, context rot | Chapter 6 |
+| Plan vs execute | Specs when they earn their keep | Chapter 17, Chapter 14 |
+| Verifiers | Tests and evals as done | Chapter 7 |
+| Intervention | Autonomy as a per-task privilege | Chapter 8, Chapter 9 |
+| Production safety | Blast radius, gates, secrets | Chapter 8, Chapter 9 |
+
+Using coding agents well does not replace software engineering. It *is* software engineering, performed through a stochastic intern you are responsible for.
+
+## Summary
+
+Give the agent a harness: a constitution, a source it is allowed to edit, an injector into the live artifact, a machine, and a verifier. Bound what it can touch. Interrupt when the goal is wrong. Review the diff as if your name is on the commit — because it is.
+
+The product names will change. The loop will not.
+`,
+    quizzes: [
+            {
+                  "id": "q15-1",
+                  "question": "What is a harness, in the sense of using coding agents?",
+                  "options": [
+                        "The model vendor’s latest flagship SKU",
+                        "The loop around the model: constitution, source of truth, injector, machine, verifier, and bounds",
+                        "A multi-agent swarm that writes the spec for you",
+                        "The Cloud Agent VM, and nothing else"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "The model is not the product. The harness is how the agent works without rediscovering your system every session."
+            },
+            {
+                  "id": "q15-2",
+                  "question": "In this workbook, an agent needs to fix a sentence in Chapter 1. What should it do?",
+                  "options": [
+                        "Open constants.ts and edit the string in place",
+                        "Edit chapters/ch1-landscape.md, then run node scripts/inject-chapter.mjs ch1",
+                        "Paste the whole constants.ts into chat so it has full context",
+                        "Migrate the bundler first so the sentence renders correctly"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Source is the markdown. The injector is the only path into the live artifact. Dumping the blob is context rot."
+            },
+            {
+                  "id": "q15-3",
+                  "question": "When should you grant an agent real autonomy?",
+                  "options": [
+                        "Always — autonomy is the point",
+                        "Never — review every token",
+                        "When you can name a verifier that defines done; otherwise stay in the loop",
+                        "Whenever the task is important"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Without a verifier, done means the model said it was done. Autonomy is a per-task privilege."
+            },
+            {
+                  "id": "q15-4",
+                  "question": "A teammate wants High Fast Cloud Agent for a title tweak. What do you do?",
+                  "options": [
+                        "Use the expensive loop — more thinking is always better",
+                        "Use a tight bot or in-editor agent; reserve Cloud Agent + High Fast for a hard rewrite",
+                        "Start five agents in the same working tree so one of them is cheap",
+                        "Skip the constitution so the agent can move faster"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Match the loop to the job. High Fast on a title change is how you empty a usage pool."
+            },
+            {
+                  "id": "q15-5",
+                  "question": "What is the production minimum when an agent has tools?",
+                  "options": [
+                        "Trust the system prompt",
+                        "Read-only prod by default, no secrets in the thread, human-gated migrations, and a blast radius you can explain",
+                        "Give it admin so it can finish the job",
+                        "Only allow agents in greenfield repos"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "If you cannot explain the blast radius of the tools you attached, the design is unfinished."
+            }
+    ],
+    flashcards: [
+            {
+                  "id": "f15-1",
+                  "front": "Harness",
+                  "back": "The loop around the model: constitution, source, injector, machine, verifier, bounds. The model is not the product."
+            },
+            {
+                  "id": "f15-2",
+                  "front": "Constitution",
+                  "back": "A one-page AGENTS.md / CLAUDE.md / rules file: purpose, stack, landmines, how to change a file."
+            },
+            {
+                  "id": "f15-3",
+                  "front": "Injector",
+                  "back": "The only path from editable source into the live artifact. In this repo: node scripts/inject-chapter.mjs chN."
+            },
+            {
+                  "id": "f15-4",
+                  "front": "False done",
+                  "back": "The agent optimized for looking finished — weakened tests, hardcoded fixtures — instead of meeting the verifier."
+            },
+            {
+                  "id": "f15-5",
+                  "front": "Verifier",
+                  "back": "The definition of done the agent can run: tests, types, build, evals. Without one, do not grant autonomy."
+            },
+            {
+                  "id": "f15-6",
+                  "front": "Context rot",
+                  "back": "A dirty thread where contradictory instructions accumulate and the agent ‘simplifies’ away an early constraint."
+            },
+            {
+                  "id": "f15-7",
+                  "front": "Tight bot vs Cloud Agent",
+                  "back": "Bot/Composer for copy and chrome. Cloud Agent for one rewrite + branch + PR. High Fast is not for title tweaks."
+            },
+            {
+                  "id": "f15-8",
+                  "front": "Closer",
+                  "back": "The human or gate that decides the work is actually done. An agent without a closer is faster drift."
+            }
+    ]
+  },
+  {
     id: 'ch14',
     title: "AI Product Strategy",
     content: `# Chapter 14: AI Product Strategy
@@ -8786,5 +8780,359 @@ Every decision in this chapter comes back to a single discipline: being honest a
             "back": "Considerations around bias, fairness, transparency, and societal impact of AI features."
       }
 ]
-  }
+  },
+  {
+    id: 'ch16',
+    title: "Software Engineering Fundamentals",
+    content: `# Software Engineering Fundamentals
+
+> Coding agents changed how we type. They did not change what software has to do: stay up, stay correct, stay cheap enough, and stay changeable. If you cannot name the tradeoffs, the agent will pick them for you — usually the ones that make the demo look finished.
+
+Andrew Ng’s skills map puts software engineering fundamentals next to building AI applications for a reason. The AI core almost always lives inside a broader application. Laurence Moroney’s *Generative AI for Software Development* course makes the same point from the other direction: use an LLM as a pair-programmer through the whole SDLC, but you still choose the data model, the tests, the dependencies, and the design.
+
+This chapter is that substrate. Chapter 15 is how you steer the agent. Chapter 17 is how you write the spec. Here is what you must already understand so those two chapters have something to steer toward.
+
+## The vibe-coding failure mode
+
+A novice can vibe-code a simple app. The agent will make bad tradeoffs in latency, availability, consistency, reliability, maintainability, simplicity, and cost — because nobody told it those axes existed.
+
+You do not need to memorize syntax. You do need to know:
+
+- What the full stack actually is
+- How data is stored and accessed
+- How the pieces are assembled
+- How the system fails and how it is secured
+- How it gets to production and stays there
+
+Those five are Ng’s list. The rest of this chapter is that list, written so you can brief an agent in the language of engineering instead of the language of wishes.
+
+## Full-stack literacy
+
+Agentic coding lets a specialist act more like a full-stack engineer. That only works if you understand the parts the agent is touching on your behalf.
+
+**Front end:** UI components, page rendering, caching, accessibility, what is computed on the server vs the client. If you cannot say where state lives, the agent will put it in three places.
+
+**Back end:** API design, authentication, sessions, async work, background jobs. If you cannot say what must be synchronous, the agent will hide a 12-second model call behind a button and call it shipped.
+
+**Testing:** Unit vs integration, what to mock, what coverage actually means. Moroney treats the LLM as a tester: ask it for edge cases, then keep the tests *you* would bet an incident on.
+
+**The boundary:** What the browser may see, what the server must enforce, what never leaves the vault. Agents love to put secrets in the client because the happy path is shorter that way.
+
+You do not have to be the world’s best at every layer. You have to be literate enough to reject a bad proposal in each one.
+
+## Data
+
+Data is hard to change even when an agent writes the migration. Choose it like you will live with it.
+
+**Access patterns first.** What do you look up, by what key, how often, how fresh? That decides relational vs document vs key-value vs graph — not the blog post the model trained on.
+
+**Transactions and concurrency.** If two users can book the last seat, you need a rule, not a vibe.
+
+**Lifecycle.** What is collected, how long it lives, who can see it, how it is deleted. Privacy and compliance are data-architecture decisions.
+
+**Freshness.** Stale context makes AI systems confidently wrong. If the agent’s input comes from your store, a bad schema is a bad prompt you cannot see.
+
+**Evolve with the product.** The prototype store is not the production store. Say that out loud before the agent “helpfully” hard-codes SQLite assumptions into twelve services.
+
+Moroney’s course walks this with real schemas, CRUD, and an ORM. The skill to keep: you can sit with an LLM and design a schema *because* you can explain the access pattern, not because the model suggested a fashionable database.
+
+## Architecture
+
+Architecture is the set of tradeoffs you chose on purpose.
+
+Ask: how many users, how important is latency, how important is cost, what happens if this is down for an hour? Then choose:
+
+- Platform and runtime
+- Front-end / back-end boundary
+- Where state lives
+- Monolith vs services (granularity is a decision, not a virtue)
+- The stack — sometimes by running a short experiment, not by copying last year’s tweet
+
+The right architecture is a moving target. Prototype ≠ first production ≠ scale. Ng’s point: the simple architecture that gets you a yes from users is often the wrong architecture to ossify. Design so you can evolve it.
+
+When you brief an agent, name the phase. “This is a spike; optimize for deletion” produces different code than “this is the path that bills customers.”
+
+## Secure and reliable
+
+Reliability is a testing strategy plus a failure plan.
+
+**Tests:** What mix of unit and integration. What must stay deterministic. What is an eval (Chapter 7) vs a unit test. Agents will weaken tests to go green. Your job is to notice.
+
+**Failures:** Rate limits, timeouts, poison messages, partial writes. Design for graceful degradation and a small blast radius.
+
+**Shift left on security.** Do not write the app and then “add security.” Authn, authz, secrets, supply chain, and cloud config are design inputs. AI tools can scan; they cannot decide your threat model.
+
+If you cannot explain the blast radius of a change, you are not ready to let an agent merge it.
+
+## Scale and operate
+
+Shipping is the rest of the SDLC: environment, release strategy, CI/CD, and enough infrastructure knowledge to not treat “the cloud” as a single button.
+
+In production you need observability, alerts, and an incident habit. To scale you need a real picture of load — then servers, load-balancing, indexing, replication, or an architecture change. Version control, code review, dependency hygiene, and technical debt are how the system stays evolvable.
+
+Moroney’s team-engineering modules (testing, documentation, dependencies) are this chapter in pair-programming form. Use the LLM to draft the runbook. You still own the on-call.
+
+## Briefing the agent in engineering language
+
+This is the payoff. Fundamentals exist so you can say things like:
+
+- “Postgres, access by \`org_id\` + \`created_at\`, no cross-tenant reads.”
+- “Synchronous for the checkout confirm; queue the receipt email.”
+- “Unit-test the service layer; do not mock away the auth check.”
+- “If the model is down, show last-known draft, do not fail the save.”
+
+Those sentences are context. Without them, the agent optimizes for looking done.
+
+## How this sits in the course
+
+| Skill | Practice here | Next |
+|---|---|---|
+| Full-stack literacy | Name every layer the agent will touch | Chapter 15 |
+| Data | Access patterns, lifecycle, freshness | Chapter 5, Chapter 8 |
+| Architecture | Phase-appropriate tradeoffs | System Design resource |
+| Secure & reliable | Tests, blast radius, shift-left | Chapter 9 |
+| Operate | SDLC, CI, observability | Chapter 8 |
+| Pair-program the SDLC | LLM as tester, docs, deps — you keep the decisions | Chapter 15, Chapter 17 |
+
+Syntax is cheap now. Taste in tradeoffs is not.
+
+## Summary
+
+Software fundamentals are how you steer. Learn the stack, the data, the architecture, the failure modes, and the path to production well enough to reject a bad default. Then give the agent that language. Then write a spec so the language survives the next session.
+`,
+    quizzes: [
+      {
+        id: "q16-1",
+        question: "Why do software fundamentals still matter when a coding agent writes the code?",
+        options: [
+          "They do not — syntax is the job",
+          "So you can name tradeoffs (latency, cost, reliability, security) and steer the agent instead of accepting demo-friendly defaults",
+          "Only for people who do not use AI",
+          "Only for interviews"
+        ],
+        correctIndex: 1,
+        explanation: "Ng's point: vibe coding without fundamentals lets the agent pick tradeoffs you did not know existed."
+      },
+      {
+        id: "q16-2",
+        question: "What should decide your data store?",
+        options: [
+          "Whatever the model suggested last week",
+          "Access patterns: what you look up, by what key, how fresh, how concurrent",
+          "Always Postgres",
+          "Always a vector database"
+        ],
+        correctIndex: 1,
+        explanation: "Data is hard to change. Access patterns decide the model, not fashion."
+      },
+      {
+        id: "q16-3",
+        question: "What does 'name the phase' mean when briefing an agent?",
+        options: [
+          "Always say production",
+          "Tell it whether this is a disposable spike or a customer-billing path so it optimizes for the right tradeoffs",
+          "Never mention production",
+          "Only name the sprint number"
+        ],
+        correctIndex: 1,
+        explanation: "Prototype architecture is not production architecture. Say which one you are in."
+      },
+      {
+        id: "q16-4",
+        question: "In Moroney's framing, what does the LLM do in the SDLC?",
+        options: [
+          "Replace code review",
+          "Act as pair coder, tester, docs, and dependency researcher — while you keep the decisions",
+          "Own the on-call",
+          "Choose the threat model"
+        ],
+        correctIndex: 1,
+        explanation: "The course is pair-programming the SDLC, not delegating ownership."
+      }
+    ],
+    flashcards: [
+      { id: "f16-1", front: "Vibe-coding failure", back: "The agent picks latency/cost/reliability tradeoffs you never named because you did not know they existed." },
+      { id: "f16-2", front: "Access pattern", back: "How you look data up — key, frequency, freshness, concurrency. This decides the store." },
+      { id: "f16-3", front: "Phase-appropriate architecture", back: "Spike ≠ first production ≠ scale. Brief the agent with the phase." },
+      { id: "f16-4", front: "Shift left", back: "Security and reliability are design inputs, not a later review." },
+      { id: "f16-5", front: "Engineering language", back: "Concrete constraints you put in context: tenant keys, sync vs queue, which tests must not be weakened." }
+    ]
+  },
+  {
+    id: 'ch17',
+    title: "Spec-Driven Development",
+    content: `# Spec-Driven Development
+
+> Vibe coding is fast. It is also how you get software that does not match what you asked for, written by a model that has already forgotten the ask. A spec is how intent survives the session.
+
+Paul Everitt’s DeepLearning.AI course with JetBrains names the practice: spec-driven development with coding agents. Andrew Ng’s skills map assumes it — “work with a clear spec, and know when not to bother.” This chapter is the workflow: constitution, feature spec, plan–implement–verify, replan, then carry the same loop into a legacy repo.
+
+You already met constitutions in Chapter 15. Here they become the operating system of the project, not a tip.
+
+## Vibe coding vs spec-driven
+
+**Vibe coding:** You talk. The agent edits. You talk again. The thread is the spec. When the thread dies, the spec dies. Cognitive debt piles up: nobody can say what the system is *for* without reading the last 40 files.
+
+**Spec-driven:** You write a markdown spec that defines what to build. The agent implements against it. You validate against it. When you replan, you change the spec first. Intent fidelity stays high because the source of truth is in the repo, not in a chat.
+
+Many strong developers already work this way and did not have a name for it. The name matters because it makes the workflow teachable and portable across agents and IDEs.
+
+Skip the spec for a one-line fix. Write the spec when the work will outlive one sitting: a feature, a migration, a public API, an MVP slice.
+
+## The constitution
+
+A project constitution is the spec you write once and reuse. Everitt’s course builds it with the agent, which is the right order: you decide, the agent drafts, you cut.
+
+A constitution that works is short:
+
+- **Mission** — what this repo is for, in one paragraph
+- **Stack** — languages, frameworks, data store, test command
+- **Invariants** — what must not change without a human
+- **Landmines** — the modules that bill, auth, or delete data
+- **Definition of done** — the verifier the agent may run
+- **Out of scope** — what we are explicitly not building
+
+Frank’s own starter repos do this as \`.cursorrules\`, \`CLAUDE.md\`, \`AGENTS.md\`, or a \`docs/ai-setup.md\` plus a feature-brief template. The filename is not the skill. The skill is: an agent that reads one page produces fewer “helpful” second HTTP clients.
+
+Keep it in the repo. Point every new session at it. When reality disagrees, edit the constitution — do not let the code and the page drift in silence.
+
+## Feature specification
+
+A feature spec is smaller and sharper than a constitution. It should be enough for an agent that has never seen the thread.
+
+Minimum fields (this matches a feature brief you can actually hand to Cursor or Claude):
+
+- User story
+- Data model changes
+- API or actions
+- UI states (empty, loading, error, success)
+- Constraints (perf, security, “do not touch X”)
+- Done criteria a machine can run
+
+If a criterion cannot fail, it is decoration. “Code is clean” is decoration. “\`npm test\` is green and the service rejects a cross-tenant id” is a criterion.
+
+Write the spec in markdown in the repo. The agent implements from the file, not from your memory of the file.
+
+## Plan → implement → verify
+
+Everitt’s loop is the whole method.
+
+**Plan.** The agent proposes files, schema, tests, and what it will not touch. You accept or cut the plan *before* it edits twenty files. A useful plan is gradable. A useless plan says “ensure quality.”
+
+**Implement.** Autonomy only after the first loop proves it understood the spec (Chapter 15). Mechanical work can run unattended. Ontology errors get an interrupt.
+
+**Verify.** Run the done criteria. If the agent weakened a test to go green, the spec failed — treat that as a product bug, not a cute agent quirk.
+
+Then **replan**. The second feature is where SDD pays off. You update the spec and the constitution if the MVP changed shape. You do not keep a stale plan in a closed PR and a new vibe in chat.
+
+An MVP in this workflow is a thin slice that satisfies the spec, not a pile of agent output that looks like a product.
+
+## Legacy codebases
+
+Greenfield SDD is easy. The valuable version is a repo that already exists.
+
+Everitt’s sequence: use the documentation you have (README, types, tests, tickets) to *generate* specs, then implement against those specs. You are not boiling the ocean. You are putting a fence around the next change.
+
+Practical start:
+
+1. Write a constitution that describes the system as it is, not as you wish it was
+2. Spec only the next feature
+3. Generate tests for the current behavior before you change it
+4. Point the agent at those tests as the verifier
+
+Existing patterns beat a clean-room rewrite. Tell the agent that. Frank’s starter rule is the right one: follow the patterns in the repo even when they differ slightly from the rules; explain why.
+
+## Package the workflow
+
+The last step in the SDD course is portability: turn your loop into an agent skill — a \`SKILL.md\` or custom command that another IDE can load. Constitutions and specs are already portable if they are files. Skills make the *ritual* portable: “read constitution → write/update spec → plan → wait for approval → implement → verify.”
+
+Agent replaceability is the test. If the workflow only works in one vendor’s chat, you do not have a workflow. You have a habit.
+
+## When not to bother
+
+Ng’s parenthetical matters. Do not spec:
+
+- A typo
+- A rename the compiler can prove
+- An experiment you will delete this afternoon
+
+Ceremony that does not reduce error is theater. SDD is for work whose intent must survive a context window.
+
+## How this sits in the course
+
+| Move | Source | Where else |
+|---|---|---|
+| Constitution | Everitt; your \`CLAUDE.md\` / \`.cursorrules\` | Chapter 15 |
+| Feature spec | Everitt; feature-brief template | Chapter 14 (what belongs in the spec) |
+| Plan–implement–verify | Everitt; Ng “close the loop with a verifier” | Chapter 7, Chapter 15 |
+| Legacy SDD | Everitt | Chapter 8 |
+| Portable skill | Everitt; builder-advisor \`SKILL.md\` pattern | Chapter 6 (MCP / tools) |
+
+Spec-driven development is how software engineering fundamentals (Chapter 16) get into the agent’s context, and how “using coding agents” (Chapter 15) stops being a vibe.
+
+## Summary
+
+Write a constitution for the repo. Write a spec for the feature. Plan, implement, verify, replan. Generate specs from what a legacy system already does before you change it. Package the ritual so the next agent can run it.
+
+The chat is not the source of truth. The repo is.
+`,
+    quizzes: [
+      {
+        id: "q17-1",
+        question: "What is the core difference between vibe coding and spec-driven development?",
+        options: [
+          "SDD is slower and always worse",
+          "In SDD the source of truth is a repo spec the agent implements against; in vibe coding the chat thread is the spec and dies with the session",
+          "SDD forbids using agents",
+          "Vibe coding requires a constitution"
+        ],
+        correctIndex: 1,
+        explanation: "Everitt: write a markdown spec, implement against it, validate against it. Intent survives the context window."
+      },
+      {
+        id: "q17-2",
+        question: "What belongs in a project constitution?",
+        options: [
+          "Every ticket in the backlog",
+          "Mission, stack, invariants, landmines, definition of done, out of scope — one short page",
+          "Only the license file",
+          "A full architecture decision record for every class"
+        ],
+        correctIndex: 1,
+        explanation: "A constitution is the spec you write once and reuse. Long novels do not get read."
+      },
+      {
+        id: "q17-3",
+        question: "When should you skip a feature spec?",
+        options: [
+          "Never",
+          "Typos, compiler-provable renames, and experiments you will delete this afternoon",
+          "Any work that touches production",
+          "Whenever the agent seems confident"
+        ],
+        correctIndex: 1,
+        explanation: "Ng: know when not to bother. Ceremony that does not reduce error is theater."
+      },
+      {
+        id: "q17-4",
+        question: "How do you start SDD on a legacy repo?",
+        options: [
+          "Rewrite it greenfield",
+          "Describe the system as it is in a constitution, spec only the next change, and generate tests for current behavior before you edit",
+          "Delete the tests so the agent has freedom",
+          "Paste the entire git history into chat"
+        ],
+        correctIndex: 1,
+        explanation: "Generate specs from what exists, then fence the next change. Follow repo patterns."
+      }
+    ],
+    flashcards: [
+      { id: "f17-1", front: "Spec-driven development", back: "Markdown spec in the repo is the source of truth. The agent implements and you verify against it." },
+      { id: "f17-2", front: "Constitution", back: "Short persistent file: mission, stack, invariants, landmines, done, out of scope." },
+      { id: "f17-3", front: "Plan–implement–verify", back: "Accept the plan before bulk edits. Autonomy after the first loop. Verify with criteria that can fail." },
+      { id: "f17-4", front: "Cognitive debt", back: "When the chat was the spec and nobody can say what the system is for without reading forty files." },
+      { id: "f17-5", front: "Agent replaceability", back: "If the workflow only works in one vendor chat, it is a habit, not a workflow." }
+    ]
+  },
+
 ];

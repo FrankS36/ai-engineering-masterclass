@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ExternalLink, Server, Database, Wrench, FlaskConical, Cpu, BookOpen, Layers, Zap, Code, Search, Rocket, Binary, GraduationCap, Briefcase, ChevronDown, ChevronUp, Target, Users, TrendingUp, Shield, Workflow, BarChart3, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { LookUpPrompt } from './LookUpPrompt';
 
 type Category = 'providers' | 'frameworks' | 'vectordb' | 'eval' | 'agents' | 'finetuning' | 'models' | 'inference' | 'embeddings' | 'learning' | 'stacks' | 'aipm';
 
@@ -134,20 +135,14 @@ const resources: Record<Category, { title: string; icon: React.ReactNode; items:
         title: 'Open Source Models',
         icon: <Code className="w-5 h-5" />,
         items: [
-            { name: 'Llama', description: 'Meta - Open weights, multiple sizes, text and vision', url: 'https://llama.meta.com', tags: ['Meta', 'Text', 'Vision'] },
-            { name: 'Mistral / Mixtral', description: 'Mistral AI - 7B, 8x7B, 8x22B MoE, Codestral', url: 'https://mistral.ai', tags: ['MoE', 'Open Weights', 'Code'] },
-            { name: 'Qwen 2.5', description: 'Alibaba - 0.5B to 72B, strong multilingual, code, math', url: 'https://github.com/QwenLM/Qwen2.5', tags: ['Multilingual', 'Code', 'Math'] },
-            { name: 'Gemma 2', description: 'Google - 2B, 9B, 27B efficient instruction-tuned models', url: 'https://ai.google.dev/gemma', tags: ['Google', 'Efficient', 'Instruction'] },
-            { name: 'Phi-3 / Phi-4', description: 'Microsoft - Small but capable 3.8B, 14B models', url: 'https://azure.microsoft.com/en-us/products/phi', tags: ['Microsoft', 'Small', 'Efficient'] },
-            { name: 'DeepSeek V3', description: 'DeepSeek - 671B MoE, strong reasoning and code', url: 'https://github.com/deepseek-ai/DeepSeek-V3', tags: ['MoE', 'Reasoning', 'Code'] },
-            { name: 'DeepSeek Coder', description: 'Strong code generation, 1.3B to 33B', url: 'https://github.com/deepseek-ai/DeepSeek-Coder', tags: ['Code', 'Programming'] },
-            { name: 'StarCoder 2', description: 'BigCode - 3B, 7B, 15B, 600+ languages', url: 'https://github.com/bigcode-project/starcoder2', tags: ['Code', 'Multi-language'] },
-            { name: 'CodeLlama', description: 'Meta - Code completion, infilling, instruction', url: 'https://github.com/meta-llama/codellama', tags: ['Meta', 'Code', 'Infilling'] },
-            { name: 'Yi', description: '01.AI - 6B, 9B, 34B - strong Chinese/English', url: 'https://github.com/01-ai/Yi', tags: ['Bilingual', 'Chinese'] },
-            { name: 'Command R', description: 'Cohere - 35B, 104B - RAG optimized, tool use', url: 'https://cohere.com/command', tags: ['RAG', 'Tool Use', 'Enterprise'] },
-            { name: 'Falcon', description: 'TII - 7B, 40B, 180B - permissive license', url: 'https://falconllm.tii.ae', tags: ['Permissive', 'Large'] },
-            { name: 'DBRX', description: 'Databricks - 132B MoE, strong general performance', url: 'https://github.com/databricks/dbrx', tags: ['Databricks', 'MoE'] },
-            { name: 'Nous Research', description: 'Fine-tuned models - Hermes, Capybara series', url: 'https://nousresearch.com', tags: ['Fine-tuned', 'Community'] },
+            { name: 'Llama family', description: 'Meta — default open-weight generalist. Look up current sizes and license.', url: 'https://llama.meta.com', tags: ['Meta', 'Open Weights'] },
+            { name: 'Mistral / Mixtral family', description: 'Mistral — dense and MoE, EU hosting option. Look up current SKUs.', url: 'https://mistral.ai', tags: ['MoE', 'Open Weights'] },
+            { name: 'Qwen family', description: 'Alibaba — multilingual, code, math. Check the current generation.', url: 'https://github.com/QwenLM', tags: ['Multilingual', 'Code'] },
+            { name: 'Gemma family', description: 'Google — small/efficient instruct models. Confirm current sizes.', url: 'https://ai.google.dev/gemma', tags: ['Google', 'Efficient'] },
+            { name: 'Phi family', description: 'Microsoft — small capable models. Look up the current line.', url: 'https://azure.microsoft.com/en-us/products/phi', tags: ['Microsoft', 'Small'] },
+            { name: 'DeepSeek family', description: 'Reasoning and code, including distillations. Check current weights.', url: 'https://github.com/deepseek-ai', tags: ['Reasoning', 'Code'] },
+            { name: 'Hugging Face Hub', description: 'Where open weights actually live — filter by license, size, and task.', url: 'https://huggingface.co/models', tags: ['Hub', 'Discovery'] },
+            { name: 'LMSYS / Arena-style boards', description: 'Human preference snapshots. Use as a hint, then run YOUR evals.', url: 'https://huggingface.co/spaces/lmarena-ai/chatbot-arena', tags: ['Benchmark', 'Hint'] },
         ]
     },
     inference: {
@@ -568,7 +563,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$10-50',
         complexity: 'Low',
         components: [
-            { category: 'LLM', name: 'OpenAI GPT-4o-mini', why: 'Cheap, fast, good quality for most use cases', link: 'https://platform.openai.com' },
+            { category: 'LLM', name: 'Current cheap/fast hosted model', why: 'Low cost to learn; look up today\'s ID and $/M', link: 'https://platform.openai.com' },
             { category: 'Embeddings', name: 'OpenAI text-embedding-3-small', why: 'Simple API, good performance, same billing', link: 'https://platform.openai.com/docs/guides/embeddings' },
             { category: 'Vector DB', name: 'Chroma', why: 'Runs locally, no setup, free, Python-native', link: 'https://trychroma.com' },
             { category: 'Framework', name: 'LangChain', why: 'Most tutorials, largest community, easy to start', link: 'https://langchain.com' },
@@ -593,7 +588,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$200-2000',
         complexity: 'Medium',
         components: [
-            { category: 'LLM', name: 'Claude 3.5 Sonnet or GPT-4o', why: 'Best quality, reliable, good tool use', link: 'https://console.anthropic.com' },
+            { category: 'LLM', name: 'Current mid-tier or flagship (eval pick)', why: 'Pick with your eval set; keep the ID in an env var', link: 'https://console.anthropic.com' },
             { category: 'Embeddings', name: 'Cohere embed-v3', why: 'Excellent quality, compression options, multilingual', link: 'https://cohere.com/embed' },
             { category: 'Vector DB', name: 'Pinecone', why: 'Managed, scales automatically, hybrid search', link: 'https://pinecone.io' },
             { category: 'Reranking', name: 'Cohere Rerank', why: 'Dramatically improves retrieval quality', link: 'https://cohere.com/rerank' },
@@ -621,7 +616,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$100-1000',
         complexity: 'High',
         components: [
-            { category: 'LLM', name: 'Claude 3.5 Sonnet or GPT-4o', why: 'Best tool use, instruction following, reasoning', link: 'https://console.anthropic.com' },
+            { category: 'LLM', name: 'Current mid-tier with strong tool use', why: 'Confirm tool-calling quality on your tools, not a blog rank', link: 'https://console.anthropic.com' },
             { category: 'Framework', name: 'LangGraph', why: 'Graph-based workflows, state management, cycles', link: 'https://langchain-ai.github.io/langgraph' },
             { category: 'Memory', name: 'Redis', why: 'Fast, persistent, good for conversation history', link: 'https://redis.io' },
             { category: 'Tools', name: 'Composio', why: '150+ pre-built integrations (Gmail, Slack, etc)', link: 'https://composio.dev' },
@@ -648,8 +643,8 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$20-200',
         complexity: 'Medium',
         components: [
-            { category: 'LLM', name: 'Llama 3.1 70B via Groq', why: 'Near-GPT-4 quality, 10x cheaper, sub-100ms latency', link: 'https://console.groq.com' },
-            { category: 'Fallback LLM', name: 'GPT-4o-mini via LiteLLM', why: 'Fallback for complex tasks, unified API', link: 'https://github.com/BerriAI/litellm' },
+            { category: 'LLM', name: 'Current open weights on a fast host', why: 'Look up today\'s cheap+fast SKU; measure TTFT yourself', link: 'https://console.groq.com' },
+            { category: 'Fallback LLM', name: 'Hosted cheap/fast via a unified client', why: 'Fallback when the open-weight path fails', link: 'https://github.com/BerriAI/litellm' },
             { category: 'Embeddings', name: 'BGE-large or Nomic', why: 'Free to run, excellent quality, no API costs', link: 'https://huggingface.co/BAAI/bge-large-en-v1.5' },
             { category: 'Vector DB', name: 'pgvector', why: 'Free with existing Postgres, good enough for most', link: 'https://github.com/pgvector/pgvector' },
             { category: 'Caching', name: 'Redis semantic cache', why: 'Cache similar queries, huge cost savings', link: 'https://redis.io' },
@@ -660,7 +655,7 @@ const recommendedStacks: RecommendedStack[] = [
             cons: ['More moving parts to manage', 'Open models slightly lower quality', 'Need to handle model routing logic', 'Self-hosted embeddings need compute']
         },
         gettingStarted: [
-            'Start with Groq for speed, add fallback to GPT-4o-mini for failures',
+            'Start with a fast open-weight host, add a hosted cheap/fast fallback',
             'Use LiteLLM proxy to unify all providers under OpenAI API format',
             'Implement semantic caching with 0.95 similarity threshold',
             'Run embeddings locally or use Hugging Face Inference Endpoints',
@@ -675,7 +670,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$500-5000 (compute)',
         complexity: 'High',
         components: [
-            { category: 'LLM', name: 'Llama 3.1 70B', why: 'Best open model, Apache-like license', link: 'https://llama.meta.com' },
+            { category: 'LLM', name: 'Current capable open-weight family', why: 'Look up size, license, and VRAM before you rent GPUs', link: 'https://llama.meta.com' },
             { category: 'Inference', name: 'vLLM', why: 'Highest throughput, PagedAttention, production-ready', link: 'https://vllm.ai' },
             { category: 'Embeddings', name: 'BGE-large or E5-mistral', why: 'Run locally, no data leaves your infra', link: 'https://huggingface.co/BAAI/bge-large-en-v1.5' },
             { category: 'Vector DB', name: 'Qdrant', why: 'Self-hostable, fast, good filtering', link: 'https://qdrant.tech' },
@@ -729,7 +724,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$100-1000',
         complexity: 'Medium',
         components: [
-            { category: 'Vision LLM', name: 'GPT-4o or Claude 3.5 Sonnet', why: 'Best vision capabilities, native multimodal', link: 'https://platform.openai.com' },
+            { category: 'Vision LLM', name: 'Current multimodal flagship or mid-tier', why: 'Confirm image/video limits on the official docs', link: 'https://platform.openai.com' },
             { category: 'Document Processing', name: 'Unstructured.io', why: 'Extract text from PDFs, images, tables', link: 'https://unstructured.io' },
             { category: 'Image Embeddings', name: 'CLIP or SigLIP', why: 'Embed images for similarity search', link: 'https://huggingface.co/openai/clip-vit-large-patch14' },
             { category: 'Audio', name: 'Whisper', why: 'Best speech-to-text, runs locally or via API', link: 'https://openai.com/research/whisper' },
@@ -741,7 +736,7 @@ const recommendedStacks: RecommendedStack[] = [
             cons: ['Higher latency for image processing', 'More expensive per query', 'Image quality affects results significantly', 'Harder to evaluate multimodal outputs']
         },
         gettingStarted: [
-            'Start with GPT-4o for vision - best quality and simplest API',
+            'Start with the current multimodal API that has the simplest SDK for you',
             'Use Unstructured.io to preprocess documents before LLM',
             'For image search, generate CLIP embeddings and store in vector DB',
             'Run Whisper locally for audio (whisper.cpp is fast)',
@@ -756,7 +751,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$50-500',
         complexity: 'Medium',
         components: [
-            { category: 'LLM', name: 'Claude 3.5 Sonnet', why: 'Best coding model, excellent at complex code', link: 'https://console.anthropic.com' },
+            { category: 'LLM', name: 'Current mid-tier strong at code', why: 'Re-check coding evals each generation — the leader rotates', link: 'https://console.anthropic.com' },
             { category: 'Code LLM', name: 'DeepSeek Coder or Codestral', why: 'Specialized for code, good for autocomplete', link: 'https://github.com/deepseek-ai/DeepSeek-Coder' },
             { category: 'Code Execution', name: 'E2B', why: 'Secure sandboxed execution, multiple languages', link: 'https://e2b.dev' },
             { category: 'Code Search', name: 'Sourcegraph or Greptile', why: 'Semantic code search across repos', link: 'https://sourcegraph.com' },
@@ -764,11 +759,11 @@ const recommendedStacks: RecommendedStack[] = [
             { category: 'Embeddings', name: 'Voyage Code or CodeBERT', why: 'Code-specific embeddings for retrieval', link: 'https://voyageai.com' },
         ],
         tradeoffs: {
-            pros: ['Claude is remarkably good at code', 'Sandboxed execution is safe', 'Can iterate on code with test feedback', 'Semantic code search improves context'],
+            pros: ['Mid-tier models are often excellent at code', 'Sandboxed execution is safe', 'Can iterate on code with test feedback', 'Semantic code search improves context'],
             cons: ['Code execution adds latency and cost', 'Security requires careful sandboxing', 'Generated code needs human review', 'Context limits matter for large codebases']
         },
         gettingStarted: [
-            'Start with Claude 3.5 Sonnet - it\'s the best at code by far',
+            'Start with a mid-tier coding model; escalate only when your tests fail',
             'Use E2B for safe code execution with automatic cleanup',
             'Implement a code → test → fix loop for better results',
             'Add codebase context via embeddings for repo-aware suggestions',
@@ -810,7 +805,7 @@ const recommendedStacks: RecommendedStack[] = [
         monthlyCost: '$20-100',
         complexity: 'Low',
         components: [
-            { category: 'LLM', name: 'OpenAI GPT-4o-mini', why: 'Best price/performance, reliable, fast', link: 'https://platform.openai.com' },
+            { category: 'LLM', name: 'Current cheap/fast hosted model', why: 'Ship the MVP; keep the model ID in an env var', link: 'https://platform.openai.com' },
             { category: 'Vector DB', name: 'Supabase Vector', why: 'Postgres + pgvector, auth, realtime included', link: 'https://supabase.com/vector' },
             { category: 'Framework', name: 'Vercel AI SDK', why: 'Streaming, React hooks, edge-ready', link: 'https://sdk.vercel.ai' },
             { category: 'Hosting', name: 'Vercel', why: 'Deploy in seconds, generous free tier', link: 'https://vercel.com' },
@@ -845,6 +840,15 @@ const StacksView = () => {
 
     return (
         <div className="space-y-4">
+            <LookUpPrompt
+                why="Stacks below name categories, not this quarter's SKUs. Look up current model IDs and prices before you copy a stack."
+                prompt="For a beginner RAG app, a production RAG app, and a coding-agent workflow: which current cheap/fast and mid-tier model IDs would you pick from OpenAI, Anthropic, or an open-weight host? Cite official docs and note list prices."
+                sources={[
+                    { label: 'OpenAI pricing', href: 'https://openai.com/pricing' },
+                    { label: 'Anthropic models', href: 'https://docs.anthropic.com/en/docs/about-claude/models' },
+                    { label: 'Hugging Face models', href: 'https://huggingface.co/models' },
+                ]}
+            />
             {recommendedStacks.map((stack) => (
                 <div
                     key={stack.id}

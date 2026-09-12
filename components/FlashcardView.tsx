@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Chapter, Flashcard } from '../types';
 import { chapters } from '../constants';
 import { ChevronLeft, ChevronRight, RotateCw, Grid, Layers, Library } from 'lucide-react';
+import { chapterOrderLabel, chapterShortTitle } from '../lib/courseOrder';
+import { EditorialHero, ArticleShell } from './EditorialChrome';
 
 interface FlashcardViewProps {
   chapter: Chapter;
@@ -91,39 +93,38 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
   const card = chapter.flashcards[currentIndex];
 
   return (
-    <div className="min-h-[80vh] bg-stone-50 py-8">
-      <div className="max-w-5xl mx-auto px-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-stone-800 mb-1">Flashcards</h2>
-            <p className="text-stone-500">{chapter.flashcards.length} cards in this section</p>
-          </div>
-          
-          {/* View toggle */}
-          <div className="flex bg-stone-200 p-1 rounded-lg">
+    <div>
+      <EditorialHero
+        kicker={`Masterclass · Cards · ${chapterOrderLabel(chapter.id)}`}
+        number={chapterOrderLabel(chapter.id)}
+        title={chapterShortTitle(chapter.title)}
+        lede={`${chapter.flashcards.length} cards. Space to flip. Arrows to move.`}
+      />
+      <ArticleShell>
+        <div className="mb-10 flex items-center justify-end gap-5">
+          <div className="flex items-center gap-5">
             <button
               onClick={() => setViewMode('single')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                viewMode === 'single' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                viewMode === 'single' ? 'text-foreground' : 'text-muted hover:text-foreground'
               }`}
             >
-              <Layers size={16} />
+              <Layers size={14} />
               <span className="hidden sm:inline">Single</span>
             </button>
             <button
               onClick={() => setViewMode('all')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                viewMode === 'all' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                viewMode === 'all' ? 'text-foreground' : 'text-muted hover:text-foreground'
               }`}
             >
-              <Grid size={16} />
+              <Grid size={14} />
               <span className="hidden sm:inline">Section</span>
             </button>
             <button
               onClick={() => setViewMode('allSections')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                viewMode === 'allSections' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                viewMode === 'allSections' ? 'text-foreground' : 'text-muted hover:text-foreground'
               }`}
             >
               <Library size={16} />
@@ -132,10 +133,11 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
           </div>
         </div>
 
-        {/* Single card view */}
         {viewMode === 'single' && (
           <div className="flex flex-col items-center">
-            <p className="text-stone-500 mb-6">Card {currentIndex + 1} of {chapter.flashcards.length}</p>
+            <p className="mb-6 font-mono text-xs uppercase tracking-[0.18em] text-accent">
+              {String(currentIndex + 1).padStart(2, '0')} of {String(chapter.flashcards.length).padStart(2, '0')}
+            </p>
             
             <div 
               className="relative w-full max-w-lg h-80 perspective-1000 group cursor-pointer"
@@ -147,23 +149,23 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
               >
                 {/* Front */}
                 <div 
-                  className="absolute inset-0 backface-hidden bg-white border-2 border-stone-200 rounded-2xl shadow-xl flex flex-col items-center justify-center p-8 text-center hover:border-brand-300 transition-colors"
+                  className="absolute inset-0 backface-hidden flex flex-col items-center justify-center border border-border bg-card-bg p-8 text-center transition-colors hover:border-accent"
                   style={{ backfaceVisibility: 'hidden' }}
                 >
-                  <span className="text-xs font-semibold tracking-widest text-brand-500 uppercase mb-4">Term</span>
-                  <h3 className="text-3xl font-bold text-stone-800">{card.front}</h3>
-                  <p className="absolute bottom-6 text-stone-400 text-sm flex items-center gap-1">
+                  <span className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-accent">Term</span>
+                  <h3 className="font-serif text-3xl leading-snug text-foreground">{card.front}</h3>
+                  <p className="absolute bottom-6 flex items-center gap-1 text-sm text-muted">
                     <RotateCw size={14} /> Click to flip
                   </p>
                 </div>
 
                 {/* Back */}
                 <div 
-                  className="absolute inset-0 backface-hidden bg-stone-900 text-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-8 text-center rotate-y-180"
+                  className="absolute inset-0 backface-hidden flex rotate-y-180 flex-col items-center justify-center border border-white/10 bg-surface-dark p-8 text-center text-white"
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
-                  <span className="text-xs font-semibold tracking-widest text-brand-400 uppercase mb-4">Definition</span>
-                  <p className="text-xl leading-relaxed">{card.back}</p>
+                  <span className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-accent">Definition</span>
+                  <p className="font-serif text-xl leading-relaxed">{card.back}</p>
                 </div>
               </div>
             </div>
@@ -172,14 +174,14 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
               <button
                 onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                 disabled={currentIndex === 0}
-                className="p-3 rounded-full bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-brand-600 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm transition-all"
+                className="border border-border p-3 text-muted transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <ChevronLeft size={24} />
               </button>
               
-              <div className="h-1 w-32 bg-stone-200 rounded-full overflow-hidden">
+              <div className="h-px w-32 overflow-hidden bg-border">
                 <div 
-                  className="h-full bg-brand-500 transition-all duration-300" 
+                  className="h-full bg-accent transition-all duration-300" 
                   style={{ width: `${((currentIndex + 1) / chapter.flashcards.length) * 100}%` }}
                 />
               </div>
@@ -187,21 +189,21 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
               <button
                 onClick={(e) => { e.stopPropagation(); handleNext(); }}
                 disabled={currentIndex === chapter.flashcards.length - 1}
-                className="p-3 rounded-full bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-brand-600 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm transition-all"
+                className="border border-border p-3 text-muted transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <ChevronRight size={24} />
               </button>
             </div>
 
             {/* Keyboard shortcuts hint */}
-            <div className="mt-8 flex flex-wrap justify-center gap-4 text-xs text-stone-400">
+            <div className="mt-8 flex flex-wrap justify-center gap-4 font-mono text-xs text-muted">
               <span className="flex items-center gap-1.5">
-                <kbd className="px-1.5 py-0.5 bg-stone-100 rounded border border-stone-200 font-mono">←</kbd>
-                <kbd className="px-1.5 py-0.5 bg-stone-100 rounded border border-stone-200 font-mono">→</kbd>
+                <kbd className="border border-border px-1.5 py-0.5">←</kbd>
+                <kbd className="border border-border px-1.5 py-0.5">→</kbd>
                 Navigate
               </span>
               <span className="flex items-center gap-1.5">
-                <kbd className="px-1.5 py-0.5 bg-stone-100 rounded border border-stone-200 font-mono">Space</kbd>
+                <kbd className="border border-border px-1.5 py-0.5">Space</kbd>
                 Flip
               </span>
             </div>
@@ -226,7 +228,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
                 >
                   {/* Front */}
                   <div 
-                    className="absolute inset-0 bg-white border border-stone-200 rounded-xl shadow-sm flex flex-col items-center justify-center p-4 text-center hover:border-brand-300 transition-colors"
+                    className="absolute inset-0 flex flex-col items-center justify-center border border-border bg-card-bg p-4 text-center transition-colors hover:border-accent"
                     style={{ backfaceVisibility: 'hidden' }}
                   >
                     <span className="text-[10px] font-semibold tracking-widest text-brand-500 uppercase mb-2">Term</span>
@@ -238,7 +240,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
 
                   {/* Back */}
                   <div 
-                    className="absolute inset-0 bg-stone-900 text-white rounded-xl shadow-sm flex flex-col items-center justify-center p-4 text-center"
+                    className="absolute inset-0 flex flex-col items-center justify-center border border-white/10 bg-surface-dark p-4 text-center text-white"
                     style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                   >
                     <span className="text-[10px] font-semibold tracking-widest text-brand-400 uppercase mb-2">Definition</span>
@@ -270,7 +272,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
                   >
                     {/* Front */}
                     <div 
-                      className="absolute inset-0 bg-white border border-stone-200 rounded-xl shadow-sm flex flex-col items-center justify-center p-4 text-center hover:border-brand-300 transition-colors"
+                      className="absolute inset-0 flex flex-col items-center justify-center border border-border bg-card-bg p-4 text-center transition-colors hover:border-accent"
                       style={{ backfaceVisibility: 'hidden' }}
                     >
                       <span className="text-[9px] font-medium text-stone-400 uppercase mb-1">{sectionTitle}</span>
@@ -283,7 +285,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
 
                     {/* Back */}
                     <div 
-                      className="absolute inset-0 bg-stone-900 text-white rounded-xl shadow-sm flex flex-col items-center justify-center p-4 text-center"
+                      className="absolute inset-0 flex flex-col items-center justify-center border border-white/10 bg-surface-dark p-4 text-center text-white"
                       style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                     >
                       <span className="text-[9px] font-medium text-stone-500 uppercase mb-1">{sectionTitle}</span>
@@ -296,7 +298,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({ chapter }) => {
             </div>
           </div>
         )}
-      </div>
+      </ArticleShell>
     </div>
   );
 };
