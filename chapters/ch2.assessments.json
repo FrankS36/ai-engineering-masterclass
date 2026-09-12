@@ -1,0 +1,106 @@
+{
+  "quizzes": [
+    {
+      "id": "q2-1",
+      "question": "A teammate says the model “understands the ticket, then writes the reply.” What is the more accurate mental model?",
+      "options": [
+        "A bidirectional encoder reads the ticket; a separate decoder writes the reply",
+        "The model tokenizes the whole prompt and continues it, one token at a time",
+        "The model retrieves a stored reply template and fills slots",
+        "The model searches the training set for a similar ticket and copies the answer"
+      ],
+      "correctIndex": 1,
+      "explanation": "There is no separate understanding pass. The reply is the continuation of the tokens you sent."
+    },
+    {
+      "id": "q2-2",
+      "question": "The draft refunds a customer. Your policy says no refund. What failed first?",
+      "options": [
+        "You used the cheap tier instead of the flagship",
+        "Temperature was too low, so it could not be creative about policy",
+        "You asked the model to know a fact it should have fetched or been given",
+        "You forgot to enable multimodal so it could see the receipt photo"
+      ],
+      "correctIndex": 2,
+      "explanation": "Generation is not a database. Policy and order state belong in context or behind a tool."
+    },
+    {
+      "id": "q2-3",
+      "question": "You want prompt-cache hits on a high-volume classifier. What do you keep identical across calls?",
+      "options": [
+        "The user message, because that is what the model attends to",
+        "The static prefix: system prompt, tools, and frozen policy — byte-identical",
+        "The temperature, raised slightly each time so the cache stays warm",
+        "The model ID, which you rotate weekly so providers cannot stale the cache"
+      ],
+      "correctIndex": 1,
+      "explanation": "Caches key on a repeated prefix. Interpolating today’s date or the ticket into the prefix misses on purpose."
+    },
+    {
+      "id": "q2-4",
+      "question": "When is fine-tuning the right next move for a support-reply feature?",
+      "options": [
+        "The model does not know this week’s return window",
+        "You have not written an eval yet and want a smarter model",
+        "Prompting, tools, and a higher tier still fail a stable error class, and you have labeled examples",
+        "Leadership asked for “our own model” on the roadmap slide"
+      ],
+      "correctIndex": 2,
+      "explanation": "Facts go in context or a store. Fine-tune locks a behavior you can already measure. Chapter 10."
+    },
+    {
+      "id": "q2-5",
+      "question": "A classification prompt is flaky: same ticket, different label. What do you change first?",
+      "options": [
+        "Switch to a multimodal model so it can see the email header",
+        "Raise temperature so it explores more labels",
+        "Lower sampling noise and measure; this is extract-and-route, not a poem",
+        "Fine-tune overnight on the last 20 tickets"
+      ],
+      "correctIndex": 2,
+      "explanation": "Sampling is a knob. Structured work wants it near zero. Then look at traces (Chapter 7) if it is still wrong."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "f2-1",
+      "front": "Tokenize → generate",
+      "back": "The model sees token IDs, not words. It continues the prompt one token at a time. There is no separate understanding pass."
+    },
+    {
+      "id": "f2-2",
+      "front": "Why they fail politely",
+      "back": "Next-token prediction completes the sentence. It will not throw. A wrong first token steers the rest."
+    },
+    {
+      "id": "f2-3",
+      "front": "Context vs tools",
+      "back": "Put in the window only what must be heard this call. If a fact can be fetched, fetch it. Generation is not a database."
+    },
+    {
+      "id": "f2-4",
+      "front": "Cache hit",
+      "back": "Keep the static prefix (system, tools, policy) byte-identical. Changing the prefix on purpose misses the cache."
+    },
+    {
+      "id": "f2-5",
+      "front": "Cutoff",
+      "back": "Weights freeze. Current facts go in context or behind a tool. Look up the cutoff when the date matters."
+    },
+    {
+      "id": "f2-6",
+      "front": "Sampling",
+      "back": "Temperature / top-p change how wildly the next token is picked. Near-zero for extract, route, classify. Higher only when variety is the product."
+    },
+    {
+      "id": "f2-7",
+      "front": "When to fine-tune or self-host",
+      "back": "Fine-tune: stable error class after prompt + tools + tier, with labels. Self-host: data cannot leave, volume economics, or air-gap. Not for last week’s facts."
+    },
+    {
+      "id": "f2-8",
+      "front": "LLM foundations (Ng)",
+      "back": "Tokenize and generate. Context, cache, cutoff, sampling, reasoning effort, tools. When to multimodal, fine-tune, or self-host. Choose a mix of models."
+    }
+  ]
+}

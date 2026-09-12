@@ -63,4 +63,4 @@ Never open `constants.ts` to “quickly fix” a sentence.
 
 ## Next chapter
 
-See `SPINE.md` → “Next session”. After ch1, that is **ch2** (LLM foundations).
+See `SPINE.md` → “Next session”. After ch2, that is **ch16** (tighten), then **ch17**.

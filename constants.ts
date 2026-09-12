@@ -250,450 +250,216 @@ The field is young. The tools will change before you finish the course. The four
   },
   {
     id: 'ch2',
-    title: "How Foundation Models Work",
-    content: `# Chapter 2: How Foundation Models Work
+    title: "LLM Foundations",
+    content: `# LLM Foundations
 
-You do not need to understand every detail of backpropagation to build production systems with foundation models. But you do need a working mental model of what is happening inside these systems — what they are good at, where they break, and why the API parameters you set actually matter. This chapter gives you that mental model.
+> **From the field — Frank Sellhausen, Sellhausen AI Systems.** You do not need the training run. You need to know why the same prompt can be right twice and wrong once — and which knobs actually change that.
 
----
+## What you will be able to do
 
-## What Makes a Foundation Model
+Leave this chapter able to:
 
-The term "foundation model" was coined by Stanford's Center for Research on Foundation Models in 2021 to describe a specific pattern: a single model, trained on broad data at scale, that can be adapted to a wide range of downstream tasks.
+1. **Explain tokenize → generate** in one breath — what the model sees, what it does next, and why it can fail politely.
+2. **Name the knobs that change behavior** — context, cache, cutoff, sampling, reasoning effort, tools — without memorizing this quarter’s IDs.
+3. **Decide what belongs in the window** versus what the model should fetch.
+4. **Know when to escalate** — a better prompt, a tool, a different tier, fine-tune, or self-host.
 
-Three properties define them:
+This is Skill 1 / LLM foundations on [Ng’s map](https://www.deeplearning.ai/the-batch/he-ai-engineering-skills-map-in-detail-building-and-deploying-ai-applications). Prompting is Chapter 3. APIs are Chapter 4. This chapter is the mental model underneath both.
 
-**Scale.** Foundation models are trained on hundreds of billions to trillions of tokens of text (and increasingly, images, audio, and video). Frontier training runs cost tens to hundreds of millions of dollars in compute. Published token counts and GPU-hours for any one run go stale — treat press numbers as order-of-magnitude, not a spec.
+## Tokenize, then generate
 
-**Generality.** Unlike task-specific models (a spam classifier, a named-entity recognizer), foundation models develop broad capabilities during pre-training. A single model can summarize, translate, write code, reason about math, and answer questions — without being explicitly trained on labeled examples for each task.
+The model does not see words. It sees **tokens** — chunks of text (sometimes a word, sometimes a piece of one, sometimes a space plus a syllable). Your string is mapped to a list of IDs. Those IDs are the only input.
 
-**Adaptability.** Through prompting, fine-tuning, or retrieval-augmented generation, you can steer a foundation model toward your specific use case without retraining from scratch. This is the property that makes them useful to engineers: you get a capable base and specialize from there.
+Then it **generates**: one token at a time, each conditioned on everything before it. That is the whole trick. There is no separate “understanding” pass and “answering” pass. The answer *is* the continuation.
 
----
+Three consequences you can use on Monday:
 
-## Scaling Laws and Emergent Capabilities
+- **Cost and limits are in tokens, not characters.** Code, JSON keys, and non-English text often spend more tokens for the same meaning. A “128k window” is smaller than it looks once you put a repo and a ticket in it.
+- **Order is a feature.** The model attends across the window, but the start and the end of the prompt are the seats that get heard. Do not bury the instruction in the middle of a dump.
+- **A wrong first token steers the rest.** Autoregression doubles down. If the model starts “Yes, we can refund that,” it will write a confident refund that does not exist.
 
-In 2020, Kaplan et al. at OpenAI showed that model performance (measured as loss on next-token prediction) follows predictable power laws with respect to three variables: the number of parameters, the amount of training data, and the compute budget. Bigger models trained on more data with more compute get predictably better.
+[INTERACTIVE: TOKENIZER_DEMO]
 
-DeepMind's Chinchilla paper (2022) refined this, finding that for compute-optimal training, models should be trained on roughly **20 tokens per parameter**. A 70B parameter model should see ~1.4 trillion tokens.
+> You can count on next-token prediction to continue a pattern. You cannot count on it to know when the pattern is false.
 
-> **Important caveat:** The Chinchilla ratio is compute-optimal for a *fixed training budget*. In practice, modern models are often trained on far more data per parameter than Chinchilla suggests — Llama 3 8B was trained on 15 trillion tokens, nearly 1,900 tokens per parameter. Why? Because inference cost dominates in production. A smaller model trained longer is cheaper to serve than a larger model trained to Chinchilla-optimal. The "right" ratio depends on your deployment economics, not just training efficiency.
+## When they fail
 
-**Emergent capabilities** — abilities that appear suddenly as models scale — have been a subject of both excitement and debate. Chain-of-thought reasoning, for instance, works poorly in small models but becomes effective around the 60B+ parameter range. However, Schaeffer et al. (2023) argued that many "emergent" abilities are artifacts of the metrics used: switch from nonlinear metrics (exact match) to linear ones (token-level accuracy), and the improvement looks smooth, not sudden.
+Language models fail **politely**. Traditional software throws, times out, or returns empty. An LLM completes the sentence.
 
-For engineers, the practical takeaway: do not assume a smaller model simply cannot do something because a paper showed emergence at scale. Test it. But also do not assume capabilities transfer uniformly — some tasks genuinely require larger models.
+The failure modes that matter for shipping:
 
-**Cost trends.** The cost of equivalent intelligence has dropped by an order of magnitude (or more) since the first public APIs. Smaller models, quantization, better serving, and competition all help. The trend is real. Exact multiples depend on which two models you compare — look up current $/M rather than memorizing a ratio.
-
-> **Look up now.** Prompt: "How have OpenAI, Anthropic, and Google list prices for a cheap/fast model and a flagship model changed over the last 18 months? Cite official pricing pages, not blogs."
-
----
-
-## The Transformer Architecture: Why It Matters for Engineers
-
-Nearly every foundation model today is built on the Transformer architecture (Vaswani et al., 2017). You need to understand two things about it: **self-attention** and **parallelizability**.
-
-### Self-Attention as Relevance Scoring
-
-At each layer, every token in the sequence computes attention scores against every other token. Think of it as: for each word, the model asks "how relevant is every other word to predicting what comes next here?" These scores are computed from learned Query, Key, and Value projections:
-
-\`\`\`
-Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
-\`\`\`
-
-This is why transformers handle long-range dependencies well. A pronoun at position 500 can attend directly to the noun it refers to at position 12 — no information needs to pass through a chain of recurrent steps.
-
-For engineers, the consequence is: **token order matters, but so does token distance within the context window.** Models can in principle attend to anything in context, but in practice, attention to very distant tokens can degrade, which is why placement of key information in your prompts matters.
-
-### Parallelization
-
-Unlike RNNs, which process tokens sequentially, transformers process all tokens in a sequence simultaneously during training. This is what made modern scale possible — training can be distributed across thousands of GPUs efficiently. Without this property, training a trillion-token dataset would be computationally infeasible.
-
-### Decoder-Only vs. Encoder-Decoder
-
-Most current LLMs (OpenAI, Anthropic, Google, Meta, and the open-weight families) use a **decoder-only** architecture: they process tokens left-to-right and generate one token at a time. Encoder-decoder models (like T5 or the original BART) use a bidirectional encoder to process the input and a decoder to generate output. Decoder-only models won out in practice because they are simpler to scale and the single architecture handles both understanding and generation.
-
----
-
-## The Training Pipeline
-
-Building a foundation model is a multi-stage process. Each stage has different goals, costs, and data requirements.
-
-### Stage 1: Pre-training
-
-The model learns to predict the next token on a massive corpus. This is where the bulk of compute goes.
-
-| Aspect | Typical Range |
-|---|---|
-| Data | 1-15+ trillion tokens |
-| Cost | $2M (7B model) to $100M+ (frontier models) |
-| Duration | Weeks to months on thousands of GPUs |
-| Objective | Next-token prediction (causal language modeling) |
-
-Pre-training produces a base model that is good at text completion but not at following instructions.
-
-### Stage 2: Supervised Fine-Tuning (SFT)
-
-Human annotators write high-quality (prompt, response) pairs. The model is trained on these to learn the format and style of helpful responses. Typical SFT datasets range from tens of thousands to low millions of examples. This stage is comparatively cheap — often under $1M.
-
-### Stage 3: Preference Tuning (RLHF / DPO / Constitutional AI)
-
-The model is further refined using human preferences. In RLHF (Reinforcement Learning from Human Feedback), annotators rank model outputs, a reward model is trained on these rankings, and the LLM is optimized against the reward model using PPO or similar algorithms.
-
-DPO (Direct Preference Optimization) simplifies this by skipping the reward model and optimizing preferences directly.
-
-> **On Constitutional AI:** Constitutional AI (Anthropic, 2022) is sometimes described as a replacement for RLHF. It is not. Constitutional AI provides a framework where the model critiques its own outputs against a set of principles (a "constitution"), generating preference data that supplements human annotations. Current Claude models use a combination of SFT, Constitutional AI, and RLHF — these techniques are complementary, not competing.
-
-### Stage 4: Reasoning Training
-
-A more recent addition to the pipeline, "reasoning" or slow-think models undergo extra training to improve step-by-step traces. This typically involves reinforcement learning on reasoning tasks (math, code, logic), where the model is rewarded for producing correct chains of thought. Names and recipes change quickly — the durable idea is **test-time compute**: spend more tokens thinking on hard problems.
-
-> **Look up now.** Prompt: "Which current models from OpenAI, Anthropic, and Google expose extended thinking or a reasoning mode, and how is that billed (tokens vs a separate SKU)?"
-
----
-
-## Training Data: Sources, Biases, and Contamination
-
-Foundation models are shaped by their training data. Understanding what goes in helps you predict what comes out.
-
-**Common sources:** Common Crawl (web text), Wikipedia, books, academic papers (Semantic Scholar, arXiv), code repositories (GitHub, Stack Overflow), and curated datasets. Increasingly, providers also use synthetic data — model-generated text that is filtered for quality.
-
-**Language bias:** The web is dominated by English. Common Crawl is roughly 45-50% English. Models trained on web-scale data inevitably perform better on English than on low-resource languages. If you are building for non-English users, test carefully — and consider that some providers train with more balanced multilingual corpora than others.
-
-**Domain models:** Models like Bloomberg's BloombergGPT (trained on financial data), Google's Med-PaLM (medical), and Code Llama (code) demonstrate that mixing domain-specific data into pre-training or fine-tuning can significantly improve performance in specialized areas.
-
-**Data contamination:** If your benchmark or evaluation dataset appeared in the training corpus, your metrics are inflated. This is a real and widespread problem. Always assume some contamination exists and supplement benchmarks with held-out, custom evaluations for your specific use case.
-
----
-
-## Tokenization: Why It Matters More Than You Think
-
-Models do not see text as characters or words. They see **tokens** — subword units produced by algorithms like Byte-Pair Encoding (BPE). Understanding tokenization matters for three practical reasons:
-
-**Cost.** API pricing is per-token. The string "unhappiness" might be 1-3 tokens depending on the tokenizer. Code and structured data are often more token-dense than prose. JSON keys like \`"customer_id"\` consume tokens that carry little semantic value — this is one reason function calling and structured output formats can be more token-efficient than asking the model to produce raw JSON.
-
-**Context limits.** Your context window is measured in tokens, not characters or words. A rough English approximation is ~0.75 words per token (or ~4 characters per token), but this varies by content type. Code often tokenizes less efficiently than natural English.
-
-**Non-English languages.** BPE tokenizers trained on English-heavy corpora produce more tokens for the same meaning in other languages. A sentence in Japanese or Arabic can easily require 2-4x as many tokens as its English equivalent. This means non-English users effectively get a smaller context window and pay more per query.
-
-\`\`\`python
-# Example: comparing token counts across languages (using tiktoken for GPT-4)
-import tiktoken
-enc = tiktoken.encoding_for_model("gpt-4")
-
-english = "The weather is nice today."      # 6 tokens
-japanese = "今日はいい天気ですね。"              # 11 tokens
-arabic = "الطقس جميل اليوم."                 # 10 tokens
-\`\`\`
-
----
-
-## Decoding and Sampling Strategies
-
-When the model generates output, it produces a probability distribution over the vocabulary for the next token. How you sample from that distribution controls the output's creativity, coherence, and determinism.
-
-| Parameter | What It Does | When to Use |
+| Failure | What it is | What you do |
 |---|---|---|
-| **Temperature** | Scales logits before softmax. Lower = more deterministic, higher = more random. | Set to 0-0.2 for factual/code tasks. 0.7-1.0 for creative writing. |
-| **Top-p (nucleus)** | Samples from the smallest set of tokens whose cumulative probability exceeds p. | Default 0.9-0.95 is a solid starting point. Reduce for more focused output. |
-| **Top-k** | Samples from the k most probable tokens only. | Less commonly used in production. k=40-100 is typical when used. |
-| **Min-p** | Filters out tokens below a minimum probability threshold relative to the top token. | Newer alternative to top-k. 0.05-0.1 works well. More adaptive than top-k. |
+| **Confident continuation** | A fluent answer to a question it cannot know | Ground it (Chapter 5) or give it a tool. Do not “ask it to be honest.” |
+| **Cutoff** | Weights freeze. Last week’s policy is not in the model | Put the current fact in context, or fetch it. Look up the cutoff when it matters. |
+| **Window overflow** | You stuffed more than fits; the middle drops out | Summarize, retrieve, or move history to memory. Do not paste the company. |
+| **Cache miss** | You changed a prefix you thought was stable | Keep the static prefix byte-identical if you want the cache hit. |
+| **Sampling noise** | Temperature made a classification wander | Lower temperature for extract / route / classify. Measure, don’t vibe. |
+| **No hands** | It invents a price, a SKU, a status | Give it a tool. Generation is not a database. |
 
-**Practical guidance:** For most production applications, set temperature between 0 and 0.3 and leave top-p at ~0.95. For deterministic outputs (structured data extraction, classification), use temperature 0. Avoid stacking too many sampling parameters — temperature + one of top-p/min-p is usually sufficient.
+Ng’s point: once you see tokenize and generate, you can predict *when* to trust the model and when the architecture has to do the work.
 
----
+## The knobs that change behavior
 
-## Context Windows: What Is Possible and What It Costs
+These survive a model generation. Names on the API change. The job of each knob does not.
 
-Context windows have grown from a few thousand tokens on early APIs to hundreds of thousands (and, on some SKUs, a million-plus). Treat any number you remember as stale. Check the provider's current docs for the ID you actually call.
-
-Longer context windows enable new architectures — you can fit entire codebases, long documents, or extended conversation histories into a single prompt. But there are engineering tradeoffs:
-
-**Attention is quadratic.** Standard self-attention scales as O(n^2) with sequence length. A 1M token context requires computing attention scores between every pair of tokens. Optimizations like FlashAttention, ring attention, and sparse attention patterns mitigate this, but long contexts still cost more in latency and compute.
-
-**The "lost in the middle" problem.** Research from Liu et al. (2023) showed that models retrieve information less reliably from the middle of long contexts than from the beginning or end. This has improved with newer models, but it is still worth placing critical information at the start or end of your prompts.
-
-**KV cache memory.** During generation, the model caches Key and Value tensors for all previous tokens. For large models, this gets expensive. A 70B parameter model at bf16 precision caching 1M tokens of context requires roughly 500GB of KV cache memory. For a 7B model, the figure is closer to 50GB. The range matters — do not quote a single number without specifying the model size.
-
----
-
-## Mixture of Experts (MoE)
-
-Mixture of Experts is an architecture that allows models to have a very large total parameter count while only activating a fraction of those parameters for each token.
-
-**How it works:** Instead of one large feed-forward network (FFN) per transformer layer, you have N "expert" FFNs and a routing network that selects the top-k experts for each token. A typical published pattern is "8 experts, top-2" — large total parameters, a much smaller active set per token. Exact counts change with each release.
-
-**Why it matters:**
-- **Inference efficiency.** Active parameter count determines inference cost. An MoE model can match a dense model's quality at a fraction of the per-token compute.
-- **Training efficiency.** More total parameters mean more model capacity for learning, without proportional increases in training compute.
-
-Several frontier and open-weight families use MoE. Treat rumored total/active parameter counts as gossip unless the lab published them.
-
-**The tradeoff:** MoE models require more memory (all experts must be loaded even if only a few are active per token) and can be harder to fine-tune effectively, since not all experts see all training examples.
-
----
-
-## Multimodal Models
-
-Foundation models increasingly handle more than text. Understanding the two main approaches helps you choose the right model for your use case.
-
-**Native multimodal models** are trained from the ground up on multiple modalities. Google's Gemini processes text, images, audio, and video through a single model with shared representations. This tends to produce better cross-modal understanding — the model can reason about the relationship between an image and text, not just describe each independently.
-
-**Composite / pipeline models** bolt vision encoders or audio encoders onto a language model backbone. LLaVA, for instance, connects a CLIP vision encoder to a Llama language model. These are easier to build and iterate on, but can struggle with deep cross-modal reasoning.
-
-**What works well today:**
-- Image understanding (describing, analyzing, extracting data from images and charts)
-- Code generation from screenshots or mockups
-- Document parsing (PDFs, receipts, forms) with vision models
-- Audio transcription and understanding (native multimodal APIs)
-
-**What remains limited:**
-- Fine-grained spatial reasoning ("what is 3cm to the left of the red box")
-- Consistent image generation that follows complex multi-constraint prompts
-- Real-time video understanding at scale
-
----
-
-## Inference Optimization
-
-Running foundation models in production requires serious engineering to manage cost and latency. Here are the key techniques:
-
-### Quantization
-
-Reducing the precision of model weights from fp16/bf16 (16-bit) to int8 or int4. A 70B model at bf16 requires ~140GB of memory; at int4, it fits in ~35GB — runnable on a single high-end GPU.
-
-| Precision | Memory (70B model) | Quality Impact |
+| Knob | What it actually does | Default judgment |
 |---|---|---|
-| bf16 | ~140 GB | Baseline |
-| int8 (GPTQ/AWQ) | ~70 GB | Minimal for most tasks |
-| int4 (GPTQ/AWQ) | ~35 GB | Small degradation, noticeable on reasoning-heavy tasks |
+| **Context** | What tokens the model can see *this call* | Only what moves the answer. The rest is noise and bill. |
+| **Cache** | Reuse compute on a repeated prefix (system prompt, tools, policy) | Put the stable text first. Do not interpolate the date into the prefix. |
+| **Cutoff** | The last day the weights saw the world | Current facts go in context or behind a tool. Never in the prompt as folklore. |
+| **Sampling** | How wildly it picks the next token (temperature, top-p) | Near-zero for structured work. Higher only when variety is the product. |
+| **Reasoning effort** | Extra test-time compute before it answers | Spend it when the eval says mid-tier fails. Latency is a product decision. |
+| **Tools** | The model may call code, search, or your API instead of guessing | If a fact can be fetched, fetch it. Do not prompt it into existence. |
 
-### KV Caching
+[INTERACTIVE: DECODING_STRATEGIES]
 
-Stores the Key and Value tensors from previous tokens so they do not need to be recomputed during generation. This is not optional — without it, generation time would scale quadratically with sequence length. Every production system uses KV caching. Techniques like PagedAttention (used in vLLM) manage KV cache memory more efficiently using virtual memory concepts.
+A **mix of models** is normal. Cheap/fast for route and extract. Mid for the everyday path. Flagship or reasoning when the eval fails. Chapter 1’s tier table still holds.
 
-### Speculative Decoding
+> **Look up now.** Prompt: "For OpenAI, Anthropic, and Google: what is the current context-window size, knowledge-cutoff language, and the name of the reasoning-effort or thinking control on the flagship and cheap tiers? Cite official docs only."
 
-Uses a small, fast "draft" model to generate candidate tokens, then verifies them in a single pass through the large model. Because the large model can check multiple tokens in parallel (whereas generation is sequential), this can yield 2-3x speedups with no quality loss. Works best when the draft model has high acceptance rates — i.e., for tasks where the output is relatively predictable.
+## Worked example — the ticket reply
 
-### Continuous Batching
+You are shipping: *summarize this support ticket and draft a reply.*
 
-Traditional batching waits until a batch of requests is ready, processes them together, then returns all results. Continuous batching (used by vLLM, TensorRT-LLM, and others) dynamically adds and removes requests from the batch as they arrive and complete. This dramatically improves GPU utilization and throughput, reducing per-request latency under load.
+**What the model sees.** Ticket body, the three sentences of policy that apply, maybe the last two messages. Not the help-center dump. Not last quarter’s pricing PDF. Tokens are scarce; the policy is the seat that must be heard.
 
----
+**What you freeze.** System prompt + tool schemas + the policy paragraph. That prefix should be identical across thousands of tickets so the cache hits. The ticket text is the suffix that changes.
 
-## Putting It Together
+**What you do not ask it to know.** Order status, refund eligibility, the SKU that shipped. Those are tools: \`get_order\`, \`get_policy(id)\`. If the tool returns “ineligible,” the draft cannot invent a yes.
 
-As an engineer building with foundation models, here is what matters from this chapter:
+**How it should sample.** This is not a poem. Temperature near zero. You want the same ticket to get the same shape of reply.
 
-1. **Model choice is an engineering decision.** Bigger is not always better. A well-quantized 8B model with good fine-tuning can outperform a 70B model on your specific task at a fraction of the cost.
-2. **Tokenization affects your budget and your users.** Count tokens, not words. Test with your actual data, especially for non-English use cases.
-3. **Sampling parameters are not magic.** Temperature controls randomness. Top-p controls diversity. Set them deliberately based on your use case, not by copying defaults.
-4. **Context windows have real costs.** Just because you *can* send 200K tokens does not mean you *should*. Retrieve what is relevant, not everything.
-5. **The training pipeline explains model behavior.** When a model refuses a harmless request or responds in an oddly formal style, it is usually traceable to the SFT or RLHF stages. Understanding the pipeline helps you debug unexpected behavior.
+**How it fails if you skip this.** The model writes a kind, specific refund. The customer screenshots it. Your agent of record is now a paragraph you cannot defend.
 
-The models are impressive, but they are also engineering artifacts with knowable properties and predictable failure modes. The more you understand about how they work, the better systems you will build with them.
+**When you escalate.** If mid-tier mangles messy threads, try flagship on *those* tickets only. If the same error class repeats after you have traces, that is Chapter 7 — not a fine-tune. Fine-tune or self-host when the eval is stuck *and* you have a constraint (data cannot leave, style must lock, cost at volume). Chapter 10 and Chapter 12.
+
+That is the mental model applied: tokenize the right things, generate under a tight sample, fetch what you cannot know, measure before you change the model.
+
+## Multimodal, fine-tune, self-host
+
+Three escalations people reach for too early.
+
+**Multimodal** when the evidence *is* pixels, audio, or a page image — a screenshot of the error, a scanned form, a diagram. If you can get the text out first and the text is enough, you do not need the bigger multimodal call. Chapter 11.
+
+**Fine-tune** when prompting + tools + a better tier still fail a *stable* error class, and you have labeled examples of the behavior you want. It is not how you add last week’s facts. Facts go in context or a store. Chapter 10.
+
+**Self-host** when data cannot leave, when the unit economics at volume beat the API, or when you need a model you can air-gap. You also take the ops. Chapter 12.
+
+The common mistake is treating these as identity. They are responses to a measured constraint.
+
+## Start here
+
+You now have the picture Ng asked for: how the model tokenizes, how it generates, when to count on it, and the knobs that change the run.
+
+Chapter 3 is how you write what goes in the window. Chapter 4 is how you call it. If a ticket-reply already failed in production, skip to Chapter 5 (grounding) or Chapter 7 (evals) with this chapter in your pocket.
+
+The SKUs will move. Tokenize → generate will not.
 `,
     quizzes: [
-      {
-            "id": "q3-1",
-            "question": "What is \"Mixture of Experts\" (MoE)?",
-            "options": [
-                  "A team of human scientists checking the model",
-                  "A training technique using only textbooks",
-                  "An architecture where the model activates only a subset of \"expert\" parameters for each token",
-                  "A model that can only answer expert-level questions"
-            ],
-            "correctIndex": 2,
-            "explanation": "MoE models route tokens to specific \"expert\" neural networks, allowing massive total parameters but only activating a fraction per token for fast inference."
-      },
-      {
-            "id": "q3-2",
-            "question": "What did the Chinchilla paper reveal about model training?",
-            "options": [
-                  "Models should be as big as possible",
-                  "Most models were undertrained—optimal ratio is ~20 tokens per parameter",
-                  "Training data doesn't matter",
-                  "Smaller models are always better"
-            ],
-            "correctIndex": 1,
-            "explanation": "DeepMind showed that compute-optimal training requires balancing model size with data. A 70B model trained on enough data can match a 280B undertrained model."
-      },
-      {
-            "id": "q3-3",
-            "question": "What is the purpose of RLHF?",
-            "options": [
-                  "To make models generate faster",
-                  "To reduce parameter count",
-                  "To align models with human preferences for helpful and safe behavior",
-                  "To teach models new languages"
-            ],
-            "correctIndex": 2,
-            "explanation": "RLHF uses human feedback to train models to produce outputs humans prefer—making them helpful, harmless, and honest."
-      },
-      {
-            "id": "q3-4",
-            "question": "What are emergent capabilities?",
-            "options": [
-                  "Features explicitly programmed by developers",
-                  "Abilities that appear suddenly at certain scale thresholds without direct training",
-                  "Bugs that emerge during training",
-                  "Capabilities requiring fine-tuning"
-            ],
-            "correctIndex": 1,
-            "explanation": "Emergent capabilities like chain-of-thought reasoning appear at scale thresholds—they're a byproduct of the training objective, not explicit programming."
-      },
-      {
-            "id": "q3-5",
-            "question": "Why does tokenization matter for AI engineers?",
-            "options": [
-                  "It only matters for linguists",
-                  "It affects cost, context limits, and model behavior with different content",
-                  "It's only relevant for training",
-                  "Tokenization is deprecated"
-            ],
-            "correctIndex": 1,
-            "explanation": "You pay per token, context is measured in tokens, and unusual tokenization can cause unexpected behavior—especially with code, math, and non-English text."
-      },
-      {
-            "id": "q3-6",
-            "question": "What is the advantage of native multimodality over composite approaches?",
-            "options": [
-                  "It's cheaper to train",
-                  "It can learn cross-modal relationships that composite systems cannot",
-                  "It uses less memory",
-                  "It only works with text"
-            ],
-            "correctIndex": 1,
-            "explanation": "Native multimodal models trained on mixed media from the start learn relationships between modalities that bolted-together systems miss."
-      },
-      {
-            "id": "q3-7",
-            "question": "What is speculative decoding?",
-            "options": [
-                  "Having the model guess user intent",
-                  "Using a small model to draft tokens that a larger model verifies",
-                  "Training on speculative data",
-                  "A type of fine-tuning"
-            ],
-            "correctIndex": 1,
-            "explanation": "Speculative decoding uses a fast small model to draft tokens, then has the main model verify them in parallel—providing 2-3x speedups."
-      },
-      {
-            "id": "q3-8",
-            "question": "What is the key difference between Temperature and Top-P sampling?",
-            "options": [
-                  "They're the same thing",
-                  "Temperature reshapes the distribution; Top-P truncates it at a cumulative threshold",
-                  "Temperature only works with text",
-                  "Top-P is faster"
-            ],
-            "correctIndex": 1,
-            "explanation": "Temperature scales the entire probability distribution (higher = flatter). Top-P keeps only tokens whose cumulative probability reaches a threshold."
-      }
-],
+            {
+                  "id": "q2-1",
+                  "question": "A teammate says the model “understands the ticket, then writes the reply.” What is the more accurate mental model?",
+                  "options": [
+                        "A bidirectional encoder reads the ticket; a separate decoder writes the reply",
+                        "The model tokenizes the whole prompt and continues it, one token at a time",
+                        "The model retrieves a stored reply template and fills slots",
+                        "The model searches the training set for a similar ticket and copies the answer"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "There is no separate understanding pass. The reply is the continuation of the tokens you sent."
+            },
+            {
+                  "id": "q2-2",
+                  "question": "The draft refunds a customer. Your policy says no refund. What failed first?",
+                  "options": [
+                        "You used the cheap tier instead of the flagship",
+                        "Temperature was too low, so it could not be creative about policy",
+                        "You asked the model to know a fact it should have fetched or been given",
+                        "You forgot to enable multimodal so it could see the receipt photo"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Generation is not a database. Policy and order state belong in context or behind a tool."
+            },
+            {
+                  "id": "q2-3",
+                  "question": "You want prompt-cache hits on a high-volume classifier. What do you keep identical across calls?",
+                  "options": [
+                        "The user message, because that is what the model attends to",
+                        "The static prefix: system prompt, tools, and frozen policy — byte-identical",
+                        "The temperature, raised slightly each time so the cache stays warm",
+                        "The model ID, which you rotate weekly so providers cannot stale the cache"
+                  ],
+                  "correctIndex": 1,
+                  "explanation": "Caches key on a repeated prefix. Interpolating today’s date or the ticket into the prefix misses on purpose."
+            },
+            {
+                  "id": "q2-4",
+                  "question": "When is fine-tuning the right next move for a support-reply feature?",
+                  "options": [
+                        "The model does not know this week’s return window",
+                        "You have not written an eval yet and want a smarter model",
+                        "Prompting, tools, and a higher tier still fail a stable error class, and you have labeled examples",
+                        "Leadership asked for “our own model” on the roadmap slide"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Facts go in context or a store. Fine-tune locks a behavior you can already measure. Chapter 10."
+            },
+            {
+                  "id": "q2-5",
+                  "question": "A classification prompt is flaky: same ticket, different label. What do you change first?",
+                  "options": [
+                        "Switch to a multimodal model so it can see the email header",
+                        "Raise temperature so it explores more labels",
+                        "Lower sampling noise and measure; this is extract-and-route, not a poem",
+                        "Fine-tune overnight on the last 20 tickets"
+                  ],
+                  "correctIndex": 2,
+                  "explanation": "Sampling is a knob. Structured work wants it near zero. Then look at traces (Chapter 7) if it is still wrong."
+            }
+    ],
     flashcards: [
-      {
-            "id": "f3-1",
-            "front": "Foundation Model",
-            "back": "A large model trained at scale on broad data, designed to be adapted to many downstream tasks through prompting, fine-tuning, or retrieval."
-      },
-      {
-            "id": "f3-2",
-            "front": "Scaling Laws",
-            "back": "Mathematical relationships showing model performance improves predictably with parameters, data, and compute following power laws."
-      },
-      {
-            "id": "f3-3",
-            "front": "Emergent Capabilities",
-            "back": "Abilities like reasoning and in-context learning that appear suddenly at certain scale thresholds without explicit training."
-      },
-      {
-            "id": "f3-4",
-            "front": "Transformer",
-            "back": "The dominant neural network architecture using self-attention to process sequences in parallel and capture long-range dependencies."
-      },
-      {
-            "id": "f3-5",
-            "front": "Self-Attention",
-            "back": "Mechanism where each token computes relevance scores to all other tokens using Query, Key, and Value vectors."
-      },
-      {
-            "id": "f3-6",
-            "front": "Pre-Training",
-            "back": "Phase 1 of training: predicting next tokens on massive text corpora to learn language, knowledge, and reasoning patterns."
-      },
-      {
-            "id": "f3-7",
-            "front": "SFT (Supervised Fine-Tuning)",
-            "back": "Phase 2: Training on (instruction, response) pairs to teach the model the format of being a helpful assistant."
-      },
-      {
-            "id": "f3-8",
-            "front": "RLHF",
-            "back": "Reinforcement Learning from Human Feedback. Phase 3: Using human preference rankings to align model outputs with human values."
-      },
-      {
-            "id": "f3-9",
-            "front": "BPE (Byte-Pair Encoding)",
-            "back": "Tokenization algorithm that iteratively merges frequent character pairs to build a vocabulary of subword units."
-      },
-      {
-            "id": "f3-10",
-            "front": "Temperature",
-            "back": "Sampling parameter that controls randomness. T=0 is greedy/deterministic, T>1 increases creativity/randomness."
-      },
-      {
-            "id": "f3-11",
-            "front": "Top-P (Nucleus Sampling)",
-            "back": "Sampling that keeps only tokens whose cumulative probability exceeds threshold P, adapting to distribution shape."
-      },
-      {
-            "id": "f3-12",
-            "front": "Context Window",
-            "back": "Maximum tokens a model can process at once. Limits vary by SKU and change often — look up the model you are calling."
-      },
-      {
-            "id": "f3-13",
-            "front": "Flash Attention",
-            "back": "Optimized attention algorithm reducing memory usage and increasing speed by fusing operations."
-      },
-      {
-            "id": "f3-14",
-            "front": "KV Cache",
-            "back": "Stored key/value vectors from previous tokens enabling efficient autoregressive generation."
-      },
-      {
-            "id": "f3-15",
-            "front": "Mixture of Experts (MoE)",
-            "back": "Architecture using multiple expert networks with a router, activating only a subset per token for efficiency."
-      },
-      {
-            "id": "f3-16",
-            "front": "Native Multimodality",
-            "back": "Models trained on mixed media (text, images, audio) from scratch rather than bolting separate encoders together."
-      },
-      {
-            "id": "f3-17",
-            "front": "Quantization",
-            "back": "Reducing model precision (FP16 → INT8/INT4) to decrease memory and increase speed with minimal quality loss."
-      },
-      {
-            "id": "f3-18",
-            "front": "Speculative Decoding",
-            "back": "Using a small fast model to draft tokens that a larger model verifies in parallel for 2-3x speedups."
-      },
-      {
-            "id": "f3-19",
-            "front": "Chinchilla Optimal",
-            "back": "The compute-optimal training ratio of ~20 tokens per parameter discovered by DeepMind."
-      },
-      {
-            "id": "f3-20",
-            "front": "Process Reward Model",
-            "back": "Reward model evaluating correctness of intermediate reasoning steps, not just final answers. Key for training reasoning models."
-      }
-]
+            {
+                  "id": "f2-1",
+                  "front": "Tokenize → generate",
+                  "back": "The model sees token IDs, not words. It continues the prompt one token at a time. There is no separate understanding pass."
+            },
+            {
+                  "id": "f2-2",
+                  "front": "Why they fail politely",
+                  "back": "Next-token prediction completes the sentence. It will not throw. A wrong first token steers the rest."
+            },
+            {
+                  "id": "f2-3",
+                  "front": "Context vs tools",
+                  "back": "Put in the window only what must be heard this call. If a fact can be fetched, fetch it. Generation is not a database."
+            },
+            {
+                  "id": "f2-4",
+                  "front": "Cache hit",
+                  "back": "Keep the static prefix (system, tools, policy) byte-identical. Changing the prefix on purpose misses the cache."
+            },
+            {
+                  "id": "f2-5",
+                  "front": "Cutoff",
+                  "back": "Weights freeze. Current facts go in context or behind a tool. Look up the cutoff when the date matters."
+            },
+            {
+                  "id": "f2-6",
+                  "front": "Sampling",
+                  "back": "Temperature / top-p change how wildly the next token is picked. Near-zero for extract, route, classify. Higher only when variety is the product."
+            },
+            {
+                  "id": "f2-7",
+                  "front": "When to fine-tune or self-host",
+                  "back": "Fine-tune: stable error class after prompt + tools + tier, with labels. Self-host: data cannot leave, volume economics, or air-gap. Not for last week’s facts."
+            },
+            {
+                  "id": "f2-8",
+                  "front": "LLM foundations (Ng)",
+                  "back": "Tokenize and generate. Context, cache, cutoff, sampling, reasoning effort, tools. When to multimodal, fine-tune, or self-host. Choose a mix of models."
+            }
+    ]
   },
   {
     id: 'ch3',

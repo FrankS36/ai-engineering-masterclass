@@ -72,7 +72,7 @@ Pedagogical order = `COURSE_ORDER`. Sidebar = `COURSE_SECTIONS`.
 | ID | Title now | Skill | Status |
 |---|---|---|---|
 | ch1 | The Four Skills | Orientation | **Prototype shipped** — iterate on this form |
-| ch2 | How Foundation Models Work | 1 LLM foundations | Next rewrite |
+| ch2 | LLM Foundations | 1 LLM foundations | **Rewritten** — mental model; no training-run gossip |
 | ch3 | Prompt Engineering | 1 LLM foundations | Encyclopedia |
 | ch4 | Building with LLM APIs | 1 LLM foundations | Encyclopedia |
 | ch5 | RAG & Knowledge Systems | 1 Grounding | Encyclopedia |
@@ -93,14 +93,13 @@ Pedagogical order = `COURSE_ORDER`. Sidebar = `COURSE_SECTIONS`.
 
 ## Next session (do this, in order)
 
-1. **Iterate ch1** if the prototype form is wrong (type, chrome, length). Do not restyle the universe first.
-2. **Rewrite ch2** to Skill 1 / LLM foundations — mental model only, no training-run gossip.
-3. **Tighten ch16 → ch17** (Skill 2 then specs). ch15 harness lesson is in.
+1. **Iterate ch1 / ch2** only if the form is wrong after you sit with them.
+2. **Tighten ch16 → ch17** (Skill 2 then specs). ch15 harness lesson is in.
 4. **Rewrite ch6 then ch7** (agentic systems + evals-as-gate).
 5. Cut remaining encyclopedia chapters to the bar. Hide junk resource views until rewritten.
 6. Rewrite or delete `CURRICULUM.md` / `GAPS.md` so they cannot contradict this file.
 
-If you only have time for one thing after ch1: **ch2**.
+If you only have time for one thing after ch2: **ch16** (tighten), then **ch17**.
 
 ---
 
@@ -113,3 +112,4 @@ If you only have time for one thing after ch1: **ch2**.
 - **ch1 rewritten** to Ng’s four skills. Sidebar labeled to the map. `SKILL_HOME` on every chapter.
 - **Harness defined:** `AGENTS.md` + `scripts/inject-chapter.mjs` + `chapters/chN.assessments.json`. Do not hand-edit `constants.ts`.
 - **ch15 rewritten** as the workbook lesson for that harness (worked example = this repo).
+- **ch2 rewritten** to LLM foundations (tokenize → generate, knobs, ticket-reply worked example).
