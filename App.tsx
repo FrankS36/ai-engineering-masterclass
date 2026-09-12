@@ -232,7 +232,7 @@ export default function App() {
         </aside>
 
         <main data-course-scroll className="relative min-w-0 flex-1 overflow-y-auto bg-background">
-          <div className="gold-grid pointer-events-none absolute inset-0 min-h-full opacity-[0.1]" />
+          <div className="gold-grid pointer-events-none absolute inset-0 min-h-full opacity-[0.16]" />
           <div className="relative z-10">{renderContent()}</div>
         </main>
       </div>
