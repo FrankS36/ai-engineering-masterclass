@@ -95,9 +95,9 @@ Pedagogical order = `COURSE_ORDER`. Sidebar = `COURSE_SECTIONS`.
 
 1. **Iterate ch1 / ch2** only if the form is wrong after you sit with them.
 2. **Tighten ch16 → ch17** (Skill 2 then specs). ch15 harness lesson is in.
-4. **Rewrite ch6 then ch7** (agentic systems + evals-as-gate).
-5. Cut remaining encyclopedia chapters to the bar. Hide junk resource views until rewritten.
-6. Rewrite or delete `CURRICULUM.md` / `GAPS.md` so they cannot contradict this file.
+3. **Rewrite ch6 then ch7** (agentic systems + evals-as-gate).
+4. Cut remaining encyclopedia chapters to the bar. Hide junk resource views until rewritten.
+5. Rewrite or delete `CURRICULUM.md` / `GAPS.md` so they cannot contradict this file.
 
 If you only have time for one thing after ch2: **ch16** (tighten), then **ch17**.
 
