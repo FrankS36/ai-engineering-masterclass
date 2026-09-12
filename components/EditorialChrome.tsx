@@ -11,8 +11,7 @@ export const EditorialHero: React.FC<{
   lede?: string;
   byline?: string;
 }> = ({ kicker, number, title, lede, byline }) => (
-  <section className="relative overflow-hidden bg-surface-dark text-white">
-    <GoldGrid />
+  <section className="relative overflow-hidden text-white">
     <div className="relative mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <p className="font-mono text-xs uppercase tracking-[0.18em] text-secondary">{kicker}</p>
       <p className="mt-4 font-serif text-7xl text-secondary/30" aria-hidden="true">
@@ -32,7 +31,7 @@ export const EditorialHero: React.FC<{
 );
 
 export const ArticleShell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <article className="bg-background py-12 lg:py-16">
+  <article className="py-12 lg:py-16">
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">{children}</div>
   </article>
 );
